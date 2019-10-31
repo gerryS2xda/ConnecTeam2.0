@@ -1,0 +1,22 @@
+
+.guideText{
+    width: 80%;
+    position: absolute;
+    top: 60px;
+}
+
+.gridContainerVertLayout{
+    width: 250px;
+    height: 70%;
+    margin-left: 5%;
+    margin-top: 10%;
+    background-color: #FFFFFF;
+}
+
+.btnUnderGrid{
+    width: 60%;
+    height: 10%;
+    margin-top: 20px;
+    background-color: #007d99;
+    margin-left: 20%;
+}
