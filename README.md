@@ -8,3 +8,4 @@ LuDo (sviluppato da Cinzia Scotellaro e Sara Boriello).
 LuDo: piattaforma sviluppata per supportare l'inserimento di giochi collaborativi.
 Sono presenti i seguenti giochi: Guess (Cinzia Scotellaro e Sara Boriello) e Maty (Gregorio Saggese).
 
+Tecnologie e framework usati: Vaadin framework, Spring Boot, Hibernate 
