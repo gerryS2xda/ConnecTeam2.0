@@ -1,7 +1,5 @@
 package com.example.demo.users.discusser;
 
-import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
-import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.NavBar;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Partita;
@@ -15,6 +13,7 @@ import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.users.event.StartGameEventBeanListener;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -24,14 +23,12 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.shared.communication.PushMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
@@ -46,7 +43,7 @@ import java.util.Map;
 @StyleSheet("frontend://stile/style.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator, BeforeLeaveObserver {
+public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator, BeforeLeaveObserver, AfterNavigationObserver {
 
     private Account account;
     private PartitaRepository partitaRepository;
@@ -57,7 +54,8 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private boolean isStartPartita = false; //verifica se il teacher ha avviato la partita
     private StartGameEventBeanListener startGameEventBeanListener;
     private StartGameThread startGameThread;
-    private UI ui;
+    private VerticalLayout main;
+    private Paragraph msgAttesa;
 
     public StudentHomeView(@Autowired AccountListEventBeanPublisher accountEventPublisher, @Autowired StartGameEventBeanListener startGameEventListener) {
 
@@ -66,23 +64,24 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             startGameEventBeanListener = startGameEventListener;
             setId("StudentHomeView");
 
-            ui = UI.getCurrent();
-
             NavBar navBar = new NavBar();
             add(navBar);
 
-            VerticalLayout main1 = new VerticalLayout();
-            main1.addClassName("main1");
-            main1.getStyle().set("top", "80px"); //'spazio' tra navbar e main content
+            main = new VerticalLayout();
+            main.addClassName("main1");
+            main.getStyle().set("top", "80px"); //'spazio' tra navbar e main content
 
-            VerticalLayout main = new VerticalLayout();
-            main.setWidth(null);
-            main.setSpacing(false);
-            main.setPadding(false);
-            main.add(homeUser());
+            VerticalLayout userInfo = new VerticalLayout();
+            userInfo.setWidth(null);
+            userInfo.setSpacing(false);
+            userInfo.setPadding(false);
+            userInfo.add(homeUser());
 
-            main1.add(main);
-            add(main1);
+            msgAttesa = new Paragraph("In attesa che il teacher inizi la sessione. Attendere...");
+            msgAttesa.getStyle().set("font-size", "20px");
+
+            main.add(userInfo, msgAttesa);
+            add(main);
 
             Broadcaster.register(account, this);
             Broadcaster.addUsers(UI.getCurrent());
@@ -90,8 +89,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
 
             startGameThread = new StartGameThread();
-            startGameThread.start();
-
         }catch (Exception e){
             removeAll();
             startGameThread.interrupt();
@@ -104,6 +101,18 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
     }
 
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {  //eseguito dopo caricamento completo della pagina
+        try {
+            startGameThread.start();
+            startGameThread.join(); //problema di interfogliamento
+            redirectUserToGame(); //eseguito dopo la fine del thread startGame
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+
+    //private methods
     private HorizontalLayout homeUser() {
 
         HorizontalLayout main = new HorizontalLayout();
@@ -185,11 +194,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         }
         layoutWelcome.add(layoutNomeEPartita);
 
-
-        Paragraph msgAttesa = new Paragraph("In attesa che il teacher inizi la sessione. Attendere...");
-        msgAttesa.getStyle().set("font-size", "20px");
-
-        verticalLayout.add(layoutWelcome, msgAttesa);
+        verticalLayout.add(layoutWelcome);
         main.add(verticalLayout);
 
         return main;
@@ -280,30 +285,32 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             isStartPartita = false;
             try{
                 while(!isStartPartita){ //itera finche' non arriva event per iniziare la partita
-                    Thread.sleep(5000); //controlla arrivo dell'event ogni 5 secondi
+                    this.sleep(5000); //controlla arrivo dell'event ogni 5 secondi
                     isStartPartita = startGameEventBeanListener.isPartitaStart(); //default e' false
                     System.out.println("StudentHomeView Thread - isStartPartita: "+ isStartPartita);
-                }
-                //NOTA: Questo funziona solo se il teacher avvia tutte e tre le partite contemporaneamente
-                // se la partita e' stata avviata dal teacher
-                Map<Account, String> dataReceive = startGameEventBeanListener.getAccountList();
-                for(Account i : dataReceive.keySet()){ //per tutti gli account connessi a questa pagina
-                    if(i.equals(account)) { //indirizza l'utente di questa sessione nella pagina del gioco assegnata dal teacher
-                        String game = dataReceive.get(i); //dammi il nome del gioco associato all'account
-                        if (game.equals("Guess")) { //indirizza il giocatore nella pagina di Guess
-                            System.out.println("StudentHomeView Thread: start Guess");
-                            ui.getPage().executeJs("window.location.href = \"http://localhost:8080/guess\"");
-                        } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty
-                            System.out.println("StudentHomeView Thread: start Maty");
-                            ui.getPage().executeJs("window.location.href = \"http://localhost:8080/maty\"");
-                        }
-                    }
                 }
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
         }
 
+    }
+
+    public void redirectUserToGame(){
+        //NOTA: Questo funziona solo se il teacher avvia tutte e tre le partite contemporaneamente
+        // se la partita e' stata avviata dal teacher
+        Map<Account, String> dataReceive = startGameEventBeanListener.getAccountList();
+        for(Account i : dataReceive.keySet()){ //per tutti gli account connessi a questa pagina
+            if(i.equals(account)) { //indirizza l'utente di questa sessione nella pagina del gioco assegnata dal teacher
+                String game = dataReceive.get(i); //dammi il nome del gioco associato all'account
+                if (game.equals("Guess")) { //indirizza il giocatore nella pagina di Guess
+                    System.out.println("StudentHomeView Thread: start Guess");
+                    UI.getCurrent().getPage().executeJs("window.open(\"http://localhost:8080/guess\");");
+                } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty
+                    UI.getCurrent().getPage().executeJs("window.open(\"http://localhost:8080/guess\");");
+                }
+            }
+        }
     }
 
     @Override
