@@ -18,7 +18,6 @@ public class StartGameEventListener implements ApplicationListener<StartGameEven
         System.out.println("Receive a custom event: " + event.getAccountList());
         accountList = event.getAccountList();
         isStartPartita = event.isStartPartita();
-
     }
 
     public Map<Account, String> getAccountList(){

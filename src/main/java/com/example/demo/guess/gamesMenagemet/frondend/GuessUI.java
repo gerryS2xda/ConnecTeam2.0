@@ -83,8 +83,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         try {
 
             guess = new Guess();
-            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().
-                    getWrappedSession().getAttribute("partitaRepository");
+            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             guessController = new GuessController(partitaRepository);
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");

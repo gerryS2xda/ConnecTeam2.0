@@ -32,6 +32,7 @@ import com.vaadin.flow.shared.communication.PushMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ import java.util.Map;
 @StyleSheet("frontend://stile/style.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator, BeforeLeaveObserver, AfterNavigationObserver {
+public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator, BeforeLeaveObserver {
 
     private Account account;
     private PartitaRepository partitaRepository;
@@ -88,7 +89,12 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
 
+            Map<Account, UI> test = new HashMap<>();
+            test.put(account, UI.getCurrent());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("testAttr", test);
+
             startGameThread = new StartGameThread();
+            startGameThread.start();
         }catch (Exception e){
             removeAll();
             startGameThread.interrupt();
@@ -100,7 +106,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         }
 
     }
-
+/*
     @Override
     public void afterNavigation(AfterNavigationEvent event) {  //eseguito dopo caricamento completo della pagina
         try {
@@ -111,7 +117,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             e.printStackTrace();
         }
     }
-
+*/
     //private methods
     private HorizontalLayout homeUser() {
 
@@ -289,6 +295,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
                     isStartPartita = startGameEventBeanListener.isPartitaStart(); //default e' false
                     System.out.println("StudentHomeView Thread - isStartPartita: "+ isStartPartita);
                 }
+                redirectUserToGame();
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
