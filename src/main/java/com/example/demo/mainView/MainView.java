@@ -11,6 +11,7 @@ import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.example.demo.maty.gameMenagement.backend.db.ItemRepositoryMaty;
 import com.example.demo.nuovoGioco.gameManagement.database.ItemRepositoryNuovoGioco;
 import com.example.demo.users.controller.ControllerMainUI;   //modificato
+import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.utility.DialogUtility;
 import com.example.demo.utility.InfoEventUtility;
 import com.vaadin.flow.component.Key;
@@ -331,11 +332,10 @@ public class MainView extends VerticalLayout {
         b.addClickListener(buttonClickEvent -> {
 
             Account a = accountRepository.findOneByEmail("gregorio@gmail.com");
+            a.setTypeAccount("teacher"); //teacher per il tester
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("gregorio@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("gregorio@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
@@ -349,11 +349,10 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("luigi@gmail.com");
+            a.setTypeAccount("teacher"); //teacher per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("luigi@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("luigi@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
@@ -368,90 +367,85 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("michela@gmail.com");
+            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("michela@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("michela@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
 
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
         });
 
         b = new Button("francesca");
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("francesca@gmail.com");
+            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("francesca@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("francesca@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
 
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
         });
 
         b = new Button("antonio");
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("antonio@gmail.com");
+            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("antonio@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("antonio@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
 
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
         });
 
         b = new Button("gianluca");
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("gianluca@gmail.com");
+            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("gianluca@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("gianluca@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
 
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
         });
 
         b = new Button("simone");
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("simone@gmail.com");
+            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("userId", accountRepository.findOneByEmail("simone@gmail.com").getId());
-            VaadinService.getCurrentRequest().getWrappedSession().
-                    setAttribute("user", accountRepository.findOneByEmail("simone@gmail.com"));
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
+            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("rep",accountRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("partitaRepository",partitaRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("gameList",gameList);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
 
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
         });
 
     }
