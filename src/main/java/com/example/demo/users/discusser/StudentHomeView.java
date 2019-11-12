@@ -1,5 +1,7 @@
 package com.example.demo.users.discusser;
 
+import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
+import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.NavBar;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Partita;
@@ -22,6 +24,8 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.InitialPageSettings;
@@ -42,7 +46,7 @@ import java.util.Map;
 @StyleSheet("frontend://stile/style.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator {
+public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator, BeforeLeaveObserver {
 
     private Account account;
     private PartitaRepository partitaRepository;
@@ -53,6 +57,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private boolean isStartPartita = false; //verifica se il teacher ha avviato la partita
     private StartGameEventBeanListener startGameEventBeanListener;
     private StartGameThread startGameThread;
+    private UI ui;
 
     public StudentHomeView(@Autowired AccountListEventBeanPublisher accountEventPublisher, @Autowired StartGameEventBeanListener startGameEventListener) {
 
@@ -60,6 +65,8 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             accountEventListpublisher = accountEventPublisher;
             startGameEventBeanListener = startGameEventListener;
             setId("StudentHomeView");
+
+            ui = UI.getCurrent();
 
             NavBar navBar = new NavBar();
             add(navBar);
@@ -270,6 +277,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
         @Override
         public void run(){
+            isStartPartita = false;
             try{
                 while(!isStartPartita){ //itera finche' non arriva event per iniziare la partita
                     Thread.sleep(5000); //controlla arrivo dell'event ogni 5 secondi
@@ -284,10 +292,10 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
                         String game = dataReceive.get(i); //dammi il nome del gioco associato all'account
                         if (game.equals("Guess")) { //indirizza il giocatore nella pagina di Guess
                             System.out.println("StudentHomeView Thread: start Guess");
-                            UI.getCurrent().navigate("guess"); //NullPointerExpection (modificare)
+                            ui.getPage().executeJs("window.location.href = \"http://localhost:8080/guess\"");
                         } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty
                             System.out.println("StudentHomeView Thread: start Maty");
-                            UI.getCurrent().navigate("maty");
+                            ui.getPage().executeJs("window.location.href = \"http://localhost:8080/maty\"");
                         }
                     }
                 }
@@ -296,6 +304,14 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             }
         }
 
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event){
+        //Prima di cambiare web page, interrompi il thread
+        if(startGameThread != null){
+            startGameThread.interrupt();
+        }
     }
 
 }
