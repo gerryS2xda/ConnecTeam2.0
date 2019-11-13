@@ -10,6 +10,7 @@ import com.example.demo.error.ErrorPage;
 import com.example.demo.users.event.AccountListEventBeanPublisher;
 import com.example.demo.users.broadcaster.BroadcastListener;
 import com.example.demo.users.broadcaster.Broadcaster;
+import com.example.demo.users.event.EventListenerTestAsync;
 import com.example.demo.users.event.StartGameEventBeanListener;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
@@ -22,19 +23,15 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.InitialPageSettings;
-import com.vaadin.flow.server.PageConfigurator;
-import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.*;
 import com.vaadin.flow.shared.communication.PushMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Push
@@ -44,7 +41,7 @@ import java.util.Map;
 @StyleSheet("frontend://stile/style.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator, BeforeLeaveObserver {
+public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator {
 
     private Account account;
     private PartitaRepository partitaRepository;
@@ -53,16 +50,26 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private int numeroUtenti = 0; //numero utenti connessi
     private AccountListEventBeanPublisher accountEventListpublisher;
     private boolean isStartPartita = false; //verifica se il teacher ha avviato la partita
-    private StartGameEventBeanListener startGameEventBeanListener;
-    private StartGameThread startGameThread;
     private VerticalLayout main;
     private Paragraph msgAttesa;
+    private EventListenerTestAsync service;
 
-    public StudentHomeView(@Autowired AccountListEventBeanPublisher accountEventPublisher, @Autowired StartGameEventBeanListener startGameEventListener) {
+    public StudentHomeView(@Autowired EventListenerTestAsync serv, @Autowired AccountListEventBeanPublisher accountEventPublisher) {
 
         try{
+            service = serv;
             accountEventListpublisher = accountEventPublisher;
-            startGameEventBeanListener = startGameEventListener;
+
+            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
+            if(accountRepository == null)
+                throw new IllegalArgumentException("StudentHomeView: AccountRepository is null");
+            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+            if(account == null)
+                throw new IllegalArgumentException("StudentHomeView: Account is null");
+            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+            if(partitaRepository == null)
+                throw new IllegalArgumentException("StudentHomeView: PartitaRepository is null");
+
             setId("StudentHomeView");
 
             NavBar navBar = new NavBar();
@@ -89,43 +96,28 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
 
-            Map<Account, UI> test = new HashMap<>();
-            test.put(account, UI.getCurrent());
-            VaadinService.getCurrentRequest().getWrappedSession().setAttribute("testAttr", test);
+            service.registerEventListener(UI.getCurrent(), account, this::redirectToGuess, this::redirectToMaty);
 
-            startGameThread = new StartGameThread();
-            startGameThread.start();
         }catch (Exception e){
-            removeAll();
-            startGameThread.interrupt();
-            getStyle().set("background-color","white");
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
+            showErrorPage();
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
 
     }
-/*
-    @Override
-    public void afterNavigation(AfterNavigationEvent event) {  //eseguito dopo caricamento completo della pagina
-        try {
-            startGameThread.start();
-            startGameThread.join(); //problema di interfogliamento
-            redirectUserToGame(); //eseguito dopo la fine del thread startGame
-        }catch(InterruptedException e){
-            e.printStackTrace();
-        }
+
+    public void showErrorPage(){
+        removeAll();
+        getStyle().set("background-color","white");
+        ErrorPage errorPage = new ErrorPage();
+        add(errorPage);
     }
-*/
+
     //private methods
     private HorizontalLayout homeUser() {
 
         HorizontalLayout main = new HorizontalLayout();
         main.addClassName("positioning");
-        accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-        account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-        partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(false);
         verticalLayout.addClassName("positioning2");
@@ -235,7 +227,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
                 if (account1.equals(account)) {
                     Broadcaster.unregister(account, this);
                     accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //invia event per rimozione account da accountList event inviato in precedenza
-                    startGameThread.interrupt();
                 }
             });
         }catch (Exception e){
@@ -283,48 +274,25 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         });
     }
 
-    //Implementazione di un background thread per gestire la parte di event listener
-    class StartGameThread extends Thread{
-
-        @Override
-        public void run(){
-            isStartPartita = false;
-            try{
-                while(!isStartPartita){ //itera finche' non arriva event per iniziare la partita
-                    this.sleep(5000); //controlla arrivo dell'event ogni 5 secondi
-                    isStartPartita = startGameEventBeanListener.isPartitaStart(); //default e' false
-                    System.out.println("StudentHomeView Thread - isStartPartita: "+ isStartPartita);
-                }
-                redirectUserToGame();
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    public void redirectUserToGame(){
-        //NOTA: Questo funziona solo se il teacher avvia tutte e tre le partite contemporaneamente
-        // se la partita e' stata avviata dal teacher
-        Map<Account, String> dataReceive = startGameEventBeanListener.getAccountList();
-        for(Account i : dataReceive.keySet()){ //per tutti gli account connessi a questa pagina
-            if(i.equals(account)) { //indirizza l'utente di questa sessione nella pagina del gioco assegnata dal teacher
-                String game = dataReceive.get(i); //dammi il nome del gioco associato all'account
-                if (game.equals("Guess")) { //indirizza il giocatore nella pagina di Guess
-                    System.out.println("StudentHomeView Thread: start Guess");
-                    UI.getCurrent().getPage().executeJs("window.open(\"http://localhost:8080/guess\");");
-                } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty
-                    UI.getCurrent().getPage().executeJs("window.open(\"http://localhost:8080/guess\");");
-                }
-            }
+    private void redirectToGuess(UI ui){
+        System.out.println("StudentHomeView: ui " + ui);
+        if(ui == null){
+            showErrorPage();
+        }else {
+            ui.access(() -> {
+                System.out.println("StudentHomeView: before executeJS");
+                ui.getPage().executeJs("window.open(\"http://localhost:8080/guess\");");
+            });
         }
     }
 
-    @Override
-    public void beforeLeave(BeforeLeaveEvent event){
-        //Prima di cambiare web page, interrompi il thread
-        if(startGameThread != null){
-            startGameThread.interrupt();
+    private void redirectToMaty(UI ui){
+        if(ui == null){
+            showErrorPage();
+        }else {
+            ui.getUI().get().access(() -> {
+                ui.getUI().get().getPage().executeJs("window.open(\"http://localhost:8080/maty\");");
+            });
         }
     }
 
