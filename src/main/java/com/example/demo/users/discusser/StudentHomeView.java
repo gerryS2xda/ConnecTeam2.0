@@ -97,6 +97,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
 
+            //Setting UI object for receive and event from teacher class
             uiCurrent = UI.getCurrent();
             uiCurrent.setPollInterval(1000);
             service.registerEventListener(uiCurrent, account, this::redirectToGuess, this::redirectToMaty);
@@ -284,7 +285,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         }else {
             ui.access(() -> {
                 System.out.println("StudentHomeView: before executeJS");
-                ui.navigate("guess");
+                ui.getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/guess\";");
             });
         }
     }
@@ -294,7 +295,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             showErrorPage();
         }else {
             ui.getUI().get().access(() -> {
-                ui.getUI().get().getPage().executeJs("window.open(\"http://localhost:8080/maty\");");
+                ui.getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/maty\";");
             });
         }
     }
