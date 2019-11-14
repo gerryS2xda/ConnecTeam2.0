@@ -17,12 +17,13 @@ public class EventListenerTestAsync {
     @Autowired
     private StartGameEventListener startGameEventListener;
 
+    //instance field per gestire comunicazione tra teacher e discusser
     private Map<Integer, Consumer<UI>> gamesLaunch = new HashMap<>(); //mappa una gioco da lanciare con un intero
     private Map<Account, UI> uiAccountList = new HashMap<>(); //mappa una ui ad un account
 
-
+    //Comunicazione tra teacher e discusser per avviare i giochi
     @Async
-    public void registerEventListener(UI ui, Account a, Consumer<UI> guess, Consumer<UI> maty){
+    public void registerEventListenerForDiscusser(UI ui, Account a, Consumer<UI> guess, Consumer<UI> maty){
         gamesLaunch.put(1, guess);
         gamesLaunch.put(2, maty);
         uiAccountList.put(a, ui);

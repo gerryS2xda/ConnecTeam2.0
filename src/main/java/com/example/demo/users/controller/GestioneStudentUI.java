@@ -9,6 +9,7 @@ import com.example.demo.users.event.AccountListEventBeanPublisher;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -74,7 +75,8 @@ public class GestioneStudentUI extends HorizontalLayout {
             guidetxt.addClassName("guideText");
             guidetxt.getStyle().set("left", NavBarVertical.NAVBAR_WIDTH);
 
-            currentAccountList = accountListEventBeanListener.getAccountList(); //salva la lista al primo accesso a questa pagina
+
+            updateAndMergeAccountList();
             gridStud.setItems(currentAccountList.keySet()); //keyset() poiche' gli account rappresentano le chiavi
             configurationGridDragAndDrop();
 
@@ -96,18 +98,7 @@ public class GestioneStudentUI extends HorizontalLayout {
 
     }
 
-    //Aggiorna e fondi le liste di account (soluzione del bug: 'Aggiorna' button)
-    private void updateAndMergeAccountList(){
-        Map<Account, String> actualList = accountListEventBeanListener.getAccountList();
-        for(Account i : actualList.keySet()){
-            if(currentAccountList.containsKey(i)){ //se il nuovo account e' gia' presente in actualList
-                actualList.replace(i, currentAccountList.get(i)); //modifica il value 'Game' degli account esistenti in currentList
-            }
-        }
-        currentAccountList = actualList; //aggiorna lista corrente con 'actualList' che contiene nuovi utenti connessi
-    }
-
-    private void configurationGridDragAndDrop(){
+        private void configurationGridDragAndDrop(){
 
         gridStud.removeAllColumns(); //inserito per rimuovere tutte le colonne di Account (bug)
         gridStud.setId("AccountList");
@@ -210,11 +201,37 @@ public class GestioneStudentUI extends HorizontalLayout {
         btn.addClassName("btnUnderGrid");
         btn.addClickListener(event ->{
             updateAndMergeAccountList();
-            gridStud.setItems(currentAccountList.keySet());
+            //Rimuovi account che hanno il campo "Game" gia' settato
+            Map<Account, String> tempList = new HashMap<>();
+            for(Account i : currentAccountList.keySet()){
+                tempList.put(i, currentAccountList.get(i));
+            }
+            for(Account i : currentAccountList.keySet()){
+                if(!currentAccountList.get(i).equals("")){ //se gli account hanno il campo 'String' settato -> rimuovi
+                    tempList.remove(i);
+                }
+            }
+            gridStud.setItems(tempList.keySet());
         });
 
         vert.add(gridStud, btn);
         return vert;
+    }
+
+    //Aggiorna e fondi le liste di account (soluzione del bug: 'Aggiorna' button)
+    private void updateAndMergeAccountList(){
+        Map<Account, String> actualList = accountListEventBeanListener.getAccountList();
+        for(Account i : actualList.keySet()){
+            if(currentAccountList.containsKey(i)){ //se il nuovo account e' gia' presente in actualList
+                actualList.replace(i, currentAccountList.get(i)); //modifica il value 'Game' degli account esistenti in currentList
+            }
+        }
+        currentAccountList = actualList; //aggiorna lista corrente con 'actualList' che contiene nuovi utenti connessi
+    }
+
+    //Aggiorna il contenuto del campo 'value' con il gioco impostato dal teacher
+    private void updateAccountListHashMap(Account acc, String game){
+        currentAccountList.replace(acc, game);
     }
 
     //Contenitore per lista studenti da inserire nel gioco Guess
@@ -285,8 +302,4 @@ public class GestioneStudentUI extends HorizontalLayout {
         return image;
     }
 
-    //Aggiorna il contenuto del campo 'value' con il gioco impostato dal teacher
-    private void updateAccountListHashMap(Account acc, String game){
-        accountListEventBeanListener.getAccountList().replace(acc, game);
-    }
 }
