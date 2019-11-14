@@ -99,7 +99,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             //Setting UI object for receive and event from teacher class
             uiCurrent = UI.getCurrent();
-            uiCurrent.setPollInterval(1000);
+            uiCurrent.setPollInterval(3000);
             service.registerEventListenerForDiscusser(uiCurrent, account, this::redirectToGuess, this::redirectToMaty);
 
         }catch (Exception e){
