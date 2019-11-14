@@ -88,11 +88,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             setId("GuessUI");
+            /*
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 if (Broadcaster.getPartiteThread().get(i) != null) {
                     isStarted = true;
                 }
             }
+
+             */
             if (isStarted != true) {
                 Broadcaster.register(account, this);
                 BroadcasterChat.register(this);
@@ -178,7 +181,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             add(label1);
              */
 
-            start.addClickListener(buttonClickEvent -> {
+
                 for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                     if (Broadcaster.getPartiteThread().get(i) != null) {
                         isStarted = true;
@@ -194,8 +197,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
-            });
-
         }
 
         catch (Exception e) {
