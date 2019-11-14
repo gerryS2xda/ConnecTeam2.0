@@ -53,6 +53,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private VerticalLayout main;
     private Paragraph msgAttesa;
     private EventListenerTestAsync service;
+    private UI uiCurrent;
 
     public StudentHomeView(@Autowired EventListenerTestAsync serv, @Autowired AccountListEventBeanPublisher accountEventPublisher) {
 
@@ -96,7 +97,9 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
 
-            service.registerEventListener(UI.getCurrent(), account, this::redirectToGuess, this::redirectToMaty);
+            uiCurrent = UI.getCurrent();
+            uiCurrent.setPollInterval(1000);
+            service.registerEventListener(uiCurrent, account, this::redirectToGuess, this::redirectToMaty);
 
         }catch (Exception e){
             showErrorPage();
@@ -281,7 +284,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         }else {
             ui.access(() -> {
                 System.out.println("StudentHomeView: before executeJS");
-                ui.getPage().executeJs("window.open(\"http://localhost:8080/guess\");");
+                ui.navigate("guess");
             });
         }
     }
