@@ -1,34 +1,16 @@
 package com.example.demo.users.event;
 
 import com.example.demo.entity.Account;
-import com.vaadin.flow.component.UI;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import com.example.demo.users.broadcaster.Broadcaster;
-
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @Component
 public class EventListenerTestAsync {
 
-/*
-    //instance field per gestire comunicazione tra teacher e discusser
-    private Map<Integer, Consumer<UI>> gamesLaunch = new HashMap<>(); //mappa una gioco da lanciare con un intero
-    private Map<Account, UI> uiAccountList = new HashMap<>(); //mappa una ui ad un account
-
-    //Comunicazione tra teacher e discusser per avviare i giochi
-    @Async
-    public void registerEventListenerForDiscusser(UI ui, Account a){
-        uiAccountList.put(a, ui);
-    }
-*/
-
-    @Async
+    @Async  //esegui in un thread differente
     @EventListener
     public void handleReceiveStarGameEvent(StartGameEvent event){
         System.out.println("EVENTLISTENER: Receive a custom event: " + event.getAccountList());
