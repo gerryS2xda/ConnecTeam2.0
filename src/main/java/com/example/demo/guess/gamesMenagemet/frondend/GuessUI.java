@@ -252,7 +252,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void countUser(UI ui, String nome) {
-        ui.getUI().get().access(() -> {
+        getUI().get().access(() -> {
             numeroUtenti.setEnabled(false);
             numeroUtenti.setText("Utenti connessi: "+Broadcaster.getListeners().size());
             numeroUtenti.setEnabled(true);
@@ -302,7 +302,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void addUsers(UI ui, int in) {
-        ui.getUI().get().access(() -> {
+        getUI().get().access(() -> {
             containerUtenti.removeAll();
             Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
 
