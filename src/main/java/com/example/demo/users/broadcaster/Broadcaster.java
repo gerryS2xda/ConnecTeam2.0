@@ -12,6 +12,7 @@ public class Broadcaster  {
     static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listner
     static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
     static int in = 0;
+    static int countGuessUser = 0;
 
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.put(account, "");
@@ -27,11 +28,13 @@ public class Broadcaster  {
     public static synchronized void unregister(Account account, BroadcastListener broadcastListener){
         listeners.remove(account,broadcastListener);
         accountList.remove(account);
+        if(countGuessUser > 0)
+            countGuessUser--;
         System.out.println("BroadcasterUSER.Unregister: size accountList:" + accountList.size());
     }
 
     public static synchronized void redirectToGuess(Account a){
-
+        countGuessUser++;
         try {
             executor.execute(() -> {
                  listeners.get(a).redirectToGuess();
@@ -60,9 +63,15 @@ public class Broadcaster  {
         return accountList;
     }
 
+    public static int getNumberOfGuessUser(){
+        return countGuessUser;
+    }
+
     public static synchronized void logOut(Account account){
         listeners.remove(account);
         accountList.remove(account);
+        if(countGuessUser > 0)
+            countGuessUser--;
         System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
     }
 

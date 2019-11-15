@@ -52,6 +52,11 @@ import java.util.Date;
 @PageTitle("ConnecTeam-Guess")
 public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
 
+    //static field
+    //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
+    private static final int maxNumeroUtentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
+
+    //instance field
     private AccountRepository accountRepository;
     private Account account;
     private GuessController guessController;
@@ -81,10 +86,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public GuessUI() {
 
         try {
-            System.out.println("GUESS");
-            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-            System.out.println("GUESS - account: " + account.toString());
             guess = new Guess();
+            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             guessController = new GuessController(partitaRepository);
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
@@ -104,6 +107,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
 
+            /* Rimosso perche' la sala di attesa e' stata sostituita da StudentHomeView
             secondContainer.setHorizontalComponentAlignment(Alignment.CENTER, start);
             Image image = new Image("frontend/img/Guess.jpeg", "guess");
             image.setWidth("200px");
@@ -124,7 +128,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             numeroUtenti.getStyle().set("font-size", "30px");
             players.add(start);
             add(players);
-
+            */
 
             Div device = new Div();
             Label label = new Label("Chat");
@@ -168,14 +172,18 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
 
+            /*
             label1 = new Label(account.getNome());
             label1.getStyle().set("position","absolute");
             label1.getStyle().set("top","140px");
             label1.getStyle().set("left","230px");
             label1.getStyle().set("font-size","40px");
             add(label1);
-
-            start.addClickListener(buttonClickEvent -> {
+            */
+            System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "#Max account: " + maxNumeroUtentiConnessi);
+            if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
+                System.out.println("GuessUI: Partita iniziata!");
+                //start.addClickListener(buttonClickEvent -> {
                 for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                     if (Broadcaster.getPartiteThread().get(i) != null) {
                         isStarted = true;
@@ -191,8 +199,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
-            });
-
+                //});
+            }
         }
 
         catch (Exception e) {
@@ -263,9 +271,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void startGame1(UI ui) {
         try {
             getUI().get().access(() -> {
-                remove(players);
-                remove(secondContainer);
-                remove(label1);
+                //remove(players);
+                //remove(secondContainer);
+                //remove(label1);
                 StartGameUI startGameUI = new StartGameUI(guessController);
                 verticalLayout.add(startGameUI);
                 verticalLayout.add(secondi,indizio);
