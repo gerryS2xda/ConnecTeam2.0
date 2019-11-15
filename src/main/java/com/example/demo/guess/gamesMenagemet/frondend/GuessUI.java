@@ -81,21 +81,19 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public GuessUI() {
 
         try {
-
+            System.out.println("GUESS");
+            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+            System.out.println("GUESS - account: " + account.toString());
             guess = new Guess();
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             guessController = new GuessController(partitaRepository);
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             setId("GuessUI");
-            /*
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 if (Broadcaster.getPartiteThread().get(i) != null) {
                     isStarted = true;
                 }
             }
-
-             */
             if (isStarted != true) {
                 Broadcaster.register(account, this);
                 BroadcasterChat.register(this);
@@ -105,8 +103,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
-
-            /* Rimosso poiche' sala di attesa e' stata sostituita da StudentHomeView
 
             secondContainer.setHorizontalComponentAlignment(Alignment.CENTER, start);
             Image image = new Image("frontend/img/Guess.jpeg", "guess");
@@ -128,7 +124,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             numeroUtenti.getStyle().set("font-size", "30px");
             players.add(start);
             add(players);
-            */
+
 
             Div device = new Div();
             Label label = new Label("Chat");
@@ -172,16 +168,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
 
-            /* Rimosso poiche' sala di attesa e' stata sostituita da StudentHomeView
             label1 = new Label(account.getNome());
             label1.getStyle().set("position","absolute");
             label1.getStyle().set("top","140px");
             label1.getStyle().set("left","230px");
             label1.getStyle().set("font-size","40px");
             add(label1);
-             */
 
-
+            start.addClickListener(buttonClickEvent -> {
                 for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                     if (Broadcaster.getPartiteThread().get(i) != null) {
                         isStarted = true;
@@ -192,11 +186,13 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     guessController.startGame(partita);
                     partitaThread = guessController.getPartitaThread();
                     item = guessController.getItem();
-                    Broadcaster.startGame(partitaThread, item);
+                    Broadcaster.startGame(UI.getCurrent(), partitaThread, item);
                 } else {
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
+            });
+
         }
 
         catch (Exception e) {
@@ -264,7 +260,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void startGame1() {
+    public void startGame1(UI ui) {
         try {
             getUI().get().access(() -> {
                 remove(players);

@@ -29,16 +29,8 @@ public class Broadcaster implements Serializable {
 
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.add(account);
-        /*for (int i=0; i<Broadcaster.getAccountList().size(); i++){
-            if (accountList.get(i).getId() == account.getId()){
-                in++;
-            }
-        }
-        if (in == 1){
-            listeners.put(account,broadcastListener);
-        }*/
         listeners.put(account,broadcastListener);
-        System.out.println("sono il boradcaster ed è stato chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
+        System.out.println("Broadcaster Guess: chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
         return () -> {
             synchronized (Broadcaster.class) {
                 listeners.remove(account);
@@ -53,12 +45,12 @@ public class Broadcaster implements Serializable {
         System.out.println(listeners.size());
     }
 
-    public static synchronized void startGame(GuessController.PartitaThread partitaThread, Item item){
+    public static synchronized void startGame(UI ui, GuessController.PartitaThread partitaThread, Item item){
         items.add(item);
         partiteThread.add(partitaThread);
         listeners.forEach((account, broadcastListener) -> {
             executor.execute(() -> {
-                broadcastListener.startGame1();
+                broadcastListener.startGame1(ui);
             });
         });
     }

@@ -52,13 +52,10 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private boolean isStartPartita = false; //verifica se il teacher ha avviato la partita
     private VerticalLayout main;
     private Paragraph msgAttesa;
-    private EventListenerTestAsync service;
-    private UI uiCurrent;
 
-    public StudentHomeView(@Autowired EventListenerTestAsync serv, @Autowired AccountListEventBeanPublisher accountEventPublisher) {
+    public StudentHomeView(@Autowired AccountListEventBeanPublisher accountEventPublisher) {
 
         try{
-            service = serv;
             accountEventListpublisher = accountEventPublisher;
 
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
@@ -95,13 +92,9 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             Broadcaster.register(account, this);
             Broadcaster.addUsers(UI.getCurrent());
 
+
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
-
-            //Setting UI object for receive and event from teacher class
-            uiCurrent = UI.getCurrent();
-            uiCurrent.setPollInterval(3000);
-            service.registerEventListenerForDiscusser(uiCurrent, account, this::redirectToGuess, this::redirectToMaty);
-
+            UI.getCurrent().setPollInterval(3000);
         }catch (Exception e){
             showErrorPage();
             e.printStackTrace();
@@ -278,16 +271,13 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         });
     }
 
-    private void redirectToGuess(UI ui){
-        System.out.println("StudentHomeView: ui " + ui);
-        if(ui == null){
-            showErrorPage();
-        }else {
-            ui.access(() -> {
-                System.out.println("StudentHomeView: before executeJS");
-                ui.getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/guess\";");
+    public void redirectToGuess(){
+        System.out.println("StudentHomeView - redirectToGuess: ui " + getUI().get());
+            getUI().get().access(() -> {
+                System.out.println("StudentHomeView - redirectToGuess: a: " + account.toString());
+                getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/guess\";");
             });
-        }
+
     }
 
     private void redirectToMaty(UI ui){

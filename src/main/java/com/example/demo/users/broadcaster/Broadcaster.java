@@ -2,6 +2,7 @@ package com.example.demo.users.broadcaster;
 
 import com.example.demo.entity.Account;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class Broadcaster  {
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.put(account, "");
         listeners.put(account, broadcastListener);
-        System.out.println("Test: Sono il broadcaster ed e' stato chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
+        System.out.println("Broadcaster User: chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
         return () -> {
             synchronized (Broadcaster.class) {
                 listeners.remove(account);
@@ -31,8 +32,9 @@ public class Broadcaster  {
     public static synchronized void unregister(Account account, BroadcastListener broadcastListener){
         listeners.remove(account,broadcastListener);
         accountList.remove(account);
-        System.out.println("Broadcaster.Unregister size accountList:" + accountList.size());
+        System.out.println("BroadcasterUSER.Unregister size accountList:" + accountList.size());
     }
+
 
     public static synchronized void addUsers(UI ui){
         try {
@@ -46,18 +48,16 @@ public class Broadcaster  {
         }
     }
 
-    public static synchronized void updateNumberofConnectedUser(UI ui){
+    public static synchronized void redirectToGuess(Account a){
+
         try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.countUser(ui,account.getNome());
-                });
+            executor.execute(() -> {
+                 listeners.get(a).redirectToGuess();
             });
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
-
 
     public static Map<Account, BroadcastListener> getListeners() {
         return listeners;
