@@ -90,8 +90,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             add(main);
 
             Broadcaster.register(account, this);
-            Broadcaster.addUsers(UI.getCurrent());
-
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
             UI.getCurrent().setPollInterval(3000);
@@ -233,44 +231,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
     //Implements methods of BroadcastListener interface
     @Override
-    public void addUsers(UI ui, int i){
-        ui.getUI().get().access(() -> {
-            //containerUtenti.removeAll(); applicato per elementi della grid
-            Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
-
-                if(account1.getProfilePicture() != null){
-                    imageU = generateImage(account1);
-                    imageU.getStyle().set("width","50px");
-                    imageU.getStyle().set("height","50px");
-                    imageU.getStyle().set("border-radius","80px");
-
-                }else {
-                    if(account1.getSesso()=="1"){
-                        imageU = new Image("frontend/img/profiloGirl.png", "foto profilo");
-                        imageU.getStyle().set("width","50px");
-                        imageU.getStyle().set("height","50px");
-                        imageU.getStyle().set("border-radius","80px");
-
-                    }
-                    else {
-                        imageU = new Image("frontend/img/profiloBoy.png", "foto profilo");
-                        imageU.getStyle().set("width","50px");
-                        imageU.getStyle().set("height","50px");
-                        imageU.getStyle().set("border-radius","80px");
-
-                    }
-                }
-            });
-        });
-    }
-
-    @Override
-    public void countUser(UI ui, String nome){
-        ui.getUI().get().access(() ->{
-            numeroUtenti = Broadcaster.getListeners().size();
-        });
-    }
-
     public void redirectToGuess(){
         System.out.println("StudentHomeView - redirectToGuess: ui " + getUI().get());
             getUI().get().access(() -> {
@@ -280,12 +240,13 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
     }
 
-    private void redirectToMaty(UI ui){
-        if(ui == null){
+    @Override
+    public void redirectToMaty(){
+        if(getUI().get() == null){
             showErrorPage();
         }else {
-            ui.getUI().get().access(() -> {
-                ui.getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/maty\";");
+            getUI().get().access(() -> {
+                getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/maty\";");
             });
         }
     }

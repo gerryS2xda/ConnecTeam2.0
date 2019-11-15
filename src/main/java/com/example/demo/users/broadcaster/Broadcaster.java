@@ -1,13 +1,8 @@
 package com.example.demo.users.broadcaster;
 
 import com.example.demo.entity.Account;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -32,20 +27,7 @@ public class Broadcaster  {
     public static synchronized void unregister(Account account, BroadcastListener broadcastListener){
         listeners.remove(account,broadcastListener);
         accountList.remove(account);
-        System.out.println("BroadcasterUSER.Unregister size accountList:" + accountList.size());
-    }
-
-
-    public static synchronized void addUsers(UI ui){
-        try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.addUsers(ui,in);
-                });
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+        System.out.println("BroadcasterUSER.Unregister: size accountList:" + accountList.size());
     }
 
     public static synchronized void redirectToGuess(Account a){
@@ -53,6 +35,17 @@ public class Broadcaster  {
         try {
             executor.execute(() -> {
                  listeners.get(a).redirectToGuess();
+            });
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static synchronized void redirectToMaty(Account a){
+
+        try {
+            executor.execute(() -> {
+                listeners.get(a).redirectToMaty();
             });
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -70,7 +63,7 @@ public class Broadcaster  {
     public static synchronized void logOut(Account account){
         listeners.remove(account);
         accountList.remove(account);
-        System.out.println("Broadcaster.logOut size accountList:" + accountList.size());
+        System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
     }
 
     public static int getIn() {

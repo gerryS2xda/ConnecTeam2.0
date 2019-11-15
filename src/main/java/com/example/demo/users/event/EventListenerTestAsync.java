@@ -24,7 +24,7 @@ public class EventListenerTestAsync {
             if (game.equals("Guess")) { //indirizza il giocatore nella pagina di Guess
                 Broadcaster.redirectToGuess(i);
             } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty
-                    //no impl.
+                Broadcaster.redirectToMaty(i);
             }
         }
     }
