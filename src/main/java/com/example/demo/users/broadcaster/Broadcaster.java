@@ -13,6 +13,7 @@ public class Broadcaster  {
     static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
     static int in = 0;
     static int countGuessUser = 0;
+    static int countMatyUser = 0;
 
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.put(account, "");
@@ -30,6 +31,8 @@ public class Broadcaster  {
         accountList.remove(account);
         if(countGuessUser > 0)
             countGuessUser--;
+        if(countMatyUser > 0)
+            countMatyUser--;
         System.out.println("BroadcasterUSER.Unregister: size accountList:" + accountList.size());
     }
 
@@ -40,17 +43,19 @@ public class Broadcaster  {
                  listeners.get(a).redirectToGuess();
             });
         }catch (Exception e){
+            countGuessUser--;
             System.out.println(e.getMessage());
         }
     }
 
     public static synchronized void redirectToMaty(Account a){
-
+        countMatyUser++;
         try {
             executor.execute(() -> {
                 listeners.get(a).redirectToMaty();
             });
         }catch (Exception e){
+            countMatyUser--;
             System.out.println(e.getMessage());
         }
     }
@@ -67,11 +72,17 @@ public class Broadcaster  {
         return countGuessUser;
     }
 
+    public static int getNumberOfMatyUser(){
+        return countMatyUser;
+    }
+
     public static synchronized void logOut(Account account){
         listeners.remove(account);
         accountList.remove(account);
         if(countGuessUser > 0)
             countGuessUser--;
+        if(countMatyUser > 0)
+            countMatyUser--;
         System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
     }
 
