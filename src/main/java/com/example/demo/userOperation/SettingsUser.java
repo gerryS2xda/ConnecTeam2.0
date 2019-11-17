@@ -41,16 +41,17 @@ import java.util.Objects;
 @PageTitle("ConnecTeam")
 public class SettingsUser extends VerticalLayout {
 
-
     private PartitaRepository partitaRepository;
     private AccountRepository accountRepository;
     private Account account;
     private Long id;
     private String control;
+    private boolean isNavBarVert;
 
 
     public SettingsUser() {
 
+        isNavBarVert = false;
         try {
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
@@ -61,18 +62,29 @@ public class SettingsUser extends VerticalLayout {
             if(accountRepository == null || account == null){
                 throw new IllegalArgumentException("AccountRepository e Account sono null");
             }else if(account.getTypeAccount().equals("teacher")){  //Usa la teacherUI se account e' teacher, else usa solo NavBar orrizzontale
-                NavBarVertical navBarVertical = new NavBarVertical();
-                add(navBarVertical);
-                AppBarUI appBar = new AppBarUI("Settings"); //nome pagina corrente
-                add(appBar);
+                isNavBarVert = true;
             }else{
                 NavBar navBar = new NavBar();
                 add(navBar);
             }
 
+            if(isNavBarVert){
+                getStyle().set("height", "100%"); //per nav bar verticale
+                HorizontalLayout hor = new HorizontalLayout();
+                hor.getStyle().set("height", "100%");
+                hor.setSpacing(false);
+                hor.setPadding(false);
+                AppBarUI appBar = new AppBarUI("Settings", true); //nome pagina corrente
+                hor.add(appBar);
+                NavBarVertical navBarVertical = new NavBarVertical();
+                hor.add(navBarVertical);
+                add(hor);
+            }
+
             HorizontalLayout main = new HorizontalLayout();
             main.addClassName("mainHorizontalLayout");
-
+            if(isNavBarVert)
+                main.getStyle().set("margin-left", "252px"); //magine sinistro da NavBar verticale
 
             VerticalLayout personalInfo = new VerticalLayout();
             Label section = new Label("Informazioni personali");
@@ -82,19 +94,20 @@ public class SettingsUser extends VerticalLayout {
             Label email = new Label("Email: " + account.getEmail());
             verticalLayout1.add(nome, email);
             personalInfo.add(section, verticalLayout1);
-            main.add(personalInfo);
+
+
             VerticalLayout layoutCambioPassword = new VerticalLayout();
             Label section2 = new Label("Cambia Password");
             section2.getStyle().set("font-size", "30px");
             layoutCambioPassword.add(section2);
             layoutCambioPassword.add(sezioneCambioPassword());
-            main.add(layoutCambioPassword);
+
+
             VerticalLayout layoutElimina = new VerticalLayout();
             Label section4 = new Label("Elimina account");
             section4.getStyle().set("font-size", "30px");
             layoutElimina.add(section4);
             layoutElimina.add(sezioneEliminaAccount());
-            main.add(layoutElimina);
 
             VerticalLayout uploadImage = new VerticalLayout();
             Label section5 = new Label("Aggiorna immagine profilo");
@@ -103,8 +116,24 @@ public class SettingsUser extends VerticalLayout {
             uploadImage.add(section5);
             uploadImage.add(initUploaderImage());
 
-            main.add(uploadImage);
+            if(isNavBarVert){  //elimina una "colonna" per fare spazio alla navbar verticale
+                personalInfo.getStyle().set("width", "50%");
+                main.add(personalInfo);
+                layoutCambioPassword.getStyle().set("width", "50%");
+                main.add(layoutCambioPassword);
 
+                VerticalLayout layoutUploadElimina = new VerticalLayout();
+                layoutUploadElimina.setSpacing(false);
+                layoutUploadElimina.setPadding(false);
+                layoutUploadElimina.add(uploadImage);
+                layoutUploadElimina.add(layoutElimina);
+                main.add(layoutUploadElimina);
+            }else {
+                main.add(personalInfo);
+                main.add(layoutCambioPassword);
+                main.add(layoutElimina);
+                main.add(uploadImage);
+            }
             add(main);
 
         } catch (Exception e) {

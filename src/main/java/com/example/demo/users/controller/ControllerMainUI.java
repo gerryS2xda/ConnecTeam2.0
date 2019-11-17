@@ -8,6 +8,7 @@ import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.gamesRules.GameList;
 import com.example.demo.userOperation.NavBarVertical;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -53,17 +54,20 @@ public class ControllerMainUI extends HorizontalLayout {
                 throw new IllegalArgumentException("Questo account non puo' accedere a questa pagina");
             }
 
+            UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //access al <body> element
             getStyle().set("height", "100%"); //per nav bar verticale
 
             //Appbar e navBar
             NavBarVertical navBar = new NavBarVertical();
             add(navBar);
-            AppBarUI appBar = new AppBarUI("Home"); //nome pagina corrente
+            AppBarUI appBar = new AppBarUI("Home", false); //nome pagina corrente
             add(appBar);
 
             VerticalLayout main1 = new VerticalLayout();
             main1.addClassName("main1");
             main1.getStyle().set("margin-left", "252px"); //margin left for nav bar vertical
+            main1.getStyle().set("left", "-10%");
+            main1.getStyle().set("right", "0");
             VerticalLayout main = new VerticalLayout();
             main.setWidth(null);
             main.add(homeUser());

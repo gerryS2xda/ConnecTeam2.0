@@ -66,7 +66,7 @@ public class GestioneStudentUI extends HorizontalLayout {
             getStyle().set("width", "100%");
             NavBarVertical navBar = new NavBarVertical();
             add(navBar);
-            AppBarUI appBar = new AppBarUI("Gestione studenti"); //nome pagina corrente
+            AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
             add(appBar);
 
 
