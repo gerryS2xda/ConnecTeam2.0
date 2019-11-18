@@ -181,15 +181,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             //Container nome utente e pulsante 'Info' su Guess
             add(nameUserAndInfoBtnContainer());
 
-            //Container che rappresenta UI di Guess
-            //NOTA: inserita per risolvere bug 'UI vuota' che richiede il refresh della page'
-            StartGameUI startGameUI = new StartGameUI(guessController);
-            verticalLayout.add(startGameUI);
-            indizio.getStyle().set("font-size","30px");
-            indizio.getStyle().set("margin-left","15px");
-            verticalLayout.add(secondi,indizio);
-            add(verticalLayout);
-
             System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "#Max account: " + maxNumeroUtentiConnessi);
             if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
                 System.out.println("GuessUI: Partita iniziata!");
@@ -277,6 +268,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         return d;
     }
 
+    //Implementazione metodi della Java interface 'BroadcasterListener'
     @Override
     public void receiveBroadcast(String message) {
         getUI().get().access(() -> {
@@ -320,7 +312,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void countUser(UI ui, String nome) {
-        getUI().get().access(() -> {
+        ui.getUI().get().access(() -> {
             numeroUtenti.setEnabled(false);
             numeroUtenti.setText("Utenti connessi: "+Broadcaster.getListeners().size());
             numeroUtenti.setEnabled(true);
@@ -331,7 +323,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void startGame1(UI ui) {
         try {
             getUI().get().access(() -> {
-                remove(verticalLayout); //rimuovi 'UI di Guess' inserita durante caricamento della pagina
                 StartGameUI startGameUI = new StartGameUI(guessController);
                 verticalLayout.add(startGameUI);
                 indizio.getStyle().set("font-size","30px");
@@ -346,8 +337,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void receiveIndizio(UI ui, String message) {
-        ui.access(() -> {
+    public void receiveIndizio(String message) {
+        getUI().get().access(() -> {
             Paragraph paragraph = new Paragraph(message);
             paragraph.getStyle().set("font-size","18px");
             paragraph.getStyle().set("margin","5px 0px 0px 15px");
@@ -368,7 +359,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void addUsers(UI ui, int in) {
-        getUI().get().access(() -> {
+        ui.getUI().get().access(() -> {
             containerUtenti.removeAll();
             Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
 
