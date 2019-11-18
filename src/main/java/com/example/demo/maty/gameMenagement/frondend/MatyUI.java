@@ -68,13 +68,10 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private MatyController matyController;
     private Label numeroUtenti = new Label();
     private Div containerUtenti = new Div();
-    private Button start = new Button("Gioca");
     private Image imageU = new Image();
     private VerticalLayout chatMessages = new VerticalLayout();
     private Label secondi = new Label();
     private Label indizio = new Label("Indizi: ");
-    private VerticalLayout players = new VerticalLayout();
-    private VerticalLayout secondContainer = new VerticalLayout();
     private VerticalLayout verticalLayout = new VerticalLayout();
     private Div containerNumeriSS = new Div();
     private Div box = new Div();
@@ -85,11 +82,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private MatyController.PartitaThread partitaThread;
     private ItemMaty item;
     boolean isStarted = false;
-    boolean isRegisterd = false;
     private Div chat = new Div();
     MessageList messageList = new MessageList("chatlayoutmessage2");
-    Label label1;
-    Label addendi = new Label();
     HorizontalLayout containerAddendi= new HorizontalLayout();
     private Image image333;
 
@@ -130,30 +124,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
-
-            /*
-            //Container che mostra il logo del gioco e la descrizione (Sala di attesa)
-            secondContainer.setHorizontalComponentAlignment(Alignment.CENTER, start);
-            Image image = new Image("frontend/img/Maty.jpeg", "maty");
-            image.setWidth("200px");
-            image.setHeight("200px");
-            VerticalLayout descrizionegioco = new VerticalLayout();
-            descrizionegioco.add(image);
-            descrizionegioco.setWidth("50%");
-            Paragraph descrizione = new Paragraph();
-            descrizione.setText(maty.getDescrizioneLungaGioco());
-            descrizionegioco.add(descrizione);
-            start.addClassName("goPlayGuess");
-            secondContainer.add(descrizionegioco);
-            add(secondContainer);
-            players.getStyle().set("position", "absolute");
-            players.getStyle().set("top", "400px");
-            players.setWidth(null);
-            players.add(numeroUtenti, containerUtenti);
-            numeroUtenti.getStyle().set("font-size", "30px");
-            players.add(start);
-            add(players);
-             */
 
             //Chat container
             Div device = new Div();
@@ -198,23 +168,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             //Container nome utente e pulsante 'Info' su Guess
             add(nameUserAndInfoBtnContainer());
 
-            /*
-            label1 = new Label(account.getNome());
-            label1.getStyle().set("position","absolute");
-            label1.getStyle().set("top","140px");
-            label1.getStyle().set("left","230px");
-            label1.getStyle().set("font-size","40px");
-            add(label1);
-            */
-
-            //start.addClickListener(buttonClickEvent -> {
-            System.out.println("GuessUI: #account: " + BroadcasterMaty.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
-            /*
-            if(BroadcasterMaty.getListeners().size() <= 1) { //vincolo di avere almeno 2 giocatori
-                InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEvent("Aspetta almeno un altro giocatore","");
-            }
-            */
+            System.out.println("Maty: #account: " + BroadcasterMaty.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
 
             if(isStarted != true && BroadcasterMaty.getListeners().size() == maxNumeroUtentiConnessi) {
                 System.out.println("MatyUI: Partita iniziata!");
@@ -234,9 +188,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
             }
-
-           //});
-
         }
         catch (Exception e) {
             removeAll();
@@ -257,7 +208,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         Label nomeUser = new Label("Benvenuta " + account.getNome());
         nomeUser.getStyle().set("font-size","40px");
 
-        Button b = new Button("Info su Guess");
+        Button b = new Button("Info su Maty");
         b.getStyle().set("background-color","#007d99");
         b.getStyle().set("margin-top","16px");
         b.getStyle().set("margin-left","36px");
@@ -317,9 +268,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     public void startGame1() {
         try {
             getUI().get().access(() -> {
-                //remove(players);
-                //remove(secondContainer);
-                //remove(label1);
                 StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController,account);
                 verticalLayout.add(startGameMatyUI);
                 verticalLayout.add(secondi/*,indizio*/);

@@ -60,13 +60,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private GuessController guessController;
     private Label numeroUtenti = new Label();
     private Div containerUtenti = new Div();
-    private Button start = new Button("Gioca");
     private Image imageU = new Image();
     private VerticalLayout chatMessages = new VerticalLayout();
     private Label secondi = new Label();
     private Label indizio = new Label("Indizi: ");
-    private VerticalLayout players = new VerticalLayout();
-    private VerticalLayout secondContainer = new VerticalLayout();
     private VerticalLayout verticalLayout = new VerticalLayout();
     private Div containerParoleVotate = new Div();
     private Guess guess;
@@ -75,7 +72,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private GuessController.PartitaThread partitaThread;
     private Item item;
     boolean isStarted = false;
-    boolean isRegisterd = false;
     private Div chat = new Div();
     MessageList messageList = new MessageList("chatlayoutmessage2");
     private Image image333;
@@ -114,29 +110,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
-
-            /* Rimosso perche' la sala di attesa e' stata sostituita da StudentHomeView
-            secondContainer.setHorizontalComponentAlignment(Alignment.CENTER, start);
-            Image image = new Image("frontend/img/Guess.jpeg", "guess");
-            image.setWidth("200px");
-            image.setHeight("200px");
-            VerticalLayout descrizionegioco = new VerticalLayout();
-            descrizionegioco.add(image);
-            descrizionegioco.setWidth("50%");
-            Paragraph descrizione = new Paragraph();
-            descrizione.setText(guess.getDescrizioneLungaGioco());
-            descrizionegioco.add(descrizione);
-            start.addClassName("goPlayGuess");
-            secondContainer.add(descrizionegioco);
-            add(secondContainer);
-            players.getStyle().set("position", "absolute");
-            players.getStyle().set("top", "400px");
-            players.setWidth(null);
-            players.add(numeroUtenti, containerUtenti);
-            numeroUtenti.getStyle().set("font-size", "30px");
-            players.add(start);
-            add(players);
-            */
 
             Div device = new Div();
             device.getStyle().set("width", "30%"); //value precedente: 500px
@@ -181,7 +154,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             //Container nome utente e pulsante 'Info' su Guess
             add(nameUserAndInfoBtnContainer());
 
-            System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "#Max account: " + maxNumeroUtentiConnessi);
+            System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
             if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
                 System.out.println("GuessUI: Partita iniziata!");
                 for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
