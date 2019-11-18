@@ -22,10 +22,8 @@ import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -80,7 +78,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     boolean isRegisterd = false;
     private Div chat = new Div();
     MessageList messageList = new MessageList("chatlayoutmessage2");
-    Label label1;
     private Image image333;
 
     public GuessUI() {
@@ -100,7 +97,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             if(partitaRepository == null)
                 throw new IllegalArgumentException("GuessUI: PartitaRepository is null");
-                        
+
             guessController = new GuessController(partitaRepository);
 
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
@@ -181,13 +178,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
 
-
-            label1 = new Label(account.getNome());
-            label1.getStyle().set("position","absolute");
-            label1.getStyle().set("top","140px");
-            label1.getStyle().set("left","230px");
-            label1.getStyle().set("font-size","40px");
-            add(label1);
+            //Container nome utente e pulsante 'Info' su Guess
+            add(nameUserAndInfoBtnContainer());
 
             System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "#Max account: " + maxNumeroUtentiConnessi);
             if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
@@ -217,6 +209,63 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             add(errorPage);
             e.printStackTrace();
         }
+    }
+
+    private HorizontalLayout nameUserAndInfoBtnContainer(){
+        HorizontalLayout hor1 = new HorizontalLayout();
+        hor1.setSpacing(false);
+        hor1.setPadding(false);
+        hor1.getStyle().set("position","absolute");
+        hor1.getStyle().set("top","10%");
+        hor1.getStyle().set("left","20%");
+
+        Label nomeUser = new Label("Benvenuta " + account.getNome());
+        nomeUser.getStyle().set("font-size","40px");
+
+        Button b = new Button("Info su Guess");
+        b.getStyle().set("background-color","#007d99");
+        b.getStyle().set("margin-top","16px");
+        b.getStyle().set("margin-left","36px");
+        b.getStyle().set("cursor","pointer");
+        b.getStyle().set("color","white");
+        Dialog d = descrizioneGiocoDialog();
+        b.addClickListener(buttonClickEvent -> {
+            d.open();
+        });
+
+        hor1.add(nomeUser, b);
+        return hor1;
+    }
+
+    private Dialog descrizioneGiocoDialog(){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("640px");
+        d.setHeight("320px");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label title = new Label("Info su Guess");
+        title.getStyle().set("font-size", "32px");
+        Label descrizione = new Label(guess.getDescrizioneLungaGioco());
+        descrizione.getStyle().set("font-size", "16px");
+        Button cancelButton = new Button("Close");
+        cancelButton.getStyle().set("background-color","#007d99");
+        cancelButton.getStyle().set("cursor","pointer");
+        cancelButton.getStyle().set("color","white");
+        cancelButton.getStyle().set("margin-top", "50px");
+        cancelButton.addClickListener(buttonClickEvent -> {
+            d.close();
+        });
+        content.add(title, descrizione, cancelButton);
+
+        d.add(content);
+        return d;
     }
 
     @Override
