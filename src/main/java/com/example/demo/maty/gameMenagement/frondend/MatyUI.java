@@ -135,7 +135,10 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             numeroUtenti.getStyle().set("font-size", "30px");
             players.add(start);
             add(players);
+
+            //Chat container
             Div device = new Div();
+            device.getStyle().set("width", "30%"); //value precedente: 500px
             Label label = new Label("Chat");
             label.getStyle().set("font-size", "30px");
             device.add(label);
@@ -152,7 +155,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                     message1.setValue("");
                 }
             });
-            message1.getStyle().set("width","85%");
+            message1.getStyle().set("width","80%"); //value precedente: 85%
             message1.getStyle().set("margin-right","16px");
             send.addClickListener(buttonClickEvent -> {
                 String mess = message1.getValue();

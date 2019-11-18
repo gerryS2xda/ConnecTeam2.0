@@ -131,15 +131,13 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             */
 
             Div device = new Div();
+            device.getStyle().set("width", "30%"); //value precedente: 500px
             Label label = new Label("Chat");
             label.getStyle().set("font-size", "30px");
             device.add(label);
             device.setId("device");
 
-
             chat.addClassName("chat");
-
-
 
             TextField message1 = new TextField();
             Icon icon = VaadinIcon.PAPERPLANE_O.create();
@@ -153,7 +151,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     message1.setValue("");
                 }
             });
-            message1.getStyle().set("width","85%");
+            message1.getStyle().set("width","80%"); //valore precedente: 85%
             message1.getStyle().set("margin-right","16px");
             send.addClickListener(buttonClickEvent -> {
                 String mess = message1.getValue();
@@ -172,18 +170,17 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
 
-            /*
+
             label1 = new Label(account.getNome());
             label1.getStyle().set("position","absolute");
             label1.getStyle().set("top","140px");
             label1.getStyle().set("left","230px");
             label1.getStyle().set("font-size","40px");
             add(label1);
-            */
+
             System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "#Max account: " + maxNumeroUtentiConnessi);
             if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
                 System.out.println("GuessUI: Partita iniziata!");
-                //start.addClickListener(buttonClickEvent -> {
                 for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                     if (Broadcaster.getPartiteThread().get(i) != null) {
                         isStarted = true;
@@ -199,7 +196,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
-                //});
+
             }
         }
 
