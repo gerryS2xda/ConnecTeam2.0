@@ -502,67 +502,17 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
         try {
             BroadcasterMaty.getIntegers().clear();
-        }catch (Exception e){
-            System.out.println("getIntegers");
-        }
-
-        try {
             BroadcasterMaty.getPartiteThread().clear();
-
-        }catch (Exception e){
-            System.out.println("getPartiteThread");
-        }
-
-        try {
             BroadcasterSuggerisciMaty.getItems().clear();
-
-        }catch (Exception e){
-            System.out.println("getVotes");
-        }
-
-        try {
             BroadcasterMaty.getAccountList().clear();
-
-        }catch (Exception e){
-            System.out.println("getAccountList");
-        }
-
-        try {
             BroadcasterMaty.getItems().clear();
-
-        }catch (Exception e){
-            System.out.println("getItems");
-        }
-
-        try {
             BroadcasterMaty.getListeners().clear();
-
-        }catch (Exception e){
-            System.out.println("getListeners");
-        }
-        try {
             BroadcasterChatMaty.getListeners().clear();
-
-        }catch (Exception e){
-            System.out.println("getListenersChat");
-        }
-        try {
             BroadcasterSuggerisciMaty.getListeners().clear();
-
-        }catch (Exception e){
-            System.out.println("getListenersSugerrisci");
-        }
-        try {
             BroadcasterMaty.getContClick().clear();
         }catch (Exception e){
-            System.out.println("getContClick");
+            e.printStackTrace();
         }
-
-
-
-
-
-
     }
 
     public Image generateImage(Account account) {
