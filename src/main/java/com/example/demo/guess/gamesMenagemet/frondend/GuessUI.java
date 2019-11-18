@@ -181,6 +181,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             //Container nome utente e pulsante 'Info' su Guess
             add(nameUserAndInfoBtnContainer());
 
+            //Container che rappresenta UI di Guess
+            //NOTA: inserita per risolvere bug 'UI vuota' che richiede il refresh della page'
+            StartGameUI startGameUI = new StartGameUI(guessController);
+            verticalLayout.add(startGameUI);
+            indizio.getStyle().set("font-size","30px");
+            indizio.getStyle().set("margin-left","15px");
+            verticalLayout.add(secondi,indizio);
+            add(verticalLayout);
+
             System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "#Max account: " + maxNumeroUtentiConnessi);
             if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
                 System.out.println("GuessUI: Partita iniziata!");
@@ -199,8 +208,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
-
             }
+
         }
 
         catch (Exception e) {
@@ -271,8 +280,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     @Override
     public void receiveBroadcast(String message) {
         getUI().get().access(() -> {
-
-
             String string = message;
             String[] parts = string.split(":");
             String nome = parts[0]+":";
@@ -308,10 +315,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
             divmessage.add(label,div);
             messageList.add(divmessage);
-
-
-
-
         });
     }
 
@@ -328,14 +331,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void startGame1(UI ui) {
         try {
             getUI().get().access(() -> {
-                //remove(players);
-                //remove(secondContainer);
-                //remove(label1);
+                remove(verticalLayout); //rimuovi 'UI di Guess' inserita durante caricamento della pagina
                 StartGameUI startGameUI = new StartGameUI(guessController);
                 verticalLayout.add(startGameUI);
-                verticalLayout.add(secondi,indizio);
                 indizio.getStyle().set("font-size","30px");
                 indizio.getStyle().set("margin-left","15px");
+                verticalLayout.add(secondi,indizio);
                 add(verticalLayout);
             });
         }catch (Exception e){
@@ -345,8 +346,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void receiveIndizio(String message) {
-        getUI().get().access(() -> {
+    public void receiveIndizio(UI ui, String message) {
+        ui.access(() -> {
             Paragraph paragraph = new Paragraph(message);
             paragraph.getStyle().set("font-size","18px");
             paragraph.getStyle().set("margin","5px 0px 0px 15px");

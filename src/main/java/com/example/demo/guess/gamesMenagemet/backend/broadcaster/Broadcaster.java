@@ -26,6 +26,7 @@ public class Broadcaster implements Serializable {
     static ArrayList<Item> items = new ArrayList<>();
     static List<GuessController.PartitaThread> partiteThread = new ArrayList<>();
     static int in = 0;
+    static UI uiCurrent;
 
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.add(account);
@@ -46,6 +47,7 @@ public class Broadcaster implements Serializable {
     }
 
     public static synchronized void startGame(UI ui, GuessController.PartitaThread partitaThread, Item item){
+        uiCurrent = ui;
         items.add(item);
         partiteThread.add(partitaThread);
         listeners.forEach((account, broadcastListener) -> {
@@ -60,7 +62,7 @@ public class Broadcaster implements Serializable {
         indiziRicevuti++;
         listeners.forEach((aLong, broadcastListener) -> {
             executor.execute(()-> {
-                broadcastListener.receiveIndizio(message);
+                broadcastListener.receiveIndizio(uiCurrent, message);
             });
         });
     }

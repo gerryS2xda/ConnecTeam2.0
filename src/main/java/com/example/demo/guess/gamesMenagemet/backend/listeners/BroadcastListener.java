@@ -6,7 +6,7 @@ import com.vaadin.flow.component.UI;
 public interface BroadcastListener {
     void countUser(UI ui, String nome);
     void startGame1(UI ui);
-    void receiveIndizio(String message);
+    void receiveIndizio(UI ui, String message);
     void countDown(String n);
     void addUsers(UI ui,int i);
     void parolaVotata();
