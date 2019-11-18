@@ -27,6 +27,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -57,6 +58,11 @@ import java.util.Date;
 @PageTitle("ConnecTeam-Maty")
 public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListenerMaty, PageConfigurator {
 
+    //static field
+    //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
+    private static final int maxNumeroUtentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfMatyUser();
+
+    //instance field
     private AccountRepository accountRepository;
     private Account account;
     private MatyController matyController;
@@ -125,6 +131,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
 
+            /*
             //Container che mostra il logo del gioco e la descrizione (Sala di attesa)
             secondContainer.setHorizontalComponentAlignment(Alignment.CENTER, start);
             Image image = new Image("frontend/img/Maty.jpeg", "maty");
@@ -146,6 +153,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             numeroUtenti.getStyle().set("font-size", "30px");
             players.add(start);
             add(players);
+             */
 
             //Chat container
             Div device = new Div();
@@ -183,39 +191,51 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             add(device);
 
             //Container che mostra numero di utenti connessi e il pulsante 'Gioca' (Sala di attesa)
-            containerUtenti.addClassName("layoutUsers");
+            //containerUtenti.addClassName("layoutUsers");
             containerNumeriSS.addClassName("containerNumeriSS");
             box.addClassName("box");
+
+            //Container nome utente e pulsante 'Info' su Guess
+            add(nameUserAndInfoBtnContainer());
+
+            /*
             label1 = new Label(account.getNome());
             label1.getStyle().set("position","absolute");
             label1.getStyle().set("top","140px");
             label1.getStyle().set("left","230px");
             label1.getStyle().set("font-size","40px");
             add(label1);
+            */
 
-            start.addClickListener(buttonClickEvent -> {
-                if(BroadcasterMaty.getListeners().size() != 1) {
-                    for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
-                        if (BroadcasterMaty.getPartiteThread().get(i) != null) {
-                            isStarted = true;
-                        }
-                    }
-                    if (isStarted != true) {
-                        partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
-                        matyController.startGame(partita);
-                        partitaThread = matyController.getPartitaThread();
-                        item = matyController.getItem();
-                        BroadcasterMaty.startGame(partitaThread, item);
-                    } else {
-                        InfoEventUtility infoEventUtility = new InfoEventUtility();
-                        infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
-                    }
+            //start.addClickListener(buttonClickEvent -> {
+            System.out.println("GuessUI: #account: " + BroadcasterMaty.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
+            /*
+            if(BroadcasterMaty.getListeners().size() <= 1) { //vincolo di avere almeno 2 giocatori
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEvent("Aspetta almeno un altro giocatore","");
+            }
+            */
 
-                }else {
-                    InfoEventUtility infoEventUtility = new InfoEventUtility();
-                    infoEventUtility.infoEvent("Aspetta almeno un altro giocatore","");
+            if(isStarted != true && BroadcasterMaty.getListeners().size() == maxNumeroUtentiConnessi) {
+                System.out.println("MatyUI: Partita iniziata!");
+                for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
+                    if (BroadcasterMaty.getPartiteThread().get(i) != null) {
+                        isStarted = true;
+                    }
                 }
-            });
+                if (isStarted != true) {
+                    partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
+                    matyController.startGame(partita);
+                    partitaThread = matyController.getPartitaThread();
+                    item = matyController.getItem();
+                    BroadcasterMaty.startGame(partitaThread, item);
+                } else {
+                    InfoEventUtility infoEventUtility = new InfoEventUtility();
+                    infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
+                }
+            }
+
+           //});
 
         }
         catch (Exception e) {
@@ -226,6 +246,64 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         }
     }
 
+    private HorizontalLayout nameUserAndInfoBtnContainer(){
+        HorizontalLayout hor1 = new HorizontalLayout();
+        hor1.setSpacing(false);
+        hor1.setPadding(false);
+        hor1.getStyle().set("position","absolute");
+        hor1.getStyle().set("top","6%");  //value precedente: 10%
+        hor1.getStyle().set("left","20%");
+
+        Label nomeUser = new Label("Benvenuta " + account.getNome());
+        nomeUser.getStyle().set("font-size","40px");
+
+        Button b = new Button("Info su Guess");
+        b.getStyle().set("background-color","#007d99");
+        b.getStyle().set("margin-top","16px");
+        b.getStyle().set("margin-left","36px");
+        b.getStyle().set("cursor","pointer");
+        b.getStyle().set("color","white");
+        Dialog d = descrizioneGiocoDialog();
+        b.addClickListener(buttonClickEvent -> {
+            d.open();
+        });
+
+        hor1.add(nomeUser, b);
+        return hor1;
+    }
+
+    private Dialog descrizioneGiocoDialog(){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("640px");
+        d.setHeight("320px");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label title = new Label("Info su Maty");
+        title.getStyle().set("font-size", "32px");
+        Label descrizione = new Label(maty.getDescrizioneLungaGioco());
+        descrizione.getStyle().set("font-size", "16px");
+        Button cancelButton = new Button("Close");
+        cancelButton.getStyle().set("background-color","#007d99");
+        cancelButton.getStyle().set("cursor","pointer");
+        cancelButton.getStyle().set("color","white");
+        cancelButton.getStyle().set("margin-top", "50px");
+        cancelButton.addClickListener(buttonClickEvent -> {
+            d.close();
+        });
+        content.add(title, descrizione, cancelButton);
+
+        d.add(content);
+        return d;
+    }
+
+    //Implementazione metodi della Java interface 'BroadcasterListener'
     @Override
     public void countUser(UI ui, String nome) {
         ui.getUI().get().access(() -> {
@@ -239,9 +317,9 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     public void startGame1() {
         try {
             getUI().get().access(() -> {
-                remove(players);
-                remove(secondContainer);
-                remove(label1);
+                //remove(players);
+                //remove(secondContainer);
+                //remove(label1);
                 StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController,account);
                 verticalLayout.add(startGameMatyUI);
                 verticalLayout.add(secondi/*,indizio*/);

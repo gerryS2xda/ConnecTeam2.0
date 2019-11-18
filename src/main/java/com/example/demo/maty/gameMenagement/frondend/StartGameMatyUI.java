@@ -63,6 +63,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             Image image = new Image("frontend/img/Maty.jpeg", "maty");
             image.setWidth("200px");
             image.setHeight("200px");
+
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.addClassName("horizontalLayoutStartGameUI");
             TextField suggertisci = new TextField();

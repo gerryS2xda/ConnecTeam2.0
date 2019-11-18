@@ -1,7 +1,7 @@
 .box{
     position: absolute;
     left: 390px;
-    top: 230px;
+    top: 260px; /* valore precedente: 230px */
     font-size: 15px;
 }
 .circle{
