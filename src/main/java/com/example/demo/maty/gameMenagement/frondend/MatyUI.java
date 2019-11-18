@@ -92,13 +92,23 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         try {
 
             setId("MatyUI");
+            getStyle().set("height", "100%");
+
             containerAddendi.addClassName("containerAddendi");
             maty = new Maty();
-            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().
-                    getWrappedSession().getAttribute("partitaRepository");
-            matyController = new MatyController(partitaRepository);
-            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
+
+            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+            if(account == null)
+                throw new IllegalArgumentException("MatyUI: Account is null");
+            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
+            if(accountRepository == null)
+                throw new IllegalArgumentException("MatyUI: AccountRepository is null");
+            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+            if(partitaRepository == null)
+                throw new IllegalArgumentException("MatyUI: PartitaRepository is null");
+
+            matyController = new MatyController(partitaRepository);
 
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
                 if (BroadcasterMaty.getPartiteThread().get(i) != null) {
@@ -115,6 +125,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
 
+            //Container che mostra il logo del gioco e la descrizione (Sala di attesa)
             secondContainer.setHorizontalComponentAlignment(Alignment.CENTER, start);
             Image image = new Image("frontend/img/Maty.jpeg", "maty");
             image.setWidth("200px");
@@ -170,6 +181,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             device.add(message1);
             device.add(send);
             add(device);
+
+            //Container che mostra numero di utenti connessi e il pulsante 'Gioca' (Sala di attesa)
             containerUtenti.addClassName("layoutUsers");
             containerNumeriSS.addClassName("containerNumeriSS");
             box.addClassName("box");
@@ -179,6 +192,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             label1.getStyle().set("left","230px");
             label1.getStyle().set("font-size","40px");
             add(label1);
+
             start.addClickListener(buttonClickEvent -> {
                 if(BroadcasterMaty.getListeners().size() != 1) {
                     for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {

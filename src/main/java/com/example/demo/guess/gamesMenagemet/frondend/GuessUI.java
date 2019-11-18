@@ -86,12 +86,23 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public GuessUI() {
 
         try {
-            guess = new Guess();
-            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-            guessController = new GuessController(partitaRepository);
-            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             setId("GuessUI");
+            getStyle().set("height", "100%");
+            guess = new Guess();
+
+            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
+            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+            if(account == null)
+                throw new IllegalArgumentException("GuessUI: Account is null");
+            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
+            if(accountRepository == null)
+                throw new IllegalArgumentException("GuessUI: AccountRepository is null");
+            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+            if(partitaRepository == null)
+                throw new IllegalArgumentException("GuessUI: PartitaRepository is null");
+                        
+            guessController = new GuessController(partitaRepository);
+
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 if (Broadcaster.getPartiteThread().get(i) != null) {
                     isStarted = true;
