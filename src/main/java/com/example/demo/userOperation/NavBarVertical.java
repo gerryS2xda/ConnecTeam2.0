@@ -1,8 +1,10 @@
 package com.example.demo.userOperation;
 
+import com.example.demo.mainView.MainView;
 import com.example.demo.users.controller.GestioneStudentUI;
 import com.example.demo.users.controller.ControllerMainUI;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -12,12 +14,13 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.VaadinSession;
 
 @StyleSheet("frontend://stile/navBarVertStyle.css")
 public class NavBarVertical extends VerticalLayout{
 
     //costanti
-    private static final String icon_Size = "30px";
+    private static final String icon_Size = "24px"; //valore precedente: 30px
     private static final String icon_color = "#007d99";
     public static final String NAVBAR_WIDTH = "252px";
     public static final String NAVBAR_HEIGHT = "100%";
@@ -47,14 +50,14 @@ public class NavBarVertical extends VerticalLayout{
         settingIcon.setColor(icon_color);
         Div settings = addDivContainerItem("Settings", SettingsUser.class, settingIcon);
 
-        Icon gestStudIcon = new Icon(VaadinIcon.COGS);
+        Icon gestStudIcon = new Icon(VaadinIcon.EDIT);
         gestStudIcon.setSize(icon_Size);
         gestStudIcon.setColor(icon_color);
         Div gestStud = addDivContainerItem("Gestione Studenti", GestioneStudentUI.class, gestStudIcon);
 
-        Icon gamesIcon = new Icon(VaadinIcon.COGS);
-        gestStudIcon.setSize(icon_Size);
-        gestStudIcon.setColor(icon_color);
+        Icon gamesIcon = new Icon(VaadinIcon.GAMEPAD);
+        gamesIcon.setSize(icon_Size);
+        gamesIcon.setColor(icon_color);
         Div gamesStud = addDivContainerItem("Giochi", SettingsUser.class, gamesIcon);
 
         items.add(home, settings, gestStud, gamesStud, logoutItem());
@@ -94,24 +97,17 @@ public class NavBarVertical extends VerticalLayout{
         logoutIcon.setSize(icon_Size);
         logoutIcon.setColor(icon_color);
         d.addClassName("navi-item");
+        d.getStyle().set("cursor", "pointer");
         RouterLink rl = new RouterLink();
-
-        rl.addClassName("navi-item__link");
+        rl.addClassName("navi-item__link_logout");
         Span sp = new Span("Logout");
         rl.add(logoutIcon, sp);
-
-
-        /*
-        Button routerLink3 = new Button("Logout");
-        routerLink3.addClickListener(buttonClickEvent -> {
+        
+        d.add(rl);
+        d.addClickListener(event -> {
             VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente
             UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
         });
-        routerLink3.addClassNames("navi-item__link", "router-link");
-        d.add(logoutIcon, routerLink3);
-
-         */
-        d.add(rl);
         return d;
     }
 

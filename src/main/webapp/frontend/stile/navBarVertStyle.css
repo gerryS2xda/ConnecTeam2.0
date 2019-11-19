@@ -53,6 +53,19 @@
     font-size: 1rem;
 }
 
+.navi-item__link_logout {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
+    padding-left: 2rem;
+    padding-right: 1rem;
+    color: hsla(214, 40%, 16%, 0.94);
+    text-decoration: none;
+    font-size: 1rem;
+}
+
 .navi-item vaadin-button {
     flex-shrink: 0;
     margin-left: auto;
@@ -60,6 +73,14 @@
 }
 
 .navi-item__link iron-icon {
+    height: 1.25em;
+    flex-shrink: 0;
+    margin: 0 1.5rem 0 0;
+    transition: margin 160ms;
+    width: 1.25em;
+}
+
+.navi-item__link_logout iron-icon {
     height: 1.25em;
     flex-shrink: 0;
     margin: 0 1.5rem 0 0;
@@ -83,6 +104,10 @@
   text-decoration: none;
 }
 
+.navi-item__link_logout:hover {
+    text-decoration: none;
+}
+
 .navi-item:active {
   background-color: hsla(214, 53%, 23%, 0.16);
 }
@@ -94,6 +119,15 @@
   user-select: none;
   -webkit-user-select: none;
   white-space: nowrap;
+}
+
+.navi-item__link_logout span {
+    cursor: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
 }
 
 /* Logo style */
