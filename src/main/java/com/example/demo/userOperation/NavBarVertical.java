@@ -102,7 +102,7 @@ public class NavBarVertical extends VerticalLayout{
         rl.addClassName("navi-item__link_logout");
         Span sp = new Span("Logout");
         rl.add(logoutIcon, sp);
-        
+
         d.add(rl);
         d.addClickListener(event -> {
             VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente

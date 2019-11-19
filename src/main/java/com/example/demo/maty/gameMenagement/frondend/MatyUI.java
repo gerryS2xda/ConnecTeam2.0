@@ -35,6 +35,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.InitialPageSettings;
@@ -56,7 +58,7 @@ import java.util.Date;
 @StyleSheet("frontend://stile/animation.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam-Maty")
-public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListenerMaty, PageConfigurator {
+public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListenerMaty, PageConfigurator, BeforeEnterObserver {
 
     //static field
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
@@ -168,26 +170,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             //Container nome utente e pulsante 'Info' su Guess
             add(nameUserAndInfoBtnContainer());
 
-            System.out.println("Maty: #account: " + BroadcasterMaty.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
-
-            if(isStarted != true && BroadcasterMaty.getListeners().size() == maxNumeroUtentiConnessi) {
-                System.out.println("MatyUI: Partita iniziata!");
-                for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
-                    if (BroadcasterMaty.getPartiteThread().get(i) != null) {
-                        isStarted = true;
-                    }
-                }
-                if (isStarted != true) {
-                    partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
-                    matyController.startGame(partita);
-                    partitaThread = matyController.getPartitaThread();
-                    item = matyController.getItem();
-                    BroadcasterMaty.startGame(partitaThread, item);
-                } else {
-                    InfoEventUtility infoEventUtility = new InfoEventUtility();
-                    infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
-                }
-            }
         }
         catch (Exception e) {
             removeAll();
@@ -557,4 +539,26 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         }
     }
 
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        System.out.println("Maty: #account: " + BroadcasterMaty.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
+        if(isStarted != true && BroadcasterMaty.getListeners().size() == maxNumeroUtentiConnessi) {
+            System.out.println("MatyUI: Partita iniziata!");
+            for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
+                if (BroadcasterMaty.getPartiteThread().get(i) != null) {
+                    isStarted = true;
+                }
+            }
+            if (isStarted != true) {
+                partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
+                matyController.startGame(partita);
+                partitaThread = matyController.getPartitaThread();
+                item = matyController.getItem();
+                BroadcasterMaty.startGame(partitaThread, item);
+            } else {
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
+            }
+        }
+    }
 }
