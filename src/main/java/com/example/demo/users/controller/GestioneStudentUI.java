@@ -78,7 +78,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                     "Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
             guidetxt.addClassName("guideText");
             guidetxt.getStyle().set("left", NavBarVertical.NAVBAR_WIDTH);
-            
+
+            updateAndMergeAccountList();
             configurationGridDragAndDrop();
 
             VerticalLayout contStud = containerListStudent("250px", "70%");
@@ -290,10 +291,10 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             }
         }
         currentAccountList = actualList; //aggiorna lista corrente con 'actualList' che contiene nuovi utenti connessi
-        updateAllGrid();
+        updateGridStudentCollegati();
     }
 
-    private void updateAllGrid(){
+    private void updateGridStudentCollegati(){
         //Aggiorna 'Grid' Studenti collegati
         Map<Account, String> tempList = new HashMap<>();
         for(Account i : currentAccountList.keySet()){
@@ -304,10 +305,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 tempList.remove(i);
             }
         }
-        getUI().get().access(() -> {
+        if(getUI().isPresent()) {  //se e' presente una UI attached a questo component
+            getUI().get().access(() -> {
+                gridStud.setItems(tempList.keySet());
+            });
+        }else{
             gridStud.setItems(tempList.keySet());
-        });
-
+        }
     }
 
 }
