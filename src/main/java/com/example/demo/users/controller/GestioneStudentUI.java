@@ -74,15 +74,11 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
             add(appBar);
 
-
             Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gioco che desiderate." +
                     "Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
             guidetxt.addClassName("guideText");
             guidetxt.getStyle().set("left", NavBarVertical.NAVBAR_WIDTH);
-
-
-            //updateAndMergeAccountList();
-            //gridStud.setItems(currentAccountList.keySet()); //keyset() poiche' gli account rappresentano le chiavi
+            
             configurationGridDragAndDrop();
 
             VerticalLayout contStud = containerListStudent("250px", "70%");
@@ -204,24 +200,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         gridStud.getStyle().set("width", "100%");
         gridStud.getStyle().set("height", "80%");
 
-        Button btn = new Button("Aggiorna");
-        btn.addClassName("btnUnderGrid");
-        btn.addClickListener(event ->{
-            updateAndMergeAccountList();
-            //Rimuovi account che hanno il campo "Game" gia' settato
-            Map<Account, String> tempList = new HashMap<>();
-            for(Account i : currentAccountList.keySet()){
-                tempList.put(i, currentAccountList.get(i));
-            }
-            for(Account i : currentAccountList.keySet()){
-                if(!currentAccountList.get(i).equals("")){ //se gli account hanno il campo 'String' settato -> rimuovi
-                    tempList.remove(i);
-                }
-            }
-            gridStud.setItems(tempList.keySet());
-        });
-
-        vert.add(gridStud, btn);
+        vert.add(gridStud);
         return vert;
     }
 
@@ -283,18 +262,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
         vert.add(gridNewGame, btn);
         return vert;
-    }
-
-
-    private Image generateImage(Account account) {
-        Long id = account.getId();
-        StreamResource sr = new StreamResource("user", () ->  {
-            Account attached = accRep.findWithPropertyPictureAttachedById(id);
-            return new ByteArrayInputStream(attached.getProfilePicture());
-        });
-        sr.setContentType("image/png");
-        Image image = new Image(sr, "profile-picture");
-        return image;
     }
 
     //Aggiorna il contenuto del campo 'value' con il gioco impostato dal teacher
