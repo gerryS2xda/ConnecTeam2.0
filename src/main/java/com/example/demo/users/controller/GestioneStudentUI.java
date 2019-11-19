@@ -2,7 +2,6 @@ package com.example.demo.users.controller;
 
 import com.example.demo.users.broadcaster.BroadcastListener;
 import com.example.demo.users.broadcaster.Broadcaster;
-import com.example.demo.users.event.AccountListEventBeanListener;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.error.ErrorPage;
@@ -23,11 +22,8 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.ByteArrayInputStream;
 import java.util.*;
 
 @Push
@@ -41,24 +37,21 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     //instance field
     private AccountRepository accRep;
     private Account account;
-    private Image imageU = new Image(); //immagine dell'utente
     private Grid<Account> gridStud = new Grid<>(Account.class);
     private Grid<Account> gridGuess = new Grid<>(Account.class);
     private Grid<Account> gridMaty = new Grid<>(Account.class);
     private Grid<Account> gridNewGame = new Grid<>(Account.class);
     private List<Account> draggedItems; //elementi soggetti a DnD
     private Grid<Account> dragSource; //sorgente da cui 'parte' il DnD
-    private AccountListEventBeanListener accountListEventBeanListener;
     private StartGameEventBeanPublisher startGameEventBeanPublisher;
     //NOTA: uso questa variabile per tenere traccia della lista account corrente
     //BUG: "Premi 'Aggiorna' viene caricata una nuova lista e si perdono le modifiche attuali (fare merge tra due liste)
     private Map<Account, String> currentAccountList = new HashMap<>(); //lista corrente di account list
 
-    public GestioneStudentUI(@Autowired AccountListEventBeanListener accountEventListener, @Autowired StartGameEventBeanPublisher startGameEventPublisher){
+    public GestioneStudentUI(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
         try {
             accRep = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-            accountListEventBeanListener = accountEventListener; //ottenere event su lista studenti collegati
             startGameEventBeanPublisher = startGameEventPublisher;
 
             setId("GestioneStudentUI"); //setta id del root element di questo component
