@@ -21,7 +21,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinService;
 import com.example.demo.utility.AppBarUI;
-
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -40,12 +39,10 @@ public class ControllerMainUI extends HorizontalLayout {
     private GameList gameList;
     private Image image;
     private AccountRepository accountRepository;
-    private Map<String, List<String>> parametersMap;
 
     public ControllerMainUI() {
 
         try{
-
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             if(accountRepository == null || account == null){
@@ -168,13 +165,6 @@ public class ControllerMainUI extends HorizontalLayout {
         verticalLayout.add(layoutWelcome);
         main.add(verticalLayout);
 
-        /* Mostra i giochi disponibili sulla Home
-        List<Game> list= gameList.getGameList();
-        for(Game g:list) {
-            main.add(creaLayoutGioco(g, ""));
-        }
-         */
-
         return main;
     }
 
@@ -187,47 +177,5 @@ public class ControllerMainUI extends HorizontalLayout {
         sr.setContentType("image/png");
         Image image = new Image(sr, "profile-picture");
         return image;
-
     }
-
-    /*
-        private VerticalLayout creaLayoutGioco (Game game, String left){
-
-        VerticalLayout layoutGioco = new VerticalLayout();
-        layoutGioco.addClassName("layoutWelcomeGame");
-        Image img = new Image("frontend/img/"+game.getNomeGioco()+".jpeg", "logo gioco");
-        img.addClassName("imgGame");
-        Label gameName = new Label(game.getNomeGioco());
-        gameName.addClassName("WelcomeGameName");
-        layoutGioco.add(gameName,img);
-        Label gameDescr = new Label(game.getDescrizioneGioco());
-        gameDescr.addClassName("gameDescrWelcome");
-        Label ageRande = new Label(game.getAgeRange());
-        layoutGioco.add(ageRande,gameDescr);
-        layoutGioco.getStyle().set("left",left);
-        layoutGioco.getStyle().set("width","30%");
-        VerticalLayout verticalLayout = new VerticalLayout();
-
-        Button play = new Button("Gioca");
-
-        play.addClickListener(clickEvent -> {
-            try {
-                System.out.println(UI.getCurrent().getPage());
-                String expression = "window.open(\"http://localhost:8080/"+game.getPathName()+"\");";
-                UI.getCurrent().getPage().executeJavaScript(expression);
-
-            }catch (Exception e){
-                    e.printStackTrace();
-                    System.out.println(e.getMessage());
-                    }
-                    });
-
-                    verticalLayout.add(play);
-                    verticalLayout.setAlignItems(Alignment.CENTER);
-                    layoutGioco.setAlignItems(Alignment.CENTER);
-                    layoutGioco.add(verticalLayout);
-                    return layoutGioco;
-                    }
-
-     */
 }
