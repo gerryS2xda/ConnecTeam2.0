@@ -18,6 +18,7 @@ import com.vaadin.flow.component.grid.dnd.*;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
@@ -47,6 +48,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     //NOTA: uso questa variabile per tenere traccia della lista account corrente
     //BUG: "Premi 'Aggiorna' viene caricata una nuova lista e si perdono le modifiche attuali (fare merge tra due liste)
     private Map<Account, String> currentAccountList = new HashMap<>(); //lista corrente di account list
+    private int countGuessUser = 0;
+    private int countMatyUser = 0;
 
     public GestioneStudentUI(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
         try {
@@ -95,7 +98,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     }
 
-        private void configurationGridDragAndDrop(){
+    private void configurationGridDragAndDrop(){
 
         gridStud.removeAllColumns(); //inserito per rimuovere tutte le colonne di Account (bug)
         gridStud.setId("AccountList");
@@ -210,11 +213,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         Button btn = new Button("Avvia");
         btn.addClassName("btnUnderGrid");
         btn.addClickListener(event ->{
-            //INSERISCI VINCOLO DI ALMENO 2 utenti
-
-            //Invia un event contenente la lista (account, gameName) a StudentHomeView
-            //definire new Event class and listener per questo scopo
-            startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
+            startGame();
         });
 
         vert.add(gridGuess, btn);
@@ -232,11 +231,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         Button btn = new Button("Avvia");
         btn.addClassName("btnUnderGrid");
         btn.addClickListener(event ->{
-            //INSERISCI VINCOLO DI ALMENO 2 utenti
-
-            //Invia un event contenente la lista (account, gameName) a StudentHomeView
-            //definire new Event class and listener per questo scopo
-            startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
+            startGame();
         });
 
         vert.add(gridMaty, btn);
@@ -258,9 +253,40 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         return vert;
     }
 
+    //Inizia la partita di Guess o Maty quando teacher preme 'Invia'
+    private void startGame(){
+        updateCountofGuessAndMatyUser();
+        if(countGuessUser > 1){ //vincolo di almeno due utenti inseriti nella grid
+            //invia un event contenente la lista di studenti collegati che devono giocare con Guess
+            startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
+        }else if(countMatyUser > 1){ //vincolo di almeno due utenti inseriti nella grid
+            //invia un event contenente la lista di studenti collegati che devono giocare con Guess
+            startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
+        }else{
+            Label content = new Label("Almeno due utenti per poter iniziare la partita");
+            Notification notification = new Notification(content);
+            notification.setDuration(3000);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
+        }
+    }
+
     //Aggiorna il contenuto del campo 'value' con il gioco impostato dal teacher
-    public void updateAccountListHashMap(Account acc, String game){
+    private void updateAccountListHashMap(Account acc, String game){
         currentAccountList.replace(acc, game);
+    }
+
+    private void updateCountofGuessAndMatyUser(){
+        countGuessUser = 0;
+        countMatyUser = 0;
+        for(Account i : currentAccountList.keySet()){
+            String game = currentAccountList.get(i);
+            if(game.equals("Guess")){
+                countGuessUser++;
+            }else if(game.equals("Maty")){
+                countMatyUser++;
+            }
+        }
     }
 
     //Implementazione 'BroadcasterListener'
