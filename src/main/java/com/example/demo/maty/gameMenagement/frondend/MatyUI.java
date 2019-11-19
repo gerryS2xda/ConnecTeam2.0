@@ -205,7 +205,12 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         hor1.getStyle().set("top","6%");  //value precedente: 10%
         hor1.getStyle().set("left","20%");
 
-        Label nomeUser = new Label("Benvenuta " + account.getNome());
+        String str = "Benvenuta ";
+        if(account.getSesso().equals("0")){
+            str = "Benvenuto ";
+        }
+
+        Label nomeUser = new Label(str + account.getNome());
         nomeUser.getStyle().set("font-size","40px");
 
         Button b = new Button("Info su Maty");
