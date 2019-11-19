@@ -1,5 +1,7 @@
 package com.example.demo.users.controller;
 
+import com.example.demo.users.broadcaster.BroadcastListener;
+import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.users.event.AccountListEventBeanListener;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
@@ -8,6 +10,7 @@ import com.example.demo.userOperation.NavBarVertical;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -16,6 +19,7 @@ import com.vaadin.flow.component.grid.dnd.*;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -26,13 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.util.*;
 
-
+@Push
 @Route("ControllerGestStud")
 @HtmlImport("style.html")
 @StyleSheet("frontend://stile/stile.css")
 @StyleSheet("frontend://stile/gestStudStyle.css")
 @PageTitle("Gestione Studenti")
-public class GestioneStudentUI extends HorizontalLayout {
+public class GestioneStudentUI extends HorizontalLayout implements BroadcastListener {
 
     //instance field
     private AccountRepository accRep;
@@ -59,6 +63,9 @@ public class GestioneStudentUI extends HorizontalLayout {
 
             setId("GestioneStudentUI"); //setta id del root element di questo component
 
+            //Registra un teacher listener
+            Broadcaster.registerTeacher(account, this);
+
             //Nav bar verticale e appBar
             getStyle().set("height", "100%"); //per nav bar verticale
             getStyle().set("width", "100%");
@@ -74,8 +81,8 @@ public class GestioneStudentUI extends HorizontalLayout {
             guidetxt.getStyle().set("left", NavBarVertical.NAVBAR_WIDTH);
 
 
-            updateAndMergeAccountList();
-            gridStud.setItems(currentAccountList.keySet()); //keyset() poiche' gli account rappresentano le chiavi
+            //updateAndMergeAccountList();
+            //gridStud.setItems(currentAccountList.keySet()); //keyset() poiche' gli account rappresentano le chiavi
             configurationGridDragAndDrop();
 
             VerticalLayout contStud = containerListStudent("250px", "70%");
@@ -85,6 +92,8 @@ public class GestioneStudentUI extends HorizontalLayout {
             VerticalLayout contNewGame = containerListStudentNewGame("250px", "70%");
 
             add(guidetxt, contStud, contGuess, contMaty, contNewGame);
+
+            UI.getCurrent().setPollInterval(5000);
         }catch (Exception e){
             removeAll();
             getStyle().set("background-color","white");
@@ -216,22 +225,6 @@ public class GestioneStudentUI extends HorizontalLayout {
         return vert;
     }
 
-    //Aggiorna e fondi le liste di account (soluzione del bug: 'Aggiorna' button)
-    private void updateAndMergeAccountList(){
-        Map<Account, String> actualList = accountListEventBeanListener.getAccountList();
-        for(Account i : actualList.keySet()){
-            if(currentAccountList.containsKey(i)){ //se il nuovo account e' gia' presente in actualList
-                actualList.replace(i, currentAccountList.get(i)); //modifica il value 'Game' degli account esistenti in currentList
-            }
-        }
-        currentAccountList = actualList; //aggiorna lista corrente con 'actualList' che contiene nuovi utenti connessi
-    }
-
-    //Aggiorna il contenuto del campo 'value' con il gioco impostato dal teacher
-    private void updateAccountListHashMap(Account acc, String game){
-        currentAccountList.replace(acc, game);
-    }
-
     //Contenitore per lista studenti da inserire nel gioco Guess
     private VerticalLayout containerListStudentGuess(String width, String height){
         VerticalLayout vert = new VerticalLayout();
@@ -302,6 +295,52 @@ public class GestioneStudentUI extends HorizontalLayout {
         sr.setContentType("image/png");
         Image image = new Image(sr, "profile-picture");
         return image;
+    }
+
+    //Aggiorna il contenuto del campo 'value' con il gioco impostato dal teacher
+    public void updateAccountListHashMap(Account acc, String game){
+        currentAccountList.replace(acc, game);
+    }
+
+    //Implementazione 'BroadcasterListener'
+    @Override
+    public void redirectToGuess(){
+        //no implement
+    }
+
+    @Override
+    public void redirectToMaty(){
+        //no implement
+    }
+
+    @Override
+    //Aggiorna e fondi le liste di account (soluzione del bug: 'Aggiorna' button)
+    public void updateAndMergeAccountList(){
+        Map<Account, String> actualList = Broadcaster.getAccountListReceive();
+        for(Account i : actualList.keySet()){
+            if(currentAccountList.containsKey(i)){ //se il nuovo account e' gia' presente in actualList
+                actualList.replace(i, currentAccountList.get(i)); //modifica il value 'Game' degli account esistenti in currentList
+            }
+        }
+        currentAccountList = actualList; //aggiorna lista corrente con 'actualList' che contiene nuovi utenti connessi
+        updateAllGrid();
+    }
+
+    private void updateAllGrid(){
+        //Aggiorna 'Grid' Studenti collegati
+        Map<Account, String> tempList = new HashMap<>();
+        for(Account i : currentAccountList.keySet()){
+            tempList.put(i, currentAccountList.get(i));
+        }
+        for(Account i : currentAccountList.keySet()){
+            if(!currentAccountList.get(i).equals("")){ //se gli account hanno il campo 'String' settato -> rimuovi
+                tempList.remove(i);
+            }
+        }
+        getUI().get().access(() -> {
+            gridStud.setItems(tempList.keySet());
+        });
+
     }
 
 }

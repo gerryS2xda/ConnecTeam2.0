@@ -1,6 +1,7 @@
 package com.example.demo.users.broadcaster;
 
 import com.example.demo.entity.Account;
+import com.example.demo.users.event.AccountListEvent;
 import com.vaadin.flow.shared.Registration;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,8 +10,10 @@ import java.util.concurrent.Executors;
 
 public class Broadcaster  {
     static Executor executor = Executors.newSingleThreadExecutor();
-    static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listner
+    static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener
+    static Map<Account, BroadcastListener> teacherlisteners = new HashMap();  //mappa un account ad ogni listner
     static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
+    static Map<Account, String> accountListReceive = new HashMap<>(); //lista di account ricevuti dall'event
     static int in = 0;
     static int countGuessUser = 0;
     static int countMatyUser = 0;
@@ -77,8 +80,11 @@ public class Broadcaster  {
     }
 
     public static synchronized void logOut(Account account){
-        listeners.remove(account);
-        accountList.remove(account);
+        if(account.getTypeAccount().equals("student"))
+            listeners.remove(account);
+            accountList.remove(account);
+        if(account.getTypeAccount().equals("teacher"))
+            teacherlisteners.remove(account); //logout del teacher
         if(countGuessUser > 0)
             countGuessUser--;
         if(countMatyUser > 0)
@@ -88,5 +94,40 @@ public class Broadcaster  {
 
     public static int getIn() {
         return in;
+    }
+
+    //static method for teacher
+    public static synchronized Registration registerTeacher(Account account, BroadcastListener broadcastListener) {
+        teacherlisteners.put(account, broadcastListener);
+        System.out.println("Broadcaster User: chiamato registerTeacher "+ teacherlisteners.size()+ "  ui:"+ broadcastListener);
+        return () -> {
+            synchronized (Broadcaster.class) {
+                teacherlisteners.remove(account);
+            }
+        };
+    }
+
+    public static synchronized void unregisterTeacher(Account account, BroadcastListener broadcastListener){
+        teacherlisteners.remove(account,broadcastListener);
+    }
+
+    public static Map<Account, BroadcastListener> getTeacherListeners() {
+        return teacherlisteners;
+    }
+
+    public static synchronized void setAccountListReceive(AccountListEvent event){
+        accountListReceive = event.getAccountList();
+    }
+
+    public static Map<Account, String> getAccountListReceive() {
+        return accountListReceive;
+    }
+
+    public static synchronized void updateListaUtentiConnessi(){
+        teacherlisteners.forEach((account, broadcastListener) -> {
+           executor.execute(() ->{
+               broadcastListener.updateAndMergeAccountList();
+           });
+        });
     }
 }
