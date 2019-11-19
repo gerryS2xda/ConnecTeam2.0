@@ -5,11 +5,9 @@ import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.userOperation.NavBarVertical;
-import com.example.demo.users.event.AccountListEventBeanPublisher;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -246,6 +244,8 @@ public class GestioneStudentUI extends HorizontalLayout {
         Button btn = new Button("Avvia");
         btn.addClassName("btnUnderGrid");
         btn.addClickListener(event ->{
+            //INSERISCI VINCOLO DI ALMENO 2 utenti
+
             //Invia un event contenente la lista (account, gameName) a StudentHomeView
             //definire new Event class and listener per questo scopo
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
@@ -266,6 +266,8 @@ public class GestioneStudentUI extends HorizontalLayout {
         Button btn = new Button("Avvia");
         btn.addClassName("btnUnderGrid");
         btn.addClickListener(event ->{
+            //INSERISCI VINCOLO DI ALMENO 2 utenti
+
             //Invia un event contenente la lista (account, gameName) a StudentHomeView
             //definire new Event class and listener per questo scopo
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
