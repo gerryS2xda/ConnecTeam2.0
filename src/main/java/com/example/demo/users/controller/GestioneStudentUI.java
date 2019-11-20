@@ -24,7 +24,6 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
 @Push
@@ -70,16 +69,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
             add(appBar);
 
-            /*
-            //Nav bar verticale e appBar
-            getStyle().set("height", "100%"); //per nav bar verticale
-            getStyle().set("width", "100%");
-            NavBarVertical navBar = new NavBarVertical();
-            add(navBar);
-            AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
-            add(appBar);
-
-             */
             Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gioco che desiderate." +
                     "Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
             guidetxt.addClassName("guideText");

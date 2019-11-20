@@ -37,16 +37,6 @@ public class AppBarUI extends HorizontalLayout {
         add(main);
     }
 
-    public void setTitleInAppBar(String titlePage, boolean isVertPage){
-        H4 old = textBar;
-        H4 nuovatxt = new H4(titlePage);
-        nuovatxt.addClassName("app-bar__title");
-        if(isVertPage)
-            nuovatxt.getStyle().set("margin-left", NavBarVertical.NAVBAR_WIDTH);
-        replace(old, nuovatxt);
-        textBar = nuovatxt;
-    }
-
     //definire pulsante per aprire e chiudere la navbar vertical
     //definire un metodo statico per open and close nella NavBarVertical
 }

@@ -5,7 +5,6 @@ import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.mainView.MainView;
 import com.example.demo.utility.AppBarUI;
 import com.example.demo.utility.InfoEventUtility;
 import com.vaadin.flow.component.UI;
@@ -14,7 +13,6 @@ import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -26,7 +24,6 @@ import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -70,20 +67,6 @@ public class SettingsUser extends VerticalLayout {
                 add(navBar);
             }
 
-            /*
-            if(isNavBarVert){
-                getStyle().set("height", "100%"); //per nav bar verticale
-                HorizontalLayout hor = new HorizontalLayout();
-                hor.getStyle().set("height", "100%");
-                hor.setSpacing(false);
-                hor.setPadding(false);
-                AppBarUI appBar = new AppBarUI("Settings", true); //nome pagina corrente
-                hor.add(appBar);
-                NavBarVertical navBarVertical = new NavBarVertical();
-                hor.add(navBarVertical);
-                add(hor);
-            }
- */
             HorizontalLayout main = new HorizontalLayout();
             main.addClassName("mainHorizontalLayout");
             if(isNavBarVert) {

@@ -16,6 +16,13 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
 
+/*
+ *  Questa classe puo' essere rimossa poiche' e' stata rimpiazzata da TeacherMainUITab.
+ *  Rimane per essere usata in futuro per altre applicazioni
+ *  Nota: se ogni menu item della navbar deve caricare una pagina dedicata, cioe' per navigare in
+ *  SettingsUser si carica una nuova pagina, questa classe deve essere usata per mostrare la navbar in tale pagina
+ *  Guarda i commenti che sono stati rimossi nei vari commit
+*/
 @StyleSheet("frontend://stile/navBarVertStyle.css")
 public class NavBarVertical extends VerticalLayout{
 
