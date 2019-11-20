@@ -42,7 +42,6 @@ public class SettingsUser extends VerticalLayout {
     private AccountRepository accountRepository;
     private Account account;
     private Long id;
-    private String control;
     private boolean isNavBarVert;
 
 
@@ -133,7 +132,6 @@ public class SettingsUser extends VerticalLayout {
 
         } catch (Exception e) {
             removeAll();
-            //UI.getCurrent().navigate(ErrorPage.class);
             getStyle().set("background-color", "white");
             ErrorPage errorPage = new ErrorPage();
             add(errorPage);
@@ -278,64 +276,5 @@ public class SettingsUser extends VerticalLayout {
     private void saveProfilePicture(byte[] imageBytes) {
         accountRepository.updateImage(account.getId(), imageBytes);
     }
-
-
-
-
-
-    //SE VOGLI FARE QUALCOSA PIU ARTISTICA
-
-
-    /*private Component createComponent(String mimeType, String fileName,InputStream stream) {
-        if (mimeType.startsWith("text")) {
-            String text = "";
-            try {
-                text = IOUtils.toString(stream, "UTF-8");
-            } catch (IOException e) {
-                text = "exception reading stream";
-            }
-            return new Text(text);
-        } else if (mimeType.startsWith("image")) {
-            Image image = new Image();
-            try {
-
-                byte[] bytes = IOUtils.toByteArray(stream);
-                image.getElement().setAttribute("src", new StreamResource(
-                        fileName, () -> new ByteArrayInputStream(bytes)));
-                try (ImageInputStream in = ImageIO.createImageInputStream(
-                        new ByteArrayInputStream(bytes))) {
-                    final Iterator<ImageReader> readers = ImageIO
-                            .getImageReaders(in);
-                    if (readers.hasNext()) {
-                        ImageReader reader = readers.next();
-                        try {
-                            reader.setInput(in);
-                            image.setWidth(reader.getWidth(0) + "px");
-                            image.setHeight(reader.getHeight(0) + "px");
-                        } finally {
-                            reader.dispose();
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return image;
-        }
-        Div content = new Div();
-        String text = String.format("Mime type: '%s'\nSHA-256 hash: '%s'",
-                mimeType, MessageDigestUtil.sha256(stream.toString()));
-        content.setText(text);
-        return new Div();
-
-    }
-
-    private void showOutput(String text, Component content,Dialog outputContainer) {
-        HtmlComponent p = new HtmlComponent(Tag.P);
-        p.getElement().setText(text);
-        outputContainer.add(p);
-        outputContainer.add(content);
-    }*/
 }
 

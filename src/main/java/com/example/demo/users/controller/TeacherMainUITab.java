@@ -2,15 +2,11 @@ package com.example.demo.users.controller;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
-import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.mainView.MainView;
 import com.example.demo.userOperation.SettingsUser;
-import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
-import com.example.demo.utility.AppBarUI;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
@@ -38,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @StyleSheet("frontend://stile/navBarVertStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class TeacherMainUITabTest extends HorizontalLayout {
+public class TeacherMainUITab extends HorizontalLayout {
 
     //costanti
     private static final String icon_Size = "24px"; //valore precedente: 30px
@@ -48,10 +44,7 @@ public class TeacherMainUITabTest extends HorizontalLayout {
 
     //instance field
     private Account account;
-    private PartitaRepository partitaRepository;
-    private Image image;
     private AccountRepository accountRepository;
-    private AppBarUI appBarUI;
     private ControllerMainUI mainView;
     private SettingsUser settingsView;
     private GestioneStudentUI gestStudentiView;
@@ -59,7 +52,7 @@ public class TeacherMainUITabTest extends HorizontalLayout {
     private StartGameEventBeanPublisher startGameEventBeanPublisher;
 
 
-    public TeacherMainUITabTest(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
+    public TeacherMainUITab(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
 
         try{
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
@@ -78,8 +71,6 @@ public class TeacherMainUITabTest extends HorizontalLayout {
             getStyle().set("width", "100%");
 
             add(navBarVert());
-            //appBarUI = new AppBarUI("Home", false);
-            //add(appBarUI);
 
             mainView = new ControllerMainUI();
             add(mainView);
