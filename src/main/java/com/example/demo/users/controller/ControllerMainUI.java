@@ -30,6 +30,7 @@ import java.util.Map;
 @Route("ControllerHomeView")
 @HtmlImport("style.html")
 @StyleSheet("frontend://stile/stile.css")
+@StyleSheet("frontend://stile/navBarVertStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
 public class ControllerMainUI extends HorizontalLayout {
@@ -54,11 +55,15 @@ public class ControllerMainUI extends HorizontalLayout {
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //access al <body> element
             getStyle().set("height", "100%"); //per nav bar verticale
 
+            /*
             //Appbar e navBar
             NavBarVertical navBar = new NavBarVertical();
             add(navBar);
+            */
             AppBarUI appBar = new AppBarUI("Home", false); //nome pagina corrente
             add(appBar);
+
+
 
             VerticalLayout main1 = new VerticalLayout();
             main1.addClassName("main1");
@@ -178,4 +183,5 @@ public class ControllerMainUI extends HorizontalLayout {
         Image image = new Image(sr, "profile-picture");
         return image;
     }
+
 }

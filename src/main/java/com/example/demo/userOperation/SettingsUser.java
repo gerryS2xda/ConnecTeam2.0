@@ -59,6 +59,8 @@ public class SettingsUser extends VerticalLayout {
             id = (Long) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("userId");
 
             getStyle().set("padding", "0px");
+            setId("SettingsUser");
+
             if(accountRepository == null || account == null){
                 throw new IllegalArgumentException("AccountRepository e Account sono null");
             }else if(account.getTypeAccount().equals("teacher")){  //Usa la teacherUI se account e' teacher, else usa solo NavBar orrizzontale
@@ -68,6 +70,7 @@ public class SettingsUser extends VerticalLayout {
                 add(navBar);
             }
 
+            /*
             if(isNavBarVert){
                 getStyle().set("height", "100%"); //per nav bar verticale
                 HorizontalLayout hor = new HorizontalLayout();
@@ -80,11 +83,20 @@ public class SettingsUser extends VerticalLayout {
                 hor.add(navBarVertical);
                 add(hor);
             }
-
+ */
             HorizontalLayout main = new HorizontalLayout();
             main.addClassName("mainHorizontalLayout");
-            if(isNavBarVert)
-                main.getStyle().set("margin-left", "252px"); //magine sinistro da NavBar verticale
+            if(isNavBarVert) {
+                getStyle().set("height", "100%"); //per nav bar verticale
+                getStyle().set("margin-left", "0px");
+                //main.getStyle().set("margin-left", "252px"); //magine sinistro da NavBar verticale
+                HorizontalLayout hor = new HorizontalLayout();
+                hor.setPadding(false);
+                hor.setSpacing(false);
+                AppBarUI appBar = new AppBarUI("Settings", false); //Nota: true se viene usata una pagina dedicata per SettingsUser
+                hor.add(appBar);
+                add(hor);
+            }
 
             VerticalLayout personalInfo = new VerticalLayout();
             Label section = new Label("Informazioni personali");

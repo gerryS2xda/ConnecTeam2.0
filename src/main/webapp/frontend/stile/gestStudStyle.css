@@ -9,7 +9,7 @@
     width: 250px;
     height: 70%;
     margin-left: 5%;
-    margin-top: 10%;
+    margin-top: 13%;    /* valore precedente: 10% */
     background-color: #FFFFFF;
 }
 
@@ -19,4 +19,5 @@
     margin-top: 20px;
     background-color: #007d99;
     margin-left: 20%;
+    color: #FFFFFF;
 }

@@ -11,6 +11,7 @@ import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.example.demo.maty.gameMenagement.backend.db.ItemRepositoryMaty;
 import com.example.demo.nuovoGioco.gameManagement.database.ItemRepositoryNuovoGioco;
 import com.example.demo.users.controller.ControllerMainUI;   //modificato
+import com.example.demo.users.controller.TeacherMainUITabTest;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.utility.DialogUtility;
 import com.example.demo.utility.InfoEventUtility;
@@ -342,7 +343,7 @@ public class MainView extends VerticalLayout {
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
 
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(TeacherMainUITabTest.class);
         });
 
         b = new Button("luigi");

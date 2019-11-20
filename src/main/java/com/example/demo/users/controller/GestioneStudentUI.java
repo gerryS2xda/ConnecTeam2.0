@@ -35,6 +35,8 @@ import java.util.*;
 @PageTitle("Gestione Studenti")
 public class GestioneStudentUI extends HorizontalLayout implements BroadcastListener {
 
+    static boolean isGuessStart = false;
+
     //instance field
     private AccountRepository accRep;
     private Account account;
@@ -51,7 +53,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private int countGuessUser = 0;
     private int countMatyUser = 0;
 
-    public GestioneStudentUI(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
+    public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
         try {
             accRep = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
@@ -59,9 +61,16 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
             setId("GestioneStudentUI"); //setta id del root element di questo component
 
+
             //Registra un teacher listener
             Broadcaster.registerTeacher(account, this);
 
+            getStyle().set("height", "100%"); //per nav bar verticale
+            getStyle().set("width", "100%");
+            AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
+            add(appBar);
+
+            /*
             //Nav bar verticale e appBar
             getStyle().set("height", "100%"); //per nav bar verticale
             getStyle().set("width", "100%");
@@ -70,6 +79,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
             add(appBar);
 
+             */
             Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gioco che desiderate." +
                     "Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
             guidetxt.addClassName("guideText");
@@ -259,6 +269,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         if(countGuessUser > 1){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
+            isGuessStart = true;
         }else if(countMatyUser > 1){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
