@@ -17,6 +17,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
@@ -95,7 +96,7 @@ public class TeacherMainUITab extends HorizontalLayout {
 
         Div navScrollArea = new Div();
         navScrollArea.addClassName("navi-drawer__scroll-area");
-        navScrollArea.getStyle().set("width", "100%");
+        navScrollArea.getStyle().set("width", NAVBAR_WIDTH);
 
         Div items = new Div(); //container di tutti gli item della navbar
         items.getStyle().set("margin-bottom", "0.5rem");
@@ -163,18 +164,26 @@ public class TeacherMainUITab extends HorizontalLayout {
         gamesIcon.setColor(icon_color);
         Div gamesStud = addDivContainerItem("Giochi", gamesIcon);
         gamesStud.addClickListener(event -> {
-            mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
-            if(settingsView != null){
-                settingsView.getStyle().set("display", "none");
-            }
-            if(gestStudentiView != null){
-                gestStudentiView.getStyle().set("display", "none");
-            }
-            if(guessView == null){
-                guessView = new GuessUI();
-                add(guessView);
+            if(GestioneStudentUI.isGuessStart) {
+                mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
+                if (settingsView != null) {
+                    settingsView.getStyle().set("display", "none");
+                }
+                if (gestStudentiView != null) {
+                    gestStudentiView.getStyle().set("display", "none");
+                }
+                if (guessView == null) {
+                    guessView = new GuessUI();
+                    add(guessView);
+                } else {
+                    guessView.getStyle().set("display", "flex");
+                }
             }else{
-                guessView.getStyle().set("display", "flex");
+                Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
+                Notification notification = new Notification(content);
+                notification.setDuration(3000);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
             }
         });
 
