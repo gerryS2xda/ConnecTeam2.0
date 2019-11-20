@@ -246,7 +246,7 @@ public class TeacherMainUITab extends HorizontalLayout {
         });
         Div newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
         panel1.add(guess, maty, newGame);
-        Div gamesItem = addDivContainerItemInAccordion("Giochi", ic);
+        Div gamesItem = addDivInAccordionPanelContent("Giochi", ic, "0px");
         gamesItem.getStyle().set("width", "230px");
         accordion.add(new AccordionPanel(gamesItem, panel1)).addThemeVariants(DetailsVariant.REVERSE);
 
@@ -274,22 +274,6 @@ public class TeacherMainUITab extends HorizontalLayout {
         RouterLink rl = new RouterLink();
         rl.addClassName("navi-item__link_logout");
         rl.getStyle().set("margin-left", marginleft);
-        Span sp = new Span(linkText);
-        if(ic != null)
-            rl.add(ic, sp);
-        else
-            rl.add(sp);
-        d.add(rl);
-        return d;
-    }
-
-    private Div addDivContainerItemInAccordion(String linkText, Icon ic){
-        Div d = new Div();
-        d.addClassName("navi-item");
-        d.getStyle().set("cursor", "pointer");
-        d.getStyle().set("width", NAVBAR_WIDTH);
-        RouterLink rl = new RouterLink();
-        rl.addClassName("navi-item__link_logout");
         Span sp = new Span(linkText);
         if(ic != null)
             rl.add(ic, sp);
