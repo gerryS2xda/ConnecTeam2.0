@@ -8,9 +8,12 @@ import com.example.demo.mainView.MainView;
 import com.example.demo.userOperation.SettingsUser;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.accordion.Accordion;
+import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.details.DetailsVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -162,8 +165,39 @@ public class TeacherMainUITab extends HorizontalLayout {
         Icon gamesIcon = new Icon(VaadinIcon.GAMEPAD);
         gamesIcon.setSize(icon_Size);
         gamesIcon.setColor(icon_color);
-        Div gamesStud = addDivContainerItem("Giochi", gamesIcon);
-        gamesStud.addClickListener(event -> {
+        gamesIcon.getStyle().set("margin-left", "0px"); //valore precedente: 32px (no accordion)
+        Div gamesStud = addGamesListWithAccordion(gamesIcon);
+
+        items.add(home, settings, gestStud, gamesStud);
+        navScrollArea.add(items);
+        vert.add(addLogoContainer(), navScrollArea);
+        return vert;
+    }
+
+    private Div addDivContainerItem(String linkText, Icon ic){
+        Div d = new Div();
+        d.addClassName("navi-item");
+        d.getStyle().set("cursor", "pointer");
+        RouterLink rl = new RouterLink();
+        rl.addClassName("navi-item__link_logout");
+        Span sp = new Span(linkText);
+        if(ic != null)
+            rl.add(ic, sp);
+        else
+            rl.add(sp);
+        d.add(rl);
+        return d;
+    }
+
+    private Div addGamesListWithAccordion(Icon ic){
+        Div d = new Div();
+
+        Accordion accordion = new Accordion();
+        VerticalLayout panel1 = new VerticalLayout(); //contenuto del panel 1 dell'accordion
+        panel1.setSpacing(false);
+        panel1.setPadding(false);
+        Div guess = addDivInAccordionPanelContent("Guess", null, "64px");
+        guess.addClickListener(event -> {
             if(GestioneStudentUI.isGuessStart) {
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
@@ -181,35 +215,86 @@ public class TeacherMainUITab extends HorizontalLayout {
             }else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
-                notification.setDuration(3000);
+                notification.setDuration(4000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
             }
         });
+        Div maty = addDivInAccordionPanelContent("Maty", null, "64px");
+        maty.addClickListener(event -> {
+            if(GestioneStudentUI.isGuessStart) {
+                mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
+                if (settingsView != null) {
+                    settingsView.getStyle().set("display", "none");
+                }
+                if (gestStudentiView != null) {
+                    gestStudentiView.getStyle().set("display", "none");
+                }
+                if (guessView == null) {
+                    guessView = new GuessUI();
+                    add(guessView);
+                } else {
+                    guessView.getStyle().set("display", "flex");
+                }
+            }else{
+                Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
+                Notification notification = new Notification(content);
+                notification.setDuration(4000);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            }
+        });
+        Div newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
+        panel1.add(guess, maty, newGame);
+        Div gamesItem = addDivContainerItemInAccordion("Giochi", ic);
+        gamesItem.getStyle().set("width", "230px");
+        accordion.add(new AccordionPanel(gamesItem, panel1)).addThemeVariants(DetailsVariant.REVERSE);
 
         Icon logoutIcon = new Icon(VaadinIcon.SIGN_OUT);
         logoutIcon.setSize(icon_Size);
         logoutIcon.setColor(icon_color);
-        Div logout = addDivContainerItem("Logout", logoutIcon);
+        Div logout = addDivInAccordionPanelContent("Logout", logoutIcon, "-16px");
+        logout.getStyle().set("width", "236px");
+        logout.getStyle().set("margin-left", "-4px");
         logout.addClickListener(event -> {
             VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente
             UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
         });
+        accordion.add(new AccordionPanel(logout, new Div()));
 
-        items.add(home, settings, gestStud, gamesStud, logout);
-        navScrollArea.add(items);
-        vert.add(addLogoContainer(), navScrollArea);
-        return vert;
+        d.add(accordion);
+        return d;
     }
 
-    private Div addDivContainerItem(String linkText, Icon ic){
+    private Div addDivInAccordionPanelContent(String linkText, Icon ic, String marginleft){
         Div d = new Div();
         d.addClassName("navi-item");
         d.getStyle().set("cursor", "pointer");
+        d.getStyle().set("width", NAVBAR_WIDTH);
+        RouterLink rl = new RouterLink();
+        rl.addClassName("navi-item__link_logout");
+        rl.getStyle().set("margin-left", marginleft);
+        Span sp = new Span(linkText);
+        if(ic != null)
+            rl.add(ic, sp);
+        else
+            rl.add(sp);
+        d.add(rl);
+        return d;
+    }
+
+    private Div addDivContainerItemInAccordion(String linkText, Icon ic){
+        Div d = new Div();
+        d.addClassName("navi-item");
+        d.getStyle().set("cursor", "pointer");
+        d.getStyle().set("width", NAVBAR_WIDTH);
         RouterLink rl = new RouterLink();
         rl.addClassName("navi-item__link_logout");
         Span sp = new Span(linkText);
-        rl.add(ic, sp);
+        if(ic != null)
+            rl.add(ic, sp);
+        else
+            rl.add(sp);
         d.add(rl);
         return d;
     }
