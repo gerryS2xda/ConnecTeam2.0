@@ -8,8 +8,10 @@ import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.db.ItemRepositoryMaty;
+import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,9 @@ import java.util.*;
 @VaadinSessionScope
 @Lazy
 public class MatyController {
+
+    @Autowired
+    private EndGameEventBeanPublisher endGameEventBeanPublisher;
 
     private ItemRepositoryMaty itemRepository;
     private ItemMaty item;
@@ -159,6 +164,9 @@ public class MatyController {
             partitaThread.stopTimer();
             BroadcasterMaty.setIndiziRicevuti(0);
             BroadcasterMaty.partitanonVincente();
+
+            //invia un event quando la partita termina
+            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Maty");
         }
 
         public void stopTimer(){

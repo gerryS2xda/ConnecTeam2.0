@@ -8,8 +8,11 @@ import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
+import com.example.demo.users.event.EndGameEventBeanPublisher;
+import com.example.demo.users.event.EndGameEventListener;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,9 @@ import java.util.*;
 @VaadinSessionScope
 @Lazy
 public class GuessController {
+
+    @Autowired
+    private EndGameEventBeanPublisher endGameEventBeanPublisher;
 
     private ItemRepository itemRepository;
     private Item item;
@@ -149,6 +155,9 @@ public class GuessController {
             partitaThread.interrupt();
             partitaThread.stopTimer();
             Broadcaster.partitanonVincente();
+
+            //invia un event quando la partita termina
+            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess");
         }
 
         public void stopTimer(){
