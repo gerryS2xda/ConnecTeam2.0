@@ -109,6 +109,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 throw new IllegalArgumentException("MatyUI: PartitaRepository is null");
 
             matyController = new MatyController(partitaRepository);
+            matyController.setAccount(account);
             if(account.getTypeAccount().equals("teacher"))
                 isTeacher = true;
 

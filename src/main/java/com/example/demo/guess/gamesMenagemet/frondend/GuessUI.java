@@ -95,6 +95,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 throw new IllegalArgumentException("GuessUI: PartitaRepository is null");
 
             guessController = new GuessController(partitaRepository);
+            guessController.setAccount(account); //invia account attuale a GuessController (serve per endgameEvent)
 
             if(account.getTypeAccount().equals("teacher"))
                 isTeacher = true;

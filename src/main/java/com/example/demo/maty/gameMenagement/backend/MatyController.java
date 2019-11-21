@@ -34,7 +34,7 @@ public class MatyController {
     private int i;
     private int totTime;
     boolean vinta = false;
-
+    private Account account = new Account();
     private PartitaRepository partitaRepository;
     protected Partita partita;
 
@@ -113,6 +113,10 @@ public class MatyController {
         return partitaThread;
     }
 
+    public void setAccount(Account account){
+        this.account = account;
+    }
+
     public class PartitaThread extends Thread{
         private Timer timer;
         @Override
@@ -166,7 +170,7 @@ public class MatyController {
             BroadcasterMaty.partitanonVincente();
 
             //invia un event quando la partita termina
-            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Maty");
+            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Maty", account);
         }
 
         public void stopTimer(){

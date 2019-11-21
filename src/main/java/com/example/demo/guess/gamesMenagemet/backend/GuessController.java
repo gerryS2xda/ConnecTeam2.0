@@ -9,7 +9,6 @@ import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
-import com.example.demo.users.event.EndGameEventListener;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ public class GuessController {
     private ItemRepository itemRepository;
     private Item item;
     private Random random= new Random();
+    private Account account = new Account();
     private PartitaThread partitaThread;
     private List<Account> accounts;
     private int i;
@@ -47,9 +47,9 @@ public class GuessController {
         partita.addPunteggio(punteggio);
     }
 
-    public void startGame(Partita parita){
+    public void startGame(Partita partita){
 
-        this.partita = parita;
+        this.partita = partita;
 
         itemRepository = (ItemRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepository");
         partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
@@ -106,6 +106,10 @@ public class GuessController {
         return partitaThread;
     }
 
+    public void setAccount(Account account){
+        this.account = account;
+    }
+
     public class PartitaThread extends Thread{
         private Timer timer;
         @Override
@@ -157,7 +161,7 @@ public class GuessController {
             Broadcaster.partitanonVincente();
 
             //invia un event quando la partita termina
-            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess");
+            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess", account);
         }
 
         public void stopTimer(){
