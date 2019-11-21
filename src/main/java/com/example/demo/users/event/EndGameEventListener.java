@@ -1,5 +1,6 @@
 package com.example.demo.users.event;
 
+import com.example.demo.users.broadcaster.Broadcaster;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -11,5 +12,11 @@ public class EndGameEventListener {
     @EventListener
     public void handleReceiveEndGameEvent(EndGameEvent event){
         System.out.println("EndGameEventListener: receive a event");
+        String nameGame = event.getNameOfGameEnded();
+        if(nameGame.equals("Guess")){
+            Broadcaster.setIsGuessStart(false);
+        }else if(nameGame.equals("Maty")){
+            Broadcaster.setIsMatyStart(false);
+        }
     }
 }
