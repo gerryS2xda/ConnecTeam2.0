@@ -34,10 +34,6 @@ import java.util.*;
 @PageTitle("Gestione Studenti")
 public class GestioneStudentUI extends HorizontalLayout implements BroadcastListener {
 
-    //static field
-    private static boolean isGuessStart = false;
-    private static boolean isMatyStart = false;
-
     //instance field
     private AccountRepository accRep;
     private Account account;
@@ -260,11 +256,11 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         if(countGuessUser > 1){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
-            isGuessStart = true;
+            Broadcaster.setIsGuessStart(true);
         }else if(countMatyUser > 1){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
-            isMatyStart = true;
+            Broadcaster.setIsMatyStart(true);
         }else{
             Label content = new Label("Almeno due utenti per poter iniziare la partita");
             Notification notification = new Notification(content);
@@ -290,23 +286,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 countMatyUser++;
             }
         }
-    }
-
-    //public methods
-    public static boolean isGuessStart() {
-        return isGuessStart;
-    }
-
-    public static void setIsGuessStart(boolean isGuessStart) {
-        GestioneStudentUI.isGuessStart = isGuessStart;
-    }
-
-    public static boolean isMatyStart() {
-        return isMatyStart;
-    }
-
-    public static void setIsMatyStart(boolean isMatyStart) {
-        GestioneStudentUI.isMatyStart = isMatyStart;
     }
 
     //Implementazione 'BroadcasterListener'

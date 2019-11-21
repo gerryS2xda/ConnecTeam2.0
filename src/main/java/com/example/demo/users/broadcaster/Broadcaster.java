@@ -9,6 +9,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class Broadcaster  {
+
+    //private static field
+    private static boolean isGuessStart = false;
+    private static boolean isMatyStart = false;
+
+    //static field
     static Executor executor = Executors.newSingleThreadExecutor();
     static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener
     static Map<Account, BroadcastListener> teacherlisteners = new HashMap();  //mappa un account ad ogni listner
@@ -63,22 +69,6 @@ public class Broadcaster  {
         }
     }
 
-    public static Map<Account, BroadcastListener> getListeners() {
-        return listeners;
-    }
-
-    public static Map<Account, String> getAccountList() {
-        return accountList;
-    }
-
-    public static int getNumberOfGuessUser(){
-        return countGuessUser;
-    }
-
-    public static int getNumberOfMatyUser(){
-        return countMatyUser;
-    }
-
     public static synchronized void logOut(Account account){
         if(account.getTypeAccount().equals("student"))
             listeners.remove(account);
@@ -90,10 +80,6 @@ public class Broadcaster  {
         if(countMatyUser > 0)
             countMatyUser--;
         System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
-    }
-
-    public static int getIn() {
-        return in;
     }
 
     //static method for teacher
@@ -111,10 +97,6 @@ public class Broadcaster  {
         teacherlisteners.remove(account,broadcastListener);
     }
 
-    public static Map<Account, BroadcastListener> getTeacherListeners() {
-        return teacherlisteners;
-    }
-
     public static synchronized void setAccountListReceive(AccountListEvent event){
         accountListReceive = event.getAccountList();
     }
@@ -129,5 +111,46 @@ public class Broadcaster  {
                broadcastListener.updateAndMergeAccountList();
            });
         });
+    }
+
+    //getter and setter method
+    public static Map<Account, BroadcastListener> getListeners() {
+        return listeners;
+    }
+
+    public static Map<Account, String> getAccountList() {
+        return accountList;
+    }
+
+    public static int getNumberOfGuessUser(){
+        return countGuessUser;
+    }
+
+    public static int getNumberOfMatyUser(){
+        return countMatyUser;
+    }
+
+    public static int getIn() {
+        return in;
+    }
+
+    public static Map<Account, BroadcastListener> getTeacherListeners() {
+        return teacherlisteners;
+    }
+
+    public static boolean isGuessStart() {
+        return isGuessStart;
+    }
+
+    public static void setIsGuessStart(boolean isGuessStart) {
+        Broadcaster.isGuessStart = isGuessStart;
+    }
+
+    public static boolean isMatyStart() {
+        return isMatyStart;
+    }
+
+    public static void setIsMatyStart(boolean isMatyStart) {
+        Broadcaster.isMatyStart = isMatyStart;
     }
 }
