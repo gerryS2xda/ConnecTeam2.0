@@ -5,6 +5,7 @@ import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.mainView.MainView;
+import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.SettingsUser;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.vaadin.flow.component.UI;
@@ -53,6 +54,7 @@ public class TeacherMainUITab extends HorizontalLayout {
     private SettingsUser settingsView;
     private GestioneStudentUI gestStudentiView;
     private GuessUI guessView;
+    private MatyUI matyView;
     private StartGameEventBeanPublisher startGameEventBeanPublisher;
     //instance field per elementi della navbar (usato per 'highlight' style -- indicare quale view viene mostrata)
     private Div home;
@@ -129,6 +131,9 @@ public class TeacherMainUITab extends HorizontalLayout {
             if(guessView != null){
                 guessView.getStyle().set("display", "none");
             }
+            if(matyView != null){
+                matyView.getStyle().set("display", "none");
+            }
             gestStud.removeClassName("highlight");
             settings.removeClassName("highlight");
             guess.removeClassName("highlight");
@@ -147,6 +152,9 @@ public class TeacherMainUITab extends HorizontalLayout {
             }
             if(guessView != null){
                 guessView.getStyle().set("display", "none");
+            }
+            if(matyView != null){
+                matyView.getStyle().set("display", "none");
             }
             if(settingsView == null){
                 settingsView = new SettingsUser();
@@ -172,6 +180,9 @@ public class TeacherMainUITab extends HorizontalLayout {
             }
             if(guessView != null){
                 guessView.getStyle().set("display", "none");
+            }
+            if(matyView != null){
+                matyView.getStyle().set("display", "none");
             }
             if(gestStudentiView == null){
                 gestStudentiView = new GestioneStudentUI(startGameEventBeanPublisher);
@@ -221,7 +232,7 @@ public class TeacherMainUITab extends HorizontalLayout {
         panel1.setPadding(false);
         guess = addDivInAccordionPanelContent("Guess", null, "64px");
         guess.addClickListener(event -> {
-            if(GestioneStudentUI.isGuessStart) {
+            //if(GestioneStudentUI.isGuessStart()) {
                 guess.addClassName("highlight");
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
@@ -229,6 +240,9 @@ public class TeacherMainUITab extends HorizontalLayout {
                 }
                 if (gestStudentiView != null) {
                     gestStudentiView.getStyle().set("display", "none");
+                }
+                if(matyView != null){
+                    matyView.getStyle().set("display", "none");
                 }
                 if (guessView == null) {
                     guessView = new GuessUI();
@@ -240,17 +254,17 @@ public class TeacherMainUITab extends HorizontalLayout {
                 gestStud.removeClassName("highlight");
                 settings.removeClassName("highlight");
                 maty.removeClassName("highlight");
-            }else{
+            /*}else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
                 notification.setDuration(4000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
-            }
+            }*/
         });
         maty = addDivInAccordionPanelContent("Maty", null, "64px");
         maty.addClickListener(event -> {
-            if(GestioneStudentUI.isGuessStart) {
+            //if(GestioneStudentUI.isMatyStart()) { //cambiare isMatyStart
                 maty.addClassName("highlight");
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
@@ -259,23 +273,26 @@ public class TeacherMainUITab extends HorizontalLayout {
                 if (gestStudentiView != null) {
                     gestStudentiView.getStyle().set("display", "none");
                 }
-                if (guessView == null) {
-                    guessView = new GuessUI();
-                    add(guessView);
+                if(guessView != null){
+                    guessView.getStyle().set("display", "none");
+                }
+                if (matyView == null) {
+                    matyView = new MatyUI();
+                    add(matyView);
                 } else {
-                    guessView.getStyle().set("display", "flex");
+                    matyView.getStyle().set("display", "flex");
                 }
                 home.removeClassName("highlight");
                 gestStud.removeClassName("highlight");
                 settings.removeClassName("highlight");
                 guess.removeClassName("highlight");
-            }else{
+            /*}else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
                 notification.setDuration(4000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
-            }
+            }*/
         });
         newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
         panel1.add(guess, maty, newGame);
