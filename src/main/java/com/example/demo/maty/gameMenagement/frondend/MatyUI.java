@@ -16,10 +16,7 @@ import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterSugge
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.BroadcastListenerMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.ChatListenerMaty;
-import com.example.demo.utility.DialogUtility;
-import com.example.demo.utility.FireWorks;
-import com.example.demo.utility.InfoEventUtility;
-import com.example.demo.utility.MessageList;
+import com.example.demo.utility.*;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
@@ -88,6 +85,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     MessageList messageList = new MessageList("chatlayoutmessage2");
     HorizontalLayout containerAddendi= new HorizontalLayout();
     private Image image333;
+    private boolean isTeacher = false;
 
     public MatyUI() {
 
@@ -111,6 +109,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 throw new IllegalArgumentException("MatyUI: PartitaRepository is null");
 
             matyController = new MatyController(partitaRepository);
+            if(account.getTypeAccount().equals("teacher"))
+                isTeacher = true;
 
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
                 if (BroadcasterMaty.getPartiteThread().get(i) != null) {
@@ -125,6 +125,12 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             } else {
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
+            }
+
+            if(isTeacher){ //mostra la appbar
+                getStyle().set("width", "100%");
+                AppBarUI appBar = new AppBarUI("Maty", false); //nome pagina corrente
+                add(appBar);
             }
 
             //Chat container

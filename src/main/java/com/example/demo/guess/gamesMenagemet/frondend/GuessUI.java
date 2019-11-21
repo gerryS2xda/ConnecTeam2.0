@@ -14,10 +14,7 @@ import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSugg
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.BroadcastListener;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.ChatListener;
-import com.example.demo.utility.DialogUtility;
-import com.example.demo.utility.FireWorks;
-import com.example.demo.utility.InfoEventUtility;
-import com.example.demo.utility.MessageList;
+import com.example.demo.utility.*;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
@@ -77,6 +74,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Div chat = new Div();
     MessageList messageList = new MessageList("chatlayoutmessage2");
     private Image image333;
+    private boolean isTeacher = false;
 
     public GuessUI() {
 
@@ -98,6 +96,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             guessController = new GuessController(partitaRepository);
 
+            if(account.getTypeAccount().equals("teacher"))
+                isTeacher = true;
+
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 if (Broadcaster.getPartiteThread().get(i) != null) {
                     isStarted = true;
@@ -111,6 +112,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             } else {
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
+            }
+
+            if(isTeacher){ //mostra la appbar
+                getStyle().set("width", "100%");
+                AppBarUI appBar = new AppBarUI("Guess", false); //nome pagina corrente
+                add(appBar);
             }
 
             Div device = new Div();
