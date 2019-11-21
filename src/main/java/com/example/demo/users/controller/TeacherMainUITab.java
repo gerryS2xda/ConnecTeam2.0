@@ -54,6 +54,13 @@ public class TeacherMainUITab extends HorizontalLayout {
     private GestioneStudentUI gestStudentiView;
     private GuessUI guessView;
     private StartGameEventBeanPublisher startGameEventBeanPublisher;
+    //instance field per elementi della navbar (usato per 'highlight' style -- indicare quale view viene mostrata)
+    private Div home;
+    private Div gestStud;
+    private Div settings;
+    private Div guess;
+    private Div maty;
+    private Div newGame;
 
 
     public TeacherMainUITab(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
@@ -78,6 +85,7 @@ public class TeacherMainUITab extends HorizontalLayout {
 
             mainView = new ControllerMainUI();
             add(mainView);
+            home.addClassName("highlight");
         }catch(Exception e){
             removeAll();
             getStyle().set("background-color","white");
@@ -108,8 +116,9 @@ public class TeacherMainUITab extends HorizontalLayout {
         Icon homeIcon = new Icon(VaadinIcon.HOME);
         homeIcon.setSize(icon_Size);
         homeIcon.setColor(icon_color);
-        Div home = addDivContainerItem("Home", homeIcon);
+        home = addDivContainerItem("Home", homeIcon);
         home.addClickListener(event -> {
+            home.addClassName("highlight");
             mainView.getStyle().set("display", "flex"); //rendi nuovamente visibile
             if(settingsView != null){
                 settingsView.getStyle().set("display", "none"); //non mostra elemento e neanche lo spazio richiesto
@@ -120,13 +129,18 @@ public class TeacherMainUITab extends HorizontalLayout {
             if(guessView != null){
                 guessView.getStyle().set("display", "none");
             }
+            gestStud.removeClassName("highlight");
+            settings.removeClassName("highlight");
+            guess.removeClassName("highlight");
+            maty.removeClassName("highlight");
         });
 
         Icon settingIcon = new Icon(VaadinIcon.COGS);
         settingIcon.setSize(icon_Size);
         settingIcon.setColor(icon_color);
-        Div settings = addDivContainerItem("Settings", settingIcon);
+        settings = addDivContainerItem("Settings", settingIcon);
         settings.addClickListener(event -> {
+            settings.addClassName("highlight");
             mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
             if(gestStudentiView != null){
                 gestStudentiView.getStyle().set("display", "none");
@@ -140,13 +154,18 @@ public class TeacherMainUITab extends HorizontalLayout {
             }else{
                 settingsView.getStyle().set("display", "flex");
             }
+            home.removeClassName("highlight");
+            gestStud.removeClassName("highlight");
+            guess.removeClassName("highlight");
+            maty.removeClassName("highlight");
         });
 
         Icon gestStudIcon = new Icon(VaadinIcon.EDIT);
         gestStudIcon.setSize(icon_Size);
         gestStudIcon.setColor(icon_color);
-        Div gestStud = addDivContainerItem("Gestione Studenti", gestStudIcon);
+        gestStud = addDivContainerItem("Gestione Studenti", gestStudIcon);
         gestStud.addClickListener(event -> {
+            gestStud.addClassName("highlight");
             mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
             if(settingsView != null){
                 settingsView.getStyle().set("display", "none");
@@ -160,6 +179,10 @@ public class TeacherMainUITab extends HorizontalLayout {
             }else{
                 gestStudentiView.getStyle().set("display", "flex");
             }
+            home.removeClassName("highlight");
+            settings.removeClassName("highlight");
+            guess.removeClassName("highlight");
+            maty.removeClassName("highlight");
         });
 
         Icon gamesIcon = new Icon(VaadinIcon.GAMEPAD);
@@ -196,9 +219,10 @@ public class TeacherMainUITab extends HorizontalLayout {
         VerticalLayout panel1 = new VerticalLayout(); //contenuto del panel 1 dell'accordion
         panel1.setSpacing(false);
         panel1.setPadding(false);
-        Div guess = addDivInAccordionPanelContent("Guess", null, "64px");
+        guess = addDivInAccordionPanelContent("Guess", null, "64px");
         guess.addClickListener(event -> {
             if(GestioneStudentUI.isGuessStart) {
+                guess.addClassName("highlight");
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
                     settingsView.getStyle().set("display", "none");
@@ -212,6 +236,10 @@ public class TeacherMainUITab extends HorizontalLayout {
                 } else {
                     guessView.getStyle().set("display", "flex");
                 }
+                home.removeClassName("highlight");
+                gestStud.removeClassName("highlight");
+                settings.removeClassName("highlight");
+                maty.removeClassName("highlight");
             }else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
@@ -220,9 +248,10 @@ public class TeacherMainUITab extends HorizontalLayout {
                 notification.open();
             }
         });
-        Div maty = addDivInAccordionPanelContent("Maty", null, "64px");
+        maty = addDivInAccordionPanelContent("Maty", null, "64px");
         maty.addClickListener(event -> {
             if(GestioneStudentUI.isGuessStart) {
+                maty.addClassName("highlight");
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
                     settingsView.getStyle().set("display", "none");
@@ -236,6 +265,10 @@ public class TeacherMainUITab extends HorizontalLayout {
                 } else {
                     guessView.getStyle().set("display", "flex");
                 }
+                home.removeClassName("highlight");
+                gestStud.removeClassName("highlight");
+                settings.removeClassName("highlight");
+                guess.removeClassName("highlight");
             }else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
@@ -244,7 +277,7 @@ public class TeacherMainUITab extends HorizontalLayout {
                 notification.open();
             }
         });
-        Div newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
+        newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
         panel1.add(guess, maty, newGame);
         Div gamesItem = addDivInAccordionPanelContent("Giochi", ic, "0px");
         gamesItem.getStyle().set("width", "230px");
