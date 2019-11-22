@@ -60,7 +60,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
 
             //Registra un teacher listener
-            Broadcaster.registerTeacher(account, this);
+            Broadcaster.registerTeacherForGestStud(account, this);
 
             getStyle().set("height", "100%"); //per nav bar verticale
             getStyle().set("width", "100%");

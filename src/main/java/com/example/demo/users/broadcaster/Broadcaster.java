@@ -16,8 +16,8 @@ public class Broadcaster  {
 
     //static field
     static Executor executor = Executors.newSingleThreadExecutor();
-    static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener
-    static Map<Account, BroadcastListener> teacherlisteners = new HashMap();  //mappa un account ad ogni listner
+    static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener (per gli studenti)
+    static Map<Account, BroadcastListener> gestStudlisteners = new HashMap();  //per GestioneStudentUI (usato per ricevere eventi su accountlist)
     static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
     static Map<Account, String> accountListReceive = new HashMap<>(); //lista di account ricevuti dall'event
     static int in = 0;
@@ -74,27 +74,27 @@ public class Broadcaster  {
             listeners.remove(account);
             accountList.remove(account);
         if(account.getTypeAccount().equals("teacher"))
-            teacherlisteners.remove(account); //logout del teacher
+            gestStudlisteners.remove(account); //logout del teacher
         if(countGuessUser > 0)
             countGuessUser--;
         if(countMatyUser > 0)
             countMatyUser--;
         System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
     }
-
-    //static method for teacher
-    public static synchronized Registration registerTeacher(Account account, BroadcastListener broadcastListener) {
-        teacherlisteners.put(account, broadcastListener);
-        System.out.println("Broadcaster User: chiamato registerTeacher "+ teacherlisteners.size()+ "  ui:"+ broadcastListener);
+    
+    //static method for GestioneStudentUI
+    public static synchronized Registration registerTeacherForGestStud(Account account, BroadcastListener broadcastListener) {
+        gestStudlisteners.put(account, broadcastListener);
+        System.out.println("Broadcaster User: chiamato registerTeacherForGestStud "+ gestStudlisteners.size()+ "  ui:"+ broadcastListener);
         return () -> {
             synchronized (Broadcaster.class) {
-                teacherlisteners.remove(account);
+                gestStudlisteners.remove(account);
             }
         };
     }
 
-    public static synchronized void unregisterTeacher(Account account, BroadcastListener broadcastListener){
-        teacherlisteners.remove(account,broadcastListener);
+    public static synchronized void unregisterTeacherForGestStud(Account account, BroadcastListener broadcastListener){
+        gestStudlisteners.remove(account,broadcastListener);
     }
 
     public static synchronized void setAccountListReceive(AccountListEvent event){
@@ -106,7 +106,7 @@ public class Broadcaster  {
     }
 
     public static synchronized void updateListaUtentiConnessi(){
-        teacherlisteners.forEach((account, broadcastListener) -> {
+        gestStudlisteners.forEach((account, broadcastListener) -> {
            executor.execute(() ->{
                broadcastListener.updateAndMergeAccountList();
            });
@@ -134,9 +134,9 @@ public class Broadcaster  {
         return in;
     }
 
-    public static Map<Account, BroadcastListener> getTeacherListeners() {
+    /*public static Map<Account, BroadcastListener> getTeacherListeners() {
         return teacherlisteners;
-    }
+    }*/
 
     public static boolean isGuessStart() {
         return isGuessStart;
