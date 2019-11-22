@@ -7,6 +7,8 @@ import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.mainView.MainView;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.SettingsUser;
+import com.example.demo.users.broadcaster.Broadcaster;
+import com.example.demo.users.broadcaster.BroadcastListener;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -21,7 +23,6 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
@@ -39,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @StyleSheet("frontend://stile/navBarVertStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class TeacherMainUITab extends HorizontalLayout {
+public class TeacherMainUITab extends HorizontalLayout implements BroadcastListener{
 
     //costanti
     private static final String icon_Size = "24px"; //valore precedente: 30px
@@ -76,6 +77,9 @@ public class TeacherMainUITab extends HorizontalLayout {
                 throw new IllegalArgumentException("Questo account non puo' accedere a questa pagina");
             }
             setId("TeacherMainUITabTest");
+
+            //Registra un teacher listener
+            Broadcaster.registerTeacher(account, this);
 
             startGameEventBeanPublisher = startGameEventPublisher;
 
@@ -345,4 +349,22 @@ public class TeacherMainUITab extends HorizontalLayout {
         d.add(img, lab);
         return d;
     }
+
+    //Implementazione 'BroadcasterListener'
+    @Override
+    public void redirectToGuess(){
+        //no implement
+    }
+
+    @Override
+    public void redirectToMaty(){
+        //no implement
+    }
+
+    @Override
+    public void updateAndMergeAccountList(){
+        //no implement
+    }
+
+
 }
