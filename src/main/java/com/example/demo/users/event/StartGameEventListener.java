@@ -16,13 +16,6 @@ public class StartGameEventListener {
         System.out.println("EVENTLISTENER: Receive a custom event: " + event.getAccountList());
         Map<Account, String> dataReceive = event.getAccountList();
 
-        //Avvia il gioco in background per il teacher (necessario perche' non viene memorizzato stato attuale della partita)
-        if(dataReceive.containsValue("Guess")) {
-            Broadcaster.startGameTeacherInBackground("Guess");
-        }else if(dataReceive.containsValue("Maty")){
-            Broadcaster.startGameTeacherInBackground("Maty");
-        }
-
         for(Account i : dataReceive.keySet()){ //per tutti gli account ottenuti dall'event e quindi assegnati dal teacher
             String game = dataReceive.get(i); //dammi il nome del gioco associato all'account
             System.out.println("handleReceiveStarGameEvent: Account: " + i.getNome() + " game:  " + game);
@@ -31,6 +24,13 @@ public class StartGameEventListener {
             } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty
                 Broadcaster.redirectToMaty(i);
             }
+        }
+
+        //Avvia il gioco in background per il teacher (necessario perche' non viene memorizzato stato attuale della partita)
+        if(dataReceive.containsValue("Guess")) {
+            Broadcaster.startGameTeacherInBackground("Guess");
+        }else if(dataReceive.containsValue("Maty")){
+            Broadcaster.startGameTeacherInBackground("Maty");
         }
     }
 }
