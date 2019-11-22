@@ -250,4 +250,9 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     public void updateAndMergeAccountList(){
         //No-implement
     }
+
+    @Override
+    public void startGameInBackground(String game){
+        //no-implement
+    }
 }
