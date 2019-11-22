@@ -96,6 +96,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 account = (Account) teacherSession.getAttribute("user");
                 accountRepository = (AccountRepository) teacherSession.getAttribute("rep");
                 partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
+                UI.getCurrent().setPollInterval(1000);
             }
             guessController = new GuessController(partitaRepository);
             guessController.setAccount(account); //invia account attuale a GuessController (serve per endgameEvent)
@@ -493,7 +494,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
-        if(isStarted != true && Broadcaster.getListeners().size() >= maxNumeroStutentiConnessi) { //includi anche il teacher
+        if(isStarted != true && Broadcaster.getListeners().size() > maxNumeroStutentiConnessi) { //includi anche il teacher (solo studenti era ==)
             System.out.println("GuessUI: Partita iniziata!");
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 if (Broadcaster.getPartiteThread().get(i) != null) {
