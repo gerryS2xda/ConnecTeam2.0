@@ -2,6 +2,7 @@ package com.example.demo.users.broadcaster;
 
 import com.example.demo.entity.Account;
 import com.example.demo.users.event.AccountListEvent;
+import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.shared.Registration;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class Broadcaster  {
     static Map<Account, BroadcastListener> teacherlisteners = new HashMap(); //mappa un teacher account ad TeacherMainUITab
     static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
     static Map<Account, String> accountListReceive = new HashMap<>(); //lista di account ricevuti dall'event
+    static WrappedSession teacherSession; //memorizza la sessione del teacher per GuessUI e MatyUI (no memorizzazione stato partita)
     static int in = 0;
     static int countGuessUser = 0;
     static int countMatyUser = 0;
@@ -104,6 +106,14 @@ public class Broadcaster  {
                 broadcastListener.startGameInBackground(game);
             });
         });
+    }
+
+    public static void setTeacherSession(WrappedSession session){
+        teacherSession = session;
+    }
+
+    public static WrappedSession getTeacherSession(){
+        return teacherSession;
     }
 
     //static method for GestioneStudentUI

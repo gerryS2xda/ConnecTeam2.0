@@ -31,10 +31,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.InitialPageSettings;
-import com.vaadin.flow.server.PageConfigurator;
-import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.*;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
@@ -51,7 +48,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     //static field
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
-    private static final int maxNumeroUtentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
+    private static final int maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
+    private static WrappedSession teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
 
     //instance field
     private AccountRepository accountRepository;
@@ -83,17 +81,22 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             getStyle().set("height", "100%");
             guess = new Guess();
 
-            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
-            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-            if(account == null)
-                throw new IllegalArgumentException("GuessUI: Account is null");
-            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-            if(accountRepository == null)
-                throw new IllegalArgumentException("GuessUI: AccountRepository is null");
-            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-            if(partitaRepository == null)
-                throw new IllegalArgumentException("GuessUI: PartitaRepository is null");
-
+            if(VaadinService.getCurrentRequest() != null) {
+                //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
+                account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+                if (account == null)
+                    throw new IllegalArgumentException("GuessUI: Account is null");
+                accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
+                if (accountRepository == null)
+                    throw new IllegalArgumentException("GuessUI: AccountRepository is null");
+                partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+                if (partitaRepository == null)
+                    throw new IllegalArgumentException("GuessUI: PartitaRepository is null");
+            }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
+                account = (Account) teacherSession.getAttribute("user");
+                accountRepository = (AccountRepository) teacherSession.getAttribute("rep");
+                partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
+            }
             guessController = new GuessController(partitaRepository);
             guessController.setAccount(account); //invia account attuale a GuessController (serve per endgameEvent)
 
@@ -489,8 +492,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
-        if(isStarted != true && Broadcaster.getListeners().size() == maxNumeroUtentiConnessi) {
+        System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
+        if(isStarted != true && Broadcaster.getListeners().size() >= maxNumeroStutentiConnessi) { //includi anche il teacher
             System.out.println("GuessUI: Partita iniziata!");
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 if (Broadcaster.getPartiteThread().get(i) != null) {

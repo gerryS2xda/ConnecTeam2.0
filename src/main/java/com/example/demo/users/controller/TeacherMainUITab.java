@@ -80,6 +80,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
 
             //Registra un teacher listener
             Broadcaster.registerTeacher(account, this);
+            Broadcaster.setTeacherSession(VaadinService.getCurrentRequest().getWrappedSession());
 
             startGameEventBeanPublisher = startGameEventPublisher;
 
