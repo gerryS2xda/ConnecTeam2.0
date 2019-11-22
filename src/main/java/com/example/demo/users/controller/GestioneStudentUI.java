@@ -300,6 +300,11 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
+    public void startGameInBackground(String game){
+        //no implement
+    }
+
+    @Override
     //Aggiorna e fondi le liste di account (soluzione del bug: 'Aggiorna' button)
     public void updateAndMergeAccountList(){
         Map<Account, String> actualList = Broadcaster.getAccountListReceive();

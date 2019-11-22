@@ -98,6 +98,14 @@ public class Broadcaster  {
         teacherlisteners.remove(account,broadcastListener);
     }
 
+    public static synchronized void startGameTeacherInBackground(String game){
+        teacherlisteners.forEach((account, broadcastListener) ->{
+            executor.execute(()->{
+                broadcastListener.startGameInBackground(game);
+            });
+        });
+    }
+
     //static method for GestioneStudentUI
     public static synchronized Registration registerTeacherForGestStud(Account account, BroadcastListener broadcastListener) {
         gestStudlisteners.put(account, broadcastListener);

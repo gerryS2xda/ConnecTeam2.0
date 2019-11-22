@@ -14,9 +14,14 @@ public class StartGameEventListener {
     @EventListener
     public void handleReceiveStarGameEvent(StartGameEvent event){
         System.out.println("EVENTLISTENER: Receive a custom event: " + event.getAccountList());
-        //NOTA: Questo funziona solo se il teacher avvia tutte e tre le partite contemporaneamente
-        // se la partita e' stata avviata dal teacher
         Map<Account, String> dataReceive = event.getAccountList();
+
+        //Avvia il gioco in background per il teacher (necessario perche' non viene memorizzato stato attuale della partita)
+        if(dataReceive.containsValue("Guess")) {
+            Broadcaster.startGameTeacherInBackground("Guess");
+        }else if(dataReceive.containsValue("Maty")){
+            Broadcaster.startGameTeacherInBackground("Maty");
+        }
 
         for(Account i : dataReceive.keySet()){ //per tutti gli account ottenuti dall'event e quindi assegnati dal teacher
             String game = dataReceive.get(i); //dammi il nome del gioco associato all'account

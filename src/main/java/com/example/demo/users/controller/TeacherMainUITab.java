@@ -366,5 +366,22 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         //no implement
     }
 
+    //Inizializza istanza GuessUI/MatyUI quando teacher avvia la partita e rende la view dedicata non visibile
+    @Override
+    public void startGameInBackground(String game){
+        if(game.equals("Guess")){
+            getUI().get().access(()->{
+                guessView = new GuessUI();
+                add(guessView);
+                guessView.getStyle().set("display", "none");
+            });
+        }else if(game.equals("Maty")){
+            getUI().get().access(()->{
+                matyView = new MatyUI();
+                add(matyView);
+                matyView.getStyle().set("display", "none");
+            });
+        }
+    }
 
 }

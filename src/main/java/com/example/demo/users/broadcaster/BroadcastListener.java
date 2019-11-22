@@ -8,4 +8,5 @@ public interface BroadcastListener {
     void redirectToGuess();
     void redirectToMaty();
     void updateAndMergeAccountList();
+    void startGameInBackground(String game);
 }
