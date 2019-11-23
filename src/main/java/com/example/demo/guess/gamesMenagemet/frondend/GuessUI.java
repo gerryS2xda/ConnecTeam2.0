@@ -125,6 +125,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 add(appBar);
             }
 
+            //Chat container
             Div device = new Div();
             device.getStyle().set("width", "30%"); //value precedente: 500px
             Label label = new Label("Chat");
@@ -134,9 +135,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             chat.addClassName("chat");
 
+            HorizontalLayout textFieldSendBtn = new HorizontalLayout();
+            textFieldSendBtn.setSpacing(false);
+            textFieldSendBtn.getStyle().set("margin-top", "12px");
             TextField message1 = new TextField();
-            Icon icon = VaadinIcon.PAPERPLANE_O.create();
+            Icon icon = new Icon(VaadinIcon.PAPERPLANE_O);
+            icon.setSize("24px");
             icon.setColor("white");
+            if(isTeacher)
+                icon.getStyle().set("left", "100px");
 
             Button send = new Button(icon);
             message1.addKeyDownListener(Key.ENTER, keyDownEvent -> {
@@ -156,19 +163,24 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 }
             });
             send.addClassName("buttonSendChat");
+            textFieldSendBtn.add(message1, send);
 
             chat.add(messageList);
             device.add(chat);
-            device.add(message1);
-            device.add(send);
+            device.add(textFieldSendBtn);
             add(device);
+
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
+            if(isTeacher){
+                containerParoleVotate.getStyle().set("width", "15%");
+                containerParoleVotate.getStyle().set("top", "30%");
+                containerParoleVotate.getStyle().set("height", "150px");
+            }
 
             //Container nome utente e pulsante 'Info' su Guess
             if(!isTeacher) {
                 add(nameUserAndInfoBtnContainer());
-                UI.getCurrent().push();
             }
 
         }

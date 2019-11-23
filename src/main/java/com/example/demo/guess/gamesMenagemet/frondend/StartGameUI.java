@@ -11,6 +11,7 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -48,6 +49,9 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.addClassName("horizontalLayoutStartGameUI");
+            if(isTeacher){
+                horizontalLayout.getStyle().set("top", "28%"); //valore precedente: 230px
+            }
 
             TextField suggertisci = new TextField();
             Label label = new Label("Suggerisci una soluzione");
@@ -61,8 +65,6 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                 add(label, logoGuess);
             }
 
-
-            MessageList messageList = new MessageList("message-list");
             Button sendParola = new Button("Suggerisci");
             sendParola.addClickListener(buttonClickEvent -> {
                 String mess = suggertisci.getValue();
@@ -82,7 +84,14 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             sendParola.getStyle().set("cursor", "pointer");
             sendParola.setWidth(null);
             parolaLayout.addClassName("suggerisciParolaLayout");
-            parolaLayout.setWidth("250px");
+            if(isTeacher){
+                parolaLayout.getStyle().set("top", "30px");
+                parolaLayout.getStyle().set("margin-left", "0px");
+                parolaLayout.getStyle().set("padding-left", "0px");
+                parolaLayout.setWidth("350px");
+            }else{
+                parolaLayout.setWidth("250px");
+            }
             horizontalLayout.add(suggertisci, sendParola, parolaLayout);
             add(horizontalLayout);
         }
@@ -101,9 +110,14 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     public Button receiveBroadcast(String message) {
         getUI().get().access(() -> {
             MessageList messageList = new MessageList("message-list");
-            Div div = new Div();
+            HorizontalLayout horizontalLayout = new HorizontalLayout();
+            horizontalLayout.setId("paroleSuggeriteBtnPlus");
+            //Div div = new Div();
             Label label = new Label(message);
-            button = new Button(VaadinIcon.PLUS.create());
+            label.getStyle().set("margin-top", "8px");
+            Icon icon = new Icon(VaadinIcon.PLUS);
+            icon.setSize("24px");
+            button = new Button(icon);
 
             button.addClickListener(buttonClickEvent -> {
                 Broadcaster.addString(message);
@@ -154,8 +168,16 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             button.getStyle().set("margin-left","30px");
             button.getStyle().set("cursor","pointer");
             button.getStyle().set("color","white");
-            div.add(label,button);
-            messageList.add(div);
+
+            if(isTeacher){
+                horizontalLayout.getStyle().set("width", "350px");
+                icon.getStyle().set("left", "100px");
+                button.getStyle().set("width", "32px");
+            }
+
+            //div.add(label,button);
+            horizontalLayout.add(label, button);
+            messageList.add(horizontalLayout);
             parolaLayout.add(messageList);
 
         });

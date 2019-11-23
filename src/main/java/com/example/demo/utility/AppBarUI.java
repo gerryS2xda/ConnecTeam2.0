@@ -77,9 +77,9 @@ public class AppBarUI extends HorizontalLayout {
 
         Icon close = new Icon(VaadinIcon.CLOSE_CIRCLE_O);
         close.setSize(ICON_BTN_SIZE);
-        close.getStyle().set("background-color", "#0000");
         Button terminateGame = new Button("Termina partita", close);
         terminateGame.setHeight(APPBAR_HEIGHT);
+        terminateGame.getStyle().set("background-color", "#0000");
 
         horizontalLayout.add(infoBtn, terminateGame);
         return horizontalLayout;
