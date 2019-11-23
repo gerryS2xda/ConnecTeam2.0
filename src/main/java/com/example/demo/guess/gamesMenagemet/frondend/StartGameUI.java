@@ -27,25 +27,41 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     private VerticalLayout parolaLayout = new VerticalLayout();
     private Button button;
     private GuessController guessController;
+    private Image logoGuess;
     private boolean vincente;
     boolean flag = false;
+    private boolean isTeacher;
 
 
-    public StartGameUI(GuessController guessController) {
+    public StartGameUI(GuessController guessController, boolean isTeacher) {
 
         try {
             setId("StartGameUI");
             this.guessController = guessController;
+            this.isTeacher = isTeacher;
+
             BroadcasterSuggerisci.register(this);
-            Image image = new Image("frontend/img/Guess.jpeg", "guess");
-            image.setWidth("200px");
-            image.setHeight("200px");
+
+            logoGuess = new Image("frontend/img/Guess.jpeg", "guess");
+            logoGuess.setWidth("200px");
+            logoGuess.setHeight("200px");
+
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.addClassName("horizontalLayoutStartGameUI");
+
             TextField suggertisci = new TextField();
             Label label = new Label("Suggerisci una soluzione");
             label.addClassName("labelSuggerisci");
-            add(label, image);
+            if(isTeacher){
+                getStyle().set("width", "60%");
+                getStyle().set("height", "100%");
+                label.getStyle().set("top", "20%");
+                add(label);
+            }else{
+                add(label, logoGuess);
+            }
+
+
             MessageList messageList = new MessageList("message-list");
             Button sendParola = new Button("Suggerisci");
             sendParola.addClickListener(buttonClickEvent -> {
@@ -55,9 +71,14 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                     suggertisci.setValue("");
                 }
             });
+
             Label paroleVotate = new Label("Parole votate: ");
             paroleVotate.addClassName("parolevotatelabel");
+            if(isTeacher){
+                paroleVotate.getStyle().set("top", "20%");
+            }
             add(paroleVotate);
+
             sendParola.getStyle().set("cursor", "pointer");
             sendParola.setWidth(null);
             parolaLayout.addClassName("suggerisciParolaLayout");
@@ -74,6 +95,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
         }
 
     }
+
 
     @Override
     public Button receiveBroadcast(String message) {

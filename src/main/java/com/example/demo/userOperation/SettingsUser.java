@@ -75,7 +75,7 @@ public class SettingsUser extends VerticalLayout {
                 HorizontalLayout hor = new HorizontalLayout();
                 hor.setPadding(false);
                 hor.setSpacing(false);
-                AppBarUI appBar = new AppBarUI("Settings", false); //Nota: true se viene usata una pagina dedicata per SettingsUser
+                AppBarUI appBar = new AppBarUI("Settings", false, false); //Nota: true se viene usata una pagina dedicata per SettingsUser
                 hor.add(appBar);
                 add(hor);
             }

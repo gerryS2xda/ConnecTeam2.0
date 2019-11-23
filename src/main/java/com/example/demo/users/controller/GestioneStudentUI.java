@@ -64,7 +64,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
             getStyle().set("height", "100%"); //per nav bar verticale
             getStyle().set("width", "100%");
-            AppBarUI appBar = new AppBarUI("Gestione studenti", false); //nome pagina corrente
+            AppBarUI appBar = new AppBarUI("Gestione studenti", false, false); //nome pagina corrente
             add(appBar);
 
             Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gioco che desiderate." +

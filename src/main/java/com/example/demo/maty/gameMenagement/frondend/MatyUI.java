@@ -130,7 +130,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
             if(isTeacher){ //mostra la appbar
                 getStyle().set("width", "100%");
-                AppBarUI appBar = new AppBarUI("Maty", false); //nome pagina corrente
+                AppBarUI appBar = new AppBarUI("Maty", false, true); //nome pagina corrente
                 add(appBar);
             }
 

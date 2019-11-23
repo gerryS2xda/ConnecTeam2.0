@@ -121,7 +121,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             if(isTeacher){ //mostra la appbar
                 getStyle().set("width", "100%");
-                AppBarUI appBar = new AppBarUI("Guess", false); //nome pagina corrente
+                AppBarUI appBar = new AppBarUI("Guess", false, true); //nome pagina corrente
                 add(appBar);
             }
 
@@ -166,7 +166,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             containerParoleVotate.addClassName("containerParoleVotate");
 
             //Container nome utente e pulsante 'Info' su Guess
-            add(nameUserAndInfoBtnContainer());
+            if(!isTeacher) {
+                add(nameUserAndInfoBtnContainer());
+                UI.getCurrent().push();
+            }
 
         }
 
@@ -295,7 +298,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void startGame1(UI ui) {
         try {
             getUI().get().access(() -> {
-                StartGameUI startGameUI = new StartGameUI(guessController);
+                StartGameUI startGameUI = new StartGameUI(guessController, isTeacher);
                 verticalLayout.add(startGameUI);
                 indizio.getStyle().set("font-size","30px");
                 indizio.getStyle().set("margin-left","15px");

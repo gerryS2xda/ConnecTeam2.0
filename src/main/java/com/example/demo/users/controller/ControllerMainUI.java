@@ -53,7 +53,7 @@ public class ControllerMainUI extends HorizontalLayout {
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //access al <body> element
             getStyle().set("height", "100%"); //per nav bar verticale
 
-            AppBarUI appBar = new AppBarUI("Home", false); //nome pagina corrente
+            AppBarUI appBar = new AppBarUI("Home", false, false); //nome pagina corrente
             add(appBar);
 
             VerticalLayout main1 = new VerticalLayout();
