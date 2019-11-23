@@ -18,7 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class AppBarUI extends HorizontalLayout {
 
     //static field
-    private static final String ICON_BTN_SIZE = "16px";
+    private static final String ICON_BTN_SIZE = "24px";
     private static final String APPBAR_HEIGHT = "2.75rem";
 
     //instance field
@@ -44,6 +44,7 @@ public class AppBarUI extends HorizontalLayout {
 
         appBarContainer = new Div();
         appBarContainer.addClassName("app-bar__container");
+        appBarContainer.getStyle().set("height", APPBAR_HEIGHT);
 
         textBar = new H4(titlePage);
         textBar.addClassName("app-bar__title");
@@ -61,21 +62,24 @@ public class AppBarUI extends HorizontalLayout {
 
     private HorizontalLayout buttonContainer(){
         HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.getStyle().set("position", "absolute");
+        horizontalLayout.getStyle().set("left", "60%");
 
         Dialog d = descrizioneGiocoDialog();
         Icon info = new Icon(VaadinIcon.INFO_CIRCLE_O);
         info.setSize(ICON_BTN_SIZE);
         Button infoBtn = new Button("Info", info);
         infoBtn.setHeight(APPBAR_HEIGHT);
+        infoBtn.getStyle().set("background-color", "#0000");
         infoBtn.addClickListener(buttonClickEvent -> {
             d.open();
         });
 
         Icon close = new Icon(VaadinIcon.CLOSE_CIRCLE_O);
         close.setSize(ICON_BTN_SIZE);
+        close.getStyle().set("background-color", "#0000");
         Button terminateGame = new Button("Termina partita", close);
         terminateGame.setHeight(APPBAR_HEIGHT);
-
 
         horizontalLayout.add(infoBtn, terminateGame);
         return horizontalLayout;
