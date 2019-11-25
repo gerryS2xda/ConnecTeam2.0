@@ -463,6 +463,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         if((numeroUtentiConnessi-1) > 1){ //se rimuovendo questo utente, sono ancora connessi almeno 2 utenti
             //Rimuovi solo questo utente
             Broadcaster.unregister(account, this);
+            Broadcaster.removePartitaThread(account);
         }
     }
 

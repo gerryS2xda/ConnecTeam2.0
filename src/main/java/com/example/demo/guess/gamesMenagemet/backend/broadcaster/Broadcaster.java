@@ -182,6 +182,18 @@ public class Broadcaster implements Serializable {
         return partiteThread;
     }
 
+    public static synchronized void removePartitaThread(Account a){
+        if(partiteThread.containsKey(a)){
+            try {
+                partiteThread.get(a).interrupt();
+                partiteThread.get(a).stopTimer();
+                partiteThread.remove(a);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static synchronized void logOut(Account account){
         System.out.println(listeners.size());
         listeners.remove(account);
