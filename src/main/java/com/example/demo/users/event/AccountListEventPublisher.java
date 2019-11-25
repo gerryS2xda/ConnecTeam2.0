@@ -16,9 +16,9 @@ public class AccountListEventPublisher implements AccountListEventBeanPublisher{
 
 
     //method for publish an event
-    public void doStuffAndPublishAnEvent(Map<Account, String> eventContent){
-        System.out.println("Publish a custom event...");
-        AccountListEvent accountListEvent = new AccountListEvent(this, eventContent);
+    public void doStuffAndPublishAnEvent(Map<Account, String> eventContent, String operationName){
+        System.out.println("AccountListEventPublisher: Publish a custom event...");
+        AccountListEvent accountListEvent = new AccountListEvent(this, eventContent, operationName);
         applicationEventPublisher.publishEvent(accountListEvent);
     }
 }

@@ -10,15 +10,20 @@ public class AccountListEvent extends ApplicationEvent {
 
     //instance field
     private Map<Account, String> accountList;
+    private String operationName;
 
-    public AccountListEvent(Object source, Map<Account, String> accounts){
+    public AccountListEvent(Object source, Map<Account, String> accounts, String operationName){
         super(source);
         accountList = accounts;
+        this.operationName = operationName;
     }
 
     public Map<Account, String> getAccountList(){
         return accountList;
     }
 
+    public String getOperationName(){
+        return operationName;
+    }
 
 }

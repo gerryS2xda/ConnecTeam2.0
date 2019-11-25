@@ -28,7 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
 @Push
 @Route("StudentHomeView")
 @HtmlImport("style.html")
@@ -42,9 +41,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private PartitaRepository partitaRepository;
     private Image imageU;  //immagine del profilo di un utente
     private AccountRepository accountRepository;
-    private int numeroUtenti = 0; //numero utenti connessi
     private AccountListEventBeanPublisher accountEventListpublisher;
-    private boolean isStartPartita = false; //verifica se il teacher ha avviato la partita
     private VerticalLayout main;
     private Paragraph msgAttesa;
 
@@ -86,7 +83,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             Broadcaster.register(account, this);
 
-            accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //publish a new event for GestStudentUI
+            accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "add"); //publish a new event for GestStudentUI
             UI.getCurrent().setPollInterval(3000);
         }catch (Exception e){
             showErrorPage();
@@ -211,12 +208,12 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
     @ClientCallable
     public void browserIsLeaving() {  //se si esce dalla pagina corrente, invoca questo metodo
-        System.out.println("browserInLeaving() is invoking");
+        System.out.println("StudentHomeView: browserInLeaving() is invoking");
         try {
             Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
                 if (account1.equals(account)) {
                     Broadcaster.unregister(account, this);
-                    accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList()); //invia event per rimozione account da accountList event inviato in precedenza
+                    accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "remove"); //invia event per rimozione account da accountList event inviato in precedenza
                 }
             });
         }catch (Exception e){

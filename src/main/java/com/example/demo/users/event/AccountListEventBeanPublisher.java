@@ -5,5 +5,5 @@ import com.example.demo.entity.Account;
 import java.util.Map;
 
 public interface AccountListEventBeanPublisher {
-    void doStuffAndPublishAnEvent(Map<Account, String> eventContent);
+    void doStuffAndPublishAnEvent(Map<Account, String> eventContent, String operationName);
 }
