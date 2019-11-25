@@ -10,7 +10,6 @@ import com.example.demo.error.ErrorPage;
 import com.example.demo.users.event.AccountListEventBeanPublisher;
 import com.example.demo.users.broadcaster.BroadcastListener;
 import com.example.demo.users.broadcaster.Broadcaster;
-import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
@@ -35,7 +34,7 @@ import java.util.*;
 @StyleSheet("frontend://stile/style.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class StudentHomeView extends HorizontalLayout implements BroadcastListener, PageConfigurator {
+public class StudentHomeView extends HorizontalLayout implements BroadcastListener, BeforeLeaveObserver {
 
     private Account account;
     private PartitaRepository partitaRepository;
@@ -198,27 +197,12 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
     }
 
-    //Implements methods of PageConfigurator
+    //Implements methods of BeforeLeaveObserver
     @Override
-    public void configurePage(InitialPageSettings initialPageSettings) {
-        String script = "window.onbeforeunload = function (e) " +
-                "{ var e = e || window.event; document.getElementById(\"StudentHomeView\").$server.browserIsLeaving(); return; };";
-        initialPageSettings.addInlineWithContents(InitialPageSettings.Position.PREPEND, script, InitialPageSettings.WrapMode.JAVASCRIPT);
-    }
-
-    @ClientCallable
-    public void browserIsLeaving() {  //se si esce dalla pagina corrente, invoca questo metodo
-        System.out.println("StudentHomeView: browserInLeaving() is invoking");
-        try {
-            Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
-                if (account1.equals(account)) {
-                    Broadcaster.unregister(account, this);
-                    accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "remove"); //invia event per rimozione account da accountList event inviato in precedenza
-                }
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+    public void beforeLeave(BeforeLeaveEvent event) {
+        System.out.println("StudentHomeView: beforeLeave() is invoking");
+        Broadcaster.unregister(account, this);
+        accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "remove"); //invia event per rimozione account da accountList event inviato in precedenza
     }
 
     //Implements methods of BroadcastListener interface
