@@ -271,4 +271,17 @@ public class DialogUtility extends VerticalLayout {
 
     }
 
+    public void partitaTerminataConMotivazione(String motivazione){
+        Dialog dialog = new Dialog();
+        Label label = new Label(motivazione);
+        Button button = new Button("Vai alla home");
+        button.addClickListener(buttonClickEvent -> {
+            UI.getCurrent().navigate(ControllerMainUI.class);
+            dialog.close();
+            UI.getCurrent().getPage().reload();
+        });
+        button.getStyle().set("margin-left","20px");
+        dialog.add(label,button);
+        dialog.open();
+    }
 }

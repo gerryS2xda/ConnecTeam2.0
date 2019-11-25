@@ -458,12 +458,26 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         System.out.println("GuessUI.beforeLeave() e' stato invocato");
-        int numeroUtentiConnessi = Broadcaster.getListeners().size();
 
-        if((numeroUtentiConnessi-1) > 1){ //se rimuovendo questo utente, sono ancora connessi almeno 2 utenti
-            //Rimuovi solo questo utente
+        if(Broadcaster.getListeners().size() > 2) {
             Broadcaster.unregister(account, this);
             Broadcaster.removePartitaThread(account);
+        }else{
+            Broadcaster.unregister(account, this);
+            Broadcaster.removePartitaThread(account);
+            showDialogFinePartitaNoTeacher();
+            reset();
+        }
+    }
+
+    private void showDialogFinePartitaNoTeacher(){
+        try {
+            getUI().get().access(() -> {
+                DialogUtility dialogUtility = new DialogUtility();
+                dialogUtility.partitaTerminataConMotivazione("Partita Terminata! Non risultano altri utenti connessi");
+            });
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
