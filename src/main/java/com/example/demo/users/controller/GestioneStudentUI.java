@@ -1,6 +1,6 @@
 package com.example.demo.users.controller;
 
-import com.example.demo.users.broadcaster.BroadcastListener;
+import com.example.demo.users.broadcaster.BroadcastListenerTeacher;
 import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
@@ -32,7 +32,7 @@ import java.util.*;
 @StyleSheet("frontend://stile/stile.css")
 @StyleSheet("frontend://stile/gestStudStyle.css")
 @PageTitle("Gestione Studenti")
-public class GestioneStudentUI extends HorizontalLayout implements BroadcastListener {
+public class GestioneStudentUI extends HorizontalLayout implements BroadcastListenerTeacher {
 
     //instance field
     private AccountRepository accRep;
@@ -44,11 +44,10 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private List<Account> draggedItems; //elementi soggetti a DnD
     private Grid<Account> dragSource; //sorgente da cui 'parte' il DnD
     private StartGameEventBeanPublisher startGameEventBeanPublisher;
-    //NOTA: uso questa variabile per tenere traccia della lista account corrente
-    //BUG: "Premi 'Aggiorna' viene caricata una nuova lista e si perdono le modifiche attuali (fare merge tra due liste)
     private Map<Account, String> currentAccountList = new HashMap<>(); //lista corrente di account list
     private int countGuessUser = 0;
     private int countMatyUser = 0;
+    private Account removed = new Account(); //viene rimosso al piu' un account alla volta (cioe' un event alla volta)
 
     public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
         try {
@@ -288,17 +287,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         }
     }
 
-    //Implementazione 'BroadcasterListener'
-    @Override
-    public void redirectToGuess(){
-        //no implement
-    }
-
-    @Override
-    public void redirectToMaty(){
-        //no implement
-    }
-
+    //Implementazione 'BroadcastListenerTeacher'
     @Override
     public void startGameInBackground(String game){
         //no implement
@@ -335,6 +324,38 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         }else{
             gridStud.setItems(tempList.keySet());
         }
+    }
+
+    @Override
+    public void removeAccountFromAllGrid(){
+        Map<Account, String> receiveList = Broadcaster.getAccountListReceive();
+
+        for(Account i: currentAccountList.keySet()){
+            if(!receiveList.containsKey(i)){    //account i e' stato rimosso -> elimina da currentAccountList
+                currentAccountList.remove(i);
+                removed = i;
+            }
+        }
+
+        ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridStud.getDataProvider();
+        List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+        sourceItems.remove(removed);
+        gridStud.setItems(sourceItems);
+
+        sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
+        sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+        if(sourceItems.contains(removed)) {
+            sourceItems.remove(removed);
+            gridGuess.setItems(sourceItems);
+        }
+
+        sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
+        sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+        if(sourceItems.contains(removed)) {
+            sourceItems.remove(removed);
+            gridMaty.setItems(sourceItems);
+        }
+
     }
 
 }

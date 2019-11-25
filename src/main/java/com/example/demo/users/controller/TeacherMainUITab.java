@@ -8,7 +8,7 @@ import com.example.demo.mainView.MainView;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.SettingsUser;
 import com.example.demo.users.broadcaster.Broadcaster;
-import com.example.demo.users.broadcaster.BroadcastListener;
+import com.example.demo.users.broadcaster.BroadcastListenerTeacher;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @StyleSheet("frontend://stile/navBarVertStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class TeacherMainUITab extends HorizontalLayout implements BroadcastListener{
+public class TeacherMainUITab extends HorizontalLayout implements BroadcastListenerTeacher{
 
     //costanti
     private static final String icon_Size = "24px"; //valore precedente: 30px
@@ -351,19 +351,14 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         return d;
     }
 
-    //Implementazione 'BroadcasterListener'
-    @Override
-    public void redirectToGuess(){
-        //no implement
-    }
-
-    @Override
-    public void redirectToMaty(){
-        //no implement
-    }
-
+    //Implementazione 'BroadcasterListenerTeacher'
     @Override
     public void updateAndMergeAccountList(){
+        //no implement
+    }
+
+    @Override
+    public void removeAccountFromAllGrid(){
         //no implement
     }
 
