@@ -27,10 +27,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.*;
 
 import java.io.ByteArrayInputStream;
@@ -44,7 +41,7 @@ import java.util.Date;
 @StyleSheet("frontend://stile/style.css")
 @StyleSheet("frontend://stile/chat.css")
 @PageTitle("ConnecTeam-Guess")
-public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator, BeforeEnterObserver {
+public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, BeforeLeaveObserver, BeforeEnterObserver {
 
     //static field
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
@@ -104,11 +101,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(account.getTypeAccount().equals("teacher"))
                 isTeacher = true;
 
-            for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                if (Broadcaster.getPartiteThread().get(i) != null) {
+            for(Account i : Broadcaster.getPartiteThread().keySet()){
+                if(Broadcaster.getPartiteThread().get(i) != null){
                     isStarted = true;
                 }
             }
+
             if (isStarted != true) {
                 Broadcaster.register(account, this);
                 BroadcasterChat.register(this);
@@ -456,39 +454,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         Broadcaster.getStrings().clear();
     }
 
+    //Implement methods of BeforeLeaveObserver interface
     @Override
-    public void configurePage(InitialPageSettings initialPageSettings) {
-        String script = "window.onbeforeunload = function (e) " +
-                "{ var e = e || window.event; document.getElementById(\"GuessUI\").$server.browserIsLeaving(); return; };";
-        initialPageSettings.addInlineWithContents(InitialPageSettings.Position.PREPEND, script, InitialPageSettings.WrapMode.JAVASCRIPT);
-    }
+    public void beforeLeave(BeforeLeaveEvent event) {
+        System.out.println("GuessUI.beforeLeave() e' stato invocato");
+        int numeroUtentiConnessi = Broadcaster.getListeners().size();
 
-    @ClientCallable
-    public void browserIsLeaving() {
-
-        Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
-            System.out.println("Account registrato alla partita = "+account1.getNome());
-        });
-
-        try {
-            Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
-                if (account1.equals(account)) {
-                    Broadcaster.browserIsLeavingCalled(account);
-                    Broadcaster.unregister(account, this);
-                    for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                        try {
-                            Broadcaster.getPartiteThread().get(i).interrupt();
-                            Broadcaster.getPartiteThread().get(i).stopTimer();
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-
-                    }
-                    reset();
-                }
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+        if((numeroUtentiConnessi-1) > 1){ //se rimuovendo questo utente, sono ancora connessi almeno 2 utenti
+            //Rimuovi solo questo utente
+            Broadcaster.unregister(account, this);
         }
     }
 
@@ -511,8 +485,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
         if(isStarted != true && Broadcaster.getListeners().size() > maxNumeroStutentiConnessi) { //includi anche il teacher (solo studenti era ==)
             System.out.println("GuessUI: Partita iniziata!");
-            for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                if (Broadcaster.getPartiteThread().get(i) != null) {
+            for(Account i : Broadcaster.getPartiteThread().keySet()){
+                if(Broadcaster.getPartiteThread().get(i) != null){
                     isStarted = true;
                 }
             }
@@ -521,7 +495,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 guessController.startGame(partita);
                 partitaThread = guessController.getPartitaThread();
                 item = guessController.getItem();
-                Broadcaster.startGame(UI.getCurrent(), partitaThread, item);
+                Broadcaster.startGame(UI.getCurrent(), account, partitaThread, item);
             } else {
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
