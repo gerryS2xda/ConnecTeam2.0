@@ -9,6 +9,7 @@ import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.SettingsUser;
 import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.users.broadcaster.BroadcastListenerTeacher;
+import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -64,9 +65,10 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     private Div guess;
     private Div maty;
     private Div newGame;
+    private EndGameEventBeanPublisher endGamePublisher;
 
 
-    public TeacherMainUITab(@Autowired StartGameEventBeanPublisher startGameEventPublisher){
+    public TeacherMainUITab(@Autowired StartGameEventBeanPublisher startGameEventPublisher, @Autowired EndGameEventBeanPublisher endGameEventBeanPublisher){
 
         try{
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
@@ -83,6 +85,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             Broadcaster.setTeacherSession(VaadinService.getCurrentRequest().getWrappedSession());
 
             startGameEventBeanPublisher = startGameEventPublisher;
+            endGamePublisher = endGameEventBeanPublisher; //for GuessUI istance
 
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //access al <body> element
             getStyle().set("height", "100%"); //per nav bar verticale
@@ -250,7 +253,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                     matyView.getStyle().set("display", "none");
                 }
                 if (guessView == null) {
-                    guessView = new GuessUI();
+                    guessView = new GuessUI(endGamePublisher);
                     add(guessView);
                 } else {
                     guessView.getStyle().set("display", "flex");
@@ -372,7 +375,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     public void startGameInBackground(String game){
         if(game.equals("Guess")){
             getUI().get().access(()->{
-                guessView = new GuessUI();
+                guessView = new GuessUI(endGamePublisher);
                 add(guessView);
                 guessView.getStyle().set("display", "none");
             });

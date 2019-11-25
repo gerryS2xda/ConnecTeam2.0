@@ -160,7 +160,7 @@ public class GuessController {
             partitaThread.stopTimer();
             Broadcaster.partitanonVincente();
 
-            //invia un event quando la partita termina
+            //invia un event quando la partita termina (BUG: account is null)
             endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess", account, true);
         }
 

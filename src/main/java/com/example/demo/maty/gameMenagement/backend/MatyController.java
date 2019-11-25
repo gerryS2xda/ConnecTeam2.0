@@ -169,8 +169,8 @@ public class MatyController {
             BroadcasterMaty.setIndiziRicevuti(0);
             BroadcasterMaty.partitanonVincente();
 
-            //invia un event quando la partita termina
-            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Maty", account);
+            //invia un event quando la partita termina (BUG: account null)
+            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Maty", account, true);
         }
 
         public void stopTimer(){
