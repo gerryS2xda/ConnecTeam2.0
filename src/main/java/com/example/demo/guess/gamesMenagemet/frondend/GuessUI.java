@@ -43,7 +43,7 @@ import java.util.Date;
 @StyleSheet("frontend://stile/style.css")
 @StyleSheet("frontend://stile/chat.css")
 @PageTitle("ConnecTeam-Guess")
-public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, BeforeLeaveObserver, BeforeEnterObserver {
+public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator, BeforeEnterObserver {
 
     //static field
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
@@ -458,10 +458,17 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         Broadcaster.getStrings().clear();
     }
 
-    //Implement methods of BeforeLeaveObserver interface
+    //Implements methods of PageConfigurator
     @Override
-    public void beforeLeave(BeforeLeaveEvent event) {
-        System.out.println("GuessUI.beforeLeave() e' stato invocato");
+    public void configurePage(InitialPageSettings initialPageSettings) {
+        String script = "window.onbeforeunload = function (e) " +
+                "{ var e = e || window.event; document.getElementById(\"GuessUI\").$server.browserIsLeaving(); return; };";
+        initialPageSettings.addInlineWithContents(InitialPageSettings.Position.PREPEND, script, InitialPageSettings.WrapMode.JAVASCRIPT);
+    }
+
+    @ClientCallable
+    public void browserIsLeaving() {
+        System.out.println("GuessUI.browserIsLeaving() e' stato invocato");
 
         if(Broadcaster.getListeners().size() > 1) {
             Broadcaster.unregister(account, this);
