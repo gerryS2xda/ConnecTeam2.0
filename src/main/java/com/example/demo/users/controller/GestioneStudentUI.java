@@ -47,7 +47,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private Map<Account, String> currentAccountList = new HashMap<>(); //lista corrente di account list
     private int countGuessUser = 0;
     private int countMatyUser = 0;
-    private Account removed = new Account(); //viene rimosso al piu' un account alla volta (cioe' un event alla volta)
 
     public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
         try {
@@ -327,34 +326,30 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
-    public void removeAccountFromAllGrid(){
-        Map<Account, String> receiveList = Broadcaster.getAccountListReceive();
+    public void removeAccountFromAllGrid(Account a){
 
-        for(Account i: currentAccountList.keySet()){
-            if(!receiveList.containsKey(i)){    //account i e' stato rimosso -> elimina da currentAccountList
-                currentAccountList.remove(i);
-                removed = i;
-            }
-        }
+        if(currentAccountList.containsKey(a))
+            currentAccountList.remove(a);
 
+        System.out.println(a.toString());
         if(getUI().isPresent()){
             getUI().get().access(() -> {
                 ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridStud.getDataProvider();
                 List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-                sourceItems.remove(removed);
+                sourceItems.remove(a);
                 gridStud.setItems(sourceItems);
 
                 sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
                 sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-                if(sourceItems.contains(removed)) {
-                    sourceItems.remove(removed);
+                if(sourceItems.contains(a)) {
+                    sourceItems.remove(a);
                     gridGuess.setItems(sourceItems);
                 }
 
                 sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
                 sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-                if(sourceItems.contains(removed)) {
-                    sourceItems.remove(removed);
+                if(sourceItems.contains(a)) {
+                    sourceItems.remove(a);
                     gridMaty.setItems(sourceItems);
                 }
             });

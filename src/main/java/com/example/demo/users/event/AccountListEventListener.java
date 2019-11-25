@@ -1,5 +1,6 @@
 package com.example.demo.users.event;
 
+import com.example.demo.entity.Account;
 import com.example.demo.users.broadcaster.Broadcaster;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +18,10 @@ public class AccountListEventListener {
         if(event.getOperationName().equals("add")){
             Broadcaster.updateListaUtentiConnessi();
         }else if(event.getOperationName().equals("remove")){
-            Broadcaster.removeAccountFromAllGrid();
+            for(Account i : event.getAccountList().keySet()){
+                if(event.getAccountList().get(i).equals("remove"))
+                    Broadcaster.removeAccountFromAllGrid(i);
+            }
         }
 
     }

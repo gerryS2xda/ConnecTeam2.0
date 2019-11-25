@@ -147,10 +147,10 @@ public class Broadcaster  {
         });
     }
 
-    public static synchronized void removeAccountFromAllGrid(){
+    public static synchronized void removeAccountFromAllGrid(Account a){
         gestStudlisteners.forEach((account, broadcastListener) ->{
             executor.execute(()->{
-               broadcastListener.removeAccountFromAllGrid();
+               broadcastListener.removeAccountFromAllGrid(a);
             });
         });
     }

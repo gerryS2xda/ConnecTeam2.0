@@ -201,8 +201,12 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         System.out.println("StudentHomeView: beforeLeave() is invoking");
+
+        Map<Account, String> tempList = new HashMap<>();    //invia solo account da cancellare tramite HashMap
+        tempList.put(account, "remove");
+        accountEventListpublisher.doStuffAndPublishAnEvent(tempList, "remove"); //invia event per rimozione account da accountList event inviato in precedenza
+
         Broadcaster.unregister(account, this);
-        accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "remove"); //invia event per rimozione account da accountList event inviato in precedenza
     }
 
     //Implements methods of BroadcastListener interface

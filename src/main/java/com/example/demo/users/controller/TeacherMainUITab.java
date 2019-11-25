@@ -361,7 +361,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     }
 
     @Override
-    public void removeAccountFromAllGrid(){
+    public void removeAccountFromAllGrid(Account a){
         //no implement
     }
 
