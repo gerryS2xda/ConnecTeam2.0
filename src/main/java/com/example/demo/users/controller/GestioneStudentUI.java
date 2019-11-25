@@ -337,43 +337,50 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             }
         }
 
-        ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridStud.getDataProvider();
-        List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-        sourceItems.remove(removed);
-        gridStud.setItems(sourceItems);
+        if(getUI().isPresent()){
+            getUI().get().access(() -> {
+                ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridStud.getDataProvider();
+                List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                sourceItems.remove(removed);
+                gridStud.setItems(sourceItems);
 
-        sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
-        sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-        if(sourceItems.contains(removed)) {
-            sourceItems.remove(removed);
-            gridGuess.setItems(sourceItems);
+                sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
+                sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                if(sourceItems.contains(removed)) {
+                    sourceItems.remove(removed);
+                    gridGuess.setItems(sourceItems);
+                }
+
+                sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
+                sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                if(sourceItems.contains(removed)) {
+                    sourceItems.remove(removed);
+                    gridMaty.setItems(sourceItems);
+                }
+            });
         }
-
-        sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
-        sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-        if(sourceItems.contains(removed)) {
-            sourceItems.remove(removed);
-            gridMaty.setItems(sourceItems);
-        }
-
     }
 
     @Override
     public void removeAccountFromThisGrid(Account a, String gridName){
 
-        if(gridName.equals("Guess")){
-            ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
-            List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-            sourceItems.remove(a);
-            gridGuess.setItems(sourceItems);
-        }else if(gridName.equals("Maty")){
-            ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
-            List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-            sourceItems.remove(a);
-            gridMaty.setItems(sourceItems);
+        if(getUI().isPresent()){
+            getUI().get().access(()->{
+                if(gridName.equals("Guess")){
+                    ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
+                    List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                    sourceItems.remove(a);
+                    gridGuess.setItems(sourceItems);
+                }else if(gridName.equals("Maty")){
+                    ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
+                    List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                    sourceItems.remove(a);
+                    gridMaty.setItems(sourceItems);
+                }
+                currentAccountList.replace(a, currentAccountList.get(a), "");
+                updateGridStudentCollegati();
+            });
         }
-        currentAccountList.replace(a, currentAccountList.get(a), "");
-        updateGridStudentCollegati();
     }
 
 }
