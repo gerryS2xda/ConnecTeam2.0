@@ -294,7 +294,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
-    //Aggiorna e fondi le liste di account (soluzione del bug: 'Aggiorna' button)
+    //Aggiorna e fondi le liste di account 
     public void updateAndMergeAccountList(){
         Map<Account, String> actualList = Broadcaster.getAccountListReceive();
         for(Account i : actualList.keySet()){
@@ -306,8 +306,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         updateGridStudentCollegati();
     }
 
+    //Aggiorna 'Grid' Studenti collegati (rimuove dalla lista gli account gia' presenti nelle altre grid)
     private void updateGridStudentCollegati(){
-        //Aggiorna 'Grid' Studenti collegati
         Map<Account, String> tempList = new HashMap<>();
         for(Account i : currentAccountList.keySet()){
             tempList.put(i, currentAccountList.get(i));
