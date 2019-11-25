@@ -358,4 +358,22 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     }
 
+    @Override
+    public void removeAccountFromThisGrid(Account a, String gridName){
+
+        if(gridName.equals("Guess")){
+            ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGuess.getDataProvider();
+            List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+            sourceItems.remove(a);
+            gridGuess.setItems(sourceItems);
+        }else if(gridName.equals("Maty")){
+            ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridMaty.getDataProvider();
+            List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+            sourceItems.remove(a);
+            gridMaty.setItems(sourceItems);
+        }
+        currentAccountList.replace(a, currentAccountList.get(a), "");
+        updateGridStudentCollegati();
+    }
+
 }

@@ -155,6 +155,14 @@ public class Broadcaster  {
         });
     }
 
+    public static synchronized void removeAccountFromThisGrid(Account a, String nameGrid){
+        gestStudlisteners.forEach((account, broadcastListener) ->{
+            executor.execute(()->{
+                broadcastListener.removeAccountFromThisGrid(a, nameGrid);
+            });
+        });
+    }
+
     //getter and setter method
     public static Map<Account, BroadcastListener> getListeners() {
         return listeners;
