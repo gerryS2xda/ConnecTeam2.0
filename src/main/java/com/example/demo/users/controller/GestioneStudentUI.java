@@ -294,7 +294,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
-    //Aggiorna e fondi le liste di account 
+    //Aggiorna e fondi le liste di account
     public void updateAndMergeAccountList(){
         Map<Account, String> actualList = Broadcaster.getAccountListReceive();
         for(Account i : actualList.keySet()){

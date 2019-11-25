@@ -243,13 +243,4 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         }
     }
 
-    @Override
-    public void updateAndMergeAccountList(){
-        //No-implement
-    }
-
-    @Override
-    public void startGameInBackground(String game){
-        //no-implement
-    }
 }

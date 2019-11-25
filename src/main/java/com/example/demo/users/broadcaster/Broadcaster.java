@@ -147,6 +147,14 @@ public class Broadcaster  {
         });
     }
 
+    public static synchronized void removeAccountFromAllGrid(){
+        gestStudlisteners.forEach((account, broadcastListener) ->{
+            executor.execute(()->{
+               broadcastListener.removeAccountFromAllGrid();
+            });
+        });
+    }
+
     //getter and setter method
     public static Map<Account, BroadcastListener> getListeners() {
         return listeners;
