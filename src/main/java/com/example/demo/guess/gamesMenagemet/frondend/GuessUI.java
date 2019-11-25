@@ -459,7 +459,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void beforeLeave(BeforeLeaveEvent event) {
         System.out.println("GuessUI.beforeLeave() e' stato invocato");
 
-        if(Broadcaster.getListeners().size() > 2) {
+        if(Broadcaster.getListeners().size() > 1) {
             Broadcaster.unregister(account, this);
             Broadcaster.removePartitaThread(account);
         }else{
