@@ -14,6 +14,7 @@ import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSugg
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.BroadcastListener;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.ChatListener;
+import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -29,6 +30,7 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
@@ -70,13 +72,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     MessageList messageList = new MessageList("chatlayoutmessage2");
     private Image image333;
     private boolean isTeacher = false;
+    private EndGameEventBeanPublisher endGamePublisher;
 
-    public GuessUI() {
+    public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
         try {
             setId("GuessUI");
             getStyle().set("height", "100%");
             guess = new Guess();
+            endGamePublisher = endGameEventBeanPublisher;
 
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
@@ -462,10 +466,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         if(Broadcaster.getListeners().size() > 1) {
             Broadcaster.unregister(account, this);
             Broadcaster.removePartitaThread(account);
-        }else{
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+        }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
             Broadcaster.unregister(account, this);
             Broadcaster.removePartitaThread(account);
             showDialogFinePartitaNoTeacher();
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             reset();
         }
     }

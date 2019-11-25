@@ -161,7 +161,7 @@ public class GuessController {
             Broadcaster.partitanonVincente();
 
             //invia un event quando la partita termina
-            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess", account);
+            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess", account, true);
         }
 
         public void stopTimer(){

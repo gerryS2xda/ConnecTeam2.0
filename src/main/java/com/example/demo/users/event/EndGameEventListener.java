@@ -14,11 +14,15 @@ public class EndGameEventListener {
     public void handleReceiveEndGameEvent(EndGameEvent event){
         System.out.println("EndGameEventListener: receive a event");
         String nameGame = event.getNameOfGameEnded();
-        Account acc = event.getAccount(); //usa account per impostare cosa deve student e teacher
-        if(nameGame.equals("Guess")){
-            Broadcaster.setIsGuessStart(false);
-        }else if(nameGame.equals("Maty")){
-            Broadcaster.setIsMatyStart(false);
+        Account acc = event.getAccount();
+        if(event.isEndendForAll()) {
+            if (nameGame.equals("Guess")) {
+                Broadcaster.setIsGuessStart(false);
+            } else if (nameGame.equals("Maty")) {
+                Broadcaster.setIsMatyStart(false);
+            }
+        }else if(acc.getTypeAccount().equals("student")){
+            Broadcaster.removeAccountFromThisGrid(acc, nameGame); //assumiamo che nameGame sia uguale a quello della grid in GestStudentUI
         }
     }
 }
