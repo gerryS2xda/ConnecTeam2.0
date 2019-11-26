@@ -60,7 +60,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             label.addClassName("labelSuggerisci");
             if(isTeacher){
                 getStyle().set("width", "60%");
-                getStyle().set("height", "100%");
+                getStyle().set("height", "260px");
                 label.getStyle().set("top", "20%");
                 add(label);
             }else{
