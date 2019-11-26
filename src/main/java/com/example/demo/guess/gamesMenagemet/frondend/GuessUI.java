@@ -153,7 +153,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             message1.addKeyDownListener(Key.ENTER, keyDownEvent -> {
                 String mess = message1.getValue();
                 if (!mess.equals("")) {
-                    BroadcasterChat.broadcast(account.getNome() + ": " + message1.getValue()+":"+account.getId());
+                    if(account.getTypeAccount().equals("teacher"))
+                        BroadcasterChat.broadcast("Teacher: " + message1.getValue()+":"+account.getId());
+                    else
+                        BroadcasterChat.broadcast(account.getNome() + ": " + message1.getValue()+":"+account.getId());
                     message1.setValue("");
                 }
             });

@@ -114,9 +114,11 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             MessageList messageList = new MessageList("message-list");
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setId("paroleSuggeriteBtnPlus");
-            //Div div = new Div();
-            Label label = new Label(message);
+
+            Label label = new Label();  //parola suggerita
             label.getStyle().set("margin-top", "8px");
+            label.setText(message);
+
             Icon icon = new Icon(VaadinIcon.PLUS);
             icon.setSize("24px");
             button = new Button(icon);
@@ -178,7 +180,6 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                 button.getStyle().set("width", "32px");
             }
 
-            //div.add(label,button);
             horizontalLayout.add(label, button);
             messageList.add(horizontalLayout);
             parolaLayout.add(messageList);
