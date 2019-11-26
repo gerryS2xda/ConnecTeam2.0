@@ -27,9 +27,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @StyleSheet("frontend://stile/navBarVertStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam")
-public class TeacherMainUITab extends HorizontalLayout implements BroadcastListenerTeacher{
+public class TeacherMainUITab extends HorizontalLayout implements BroadcastListenerTeacher, BeforeLeaveObserver {
 
     //costanti
     private static final String icon_Size = "24px"; //valore precedente: 30px
@@ -352,6 +350,14 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         lab.addClassNames("custom_h3", "brand-expression__title");
         d.add(img, lab);
         return d;
+    }
+
+    //Implements method of BeforeLeaveObserver interface
+    @Override
+    public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
+        Broadcaster.unregisterTeacher(account, this);
+        Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
+        Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
     }
 
     //Implementazione 'BroadcasterListenerTeacher'

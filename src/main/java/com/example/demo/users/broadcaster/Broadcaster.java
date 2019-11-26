@@ -127,8 +127,8 @@ public class Broadcaster  {
         };
     }
 
-    public static synchronized void unregisterTeacherForGestStud(Account account, BroadcastListenerTeacher broadcastListener){
-        gestStudlisteners.remove(account,broadcastListener);
+    public static synchronized void unregisterTeacherForGestStud(Account account){
+        gestStudlisteners.remove(account); //se si usa una pagina dedicata per GestioneStudentUI occorre passare anche il broadcastListener
     }
 
     public static synchronized void setAccountListReceive(AccountListEvent event){
@@ -202,5 +202,10 @@ public class Broadcaster  {
 
     public static void setIsMatyStart(boolean isMatyStart) {
         Broadcaster.isMatyStart = isMatyStart;
+    }
+
+    public static void resetCounterUserGame(){
+        countGuessUser = 0;
+        countMatyUser = 0;
     }
 }
