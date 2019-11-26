@@ -43,7 +43,7 @@ import java.util.Date;
 @StyleSheet("frontend://stile/style.css")
 @StyleSheet("frontend://stile/chat.css")
 @PageTitle("ConnecTeam-Guess")
-public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
+public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator, BeforeEnterObserver {
 
     //instance field
     private AccountRepository accountRepository;
@@ -510,7 +510,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    protected void onAttach(AttachEvent attachEvent) {
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) { //void onAttach(AttachEvent attachEvent) comportamento simile
         System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
         if(isStarted != true && Broadcaster.getListeners().size() > maxNumeroStutentiConnessi) { //includi anche il teacher (solo studenti era ==)
             System.out.println("GuessUI: Partita iniziata!");
@@ -532,5 +532,4 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
         }
     }
-
 }
