@@ -26,6 +26,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.VaadinService;
@@ -238,7 +239,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         panel1.setPadding(false);
         guess = addDivInAccordionPanelContent("Guess", null, "64px");
         guess.addClickListener(event -> {
-            //if(GestioneStudentUI.isGuessStart()) {
+            if(Broadcaster.isGuessStart()) {
                 guess.addClassName("highlight");
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
@@ -260,17 +261,17 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 gestStud.removeClassName("highlight");
                 settings.removeClassName("highlight");
                 maty.removeClassName("highlight");
-            /*}else{
+            }else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
                 notification.setDuration(4000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
-            }*/
+            }
         });
         maty = addDivInAccordionPanelContent("Maty", null, "64px");
         maty.addClickListener(event -> {
-            //if(GestioneStudentUI.isMatyStart()) { //cambiare isMatyStart
+            if(Broadcaster.isMatyStart()) {
                 maty.addClassName("highlight");
                 mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
                 if (settingsView != null) {
@@ -292,13 +293,13 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 gestStud.removeClassName("highlight");
                 settings.removeClassName("highlight");
                 guess.removeClassName("highlight");
-            /*}else{
+            }else{
                 Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
                 Notification notification = new Notification(content);
                 notification.setDuration(4000);
                 notification.setPosition(Notification.Position.MIDDLE);
                 notification.open();
-            }*/
+            }
         });
         newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
         panel1.add(guess, maty, newGame);
