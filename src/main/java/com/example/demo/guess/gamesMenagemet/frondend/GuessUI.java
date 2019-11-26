@@ -43,12 +43,7 @@ import java.util.Date;
 @StyleSheet("frontend://stile/style.css")
 @StyleSheet("frontend://stile/chat.css")
 @PageTitle("ConnecTeam-Guess")
-public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator, BeforeEnterObserver {
-
-    //static field
-    //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
-    private static final int maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
-    private static WrappedSession teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
+public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
 
     //instance field
     private AccountRepository accountRepository;
@@ -73,14 +68,20 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Image image333;
     private boolean isTeacher = false;
     private EndGameEventBeanPublisher endGamePublisher;
+    //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
+    private int maxNumeroStutentiConnessi = 0;
+    private WrappedSession teacherSession;
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
         try {
+            //Inizializzazione
             setId("GuessUI");
             getStyle().set("height", "100%");
             guess = new Guess();
             endGamePublisher = endGameEventBeanPublisher;
+            maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
+            teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
 
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
@@ -470,14 +471,16 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void browserIsLeaving() {
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato");
 
-        if(Broadcaster.getListeners().size() > 1) {
-            Broadcaster.unregister(account, this);
-            Broadcaster.removePartitaThread(account);
+        System.out.println("GuessUI.browserIsLeaving(): Prima #account: " + Broadcaster.getListeners().size());
+
+        Broadcaster.unregister(account, this);
+        Broadcaster.removePartitaThread(account);
+
+        System.out.println("GuessUI.browserIsLeaving(): DOPO #account: " + Broadcaster.getListeners().size());
+        if(Broadcaster.getListeners().size() > 0) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            Broadcaster.unregister(account, this);
-            Broadcaster.removePartitaThread(account);
-            showDialogFinePartitaNoTeacher();
+            showDialogFinePartitaNoTeacher(); //BUG: mostrato solo quando si disconnette il teacher
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             reset();
         }
@@ -507,9 +510,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     }
 
-
     @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+    protected void onAttach(AttachEvent attachEvent) {
         System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
         if(isStarted != true && Broadcaster.getListeners().size() > maxNumeroStutentiConnessi) { //includi anche il teacher (solo studenti era ==)
             System.out.println("GuessUI: Partita iniziata!");
