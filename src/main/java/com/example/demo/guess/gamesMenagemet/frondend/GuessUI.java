@@ -106,6 +106,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(account.getTypeAccount().equals("teacher"))
                 isTeacher = true;
 
+            //For: usato se vengono avviate partite diverse
             for(Account i : Broadcaster.getPartiteThread().keySet()){
                 if(Broadcaster.getPartiteThread().get(i) != null){
                     isStarted = true;
@@ -474,6 +475,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato");
 
         System.out.println("GuessUI.browserIsLeaving(): Prima #account: " + Broadcaster.getListeners().size());
+
+        for(Account i : Broadcaster.getPartiteThread().keySet()){
+            System.out.println("Account: " + i.toString() + " PartitaThread: " + Broadcaster.getPartiteThread().get(i));
+        }
 
         Broadcaster.unregister(account, this);
         Broadcaster.removePartitaThread(account);

@@ -182,8 +182,9 @@ public class Broadcaster implements Serializable {
         return partiteThread;
     }
 
-    public static synchronized void removePartitaThread(Account a){
+    public static void removePartitaThread(Account a){
         if(partiteThread.containsKey(a)){
+            System.out.println("REMOVE: Account: " + a.toString() + " PartitaThread: " + Broadcaster.getPartiteThread().get(a));
             try {
                 partiteThread.get(a).interrupt();
                 partiteThread.get(a).stopTimer();
