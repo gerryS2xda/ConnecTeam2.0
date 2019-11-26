@@ -358,6 +358,9 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         Broadcaster.unregisterTeacher(account, this);
         Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
+        if(guessView != null){
+            guessView.browserIsLeaving();   //Necessario poiche' GuessUI nel teacher non ha una pagina dedicata (UI.navigate)
+        }
     }
 
     //Implementazione 'BroadcasterListenerTeacher'

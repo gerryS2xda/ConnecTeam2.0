@@ -118,6 +118,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 Broadcaster.aggiornaUtentiConnessi(UI.getCurrent());
                 Broadcaster.addUsers(UI.getCurrent());
             } else {
+                System.out.println("GUESSUI:TEST1");
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
@@ -186,9 +187,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 add(nameUserAndInfoBtnContainer());
             }
 
-        }
-
-        catch (Exception e) {
+        }catch (Exception e) {
             removeAll();
             ErrorPage errorPage = new ErrorPage();
             add(errorPage);
@@ -527,9 +526,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 item = guessController.getItem();
                 Broadcaster.startGame(UI.getCurrent(), account, partitaThread, item);
             } else {
+                System.out.println("GUESSUI:TEST2");
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
             }
         }
     }
+
 }
