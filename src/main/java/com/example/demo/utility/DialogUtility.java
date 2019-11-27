@@ -271,7 +271,7 @@ public class DialogUtility extends VerticalLayout {
 
     }
 
-    public void partitaTerminataDialogTeacher(String motivazione){
+    public void partitaTerminataDialogTeacher(String title, String motivazione){
         Dialog d = new Dialog();
         d.setCloseOnEsc(false);
         d.setCloseOnOutsideClick(false);
@@ -284,8 +284,8 @@ public class DialogUtility extends VerticalLayout {
         content.setAlignItems(Alignment.CENTER);
         content.getStyle().set("height", "100%");
 
-        Label title = new Label("Partita terminata");
-        title.getStyle().set("font-size", "32px");
+        Label titleLab = new Label(title);
+        titleLab.getStyle().set("font-size", "32px");
 
         Label descrizione = new Label();
         descrizione.getStyle().set("font-size", "16px");
@@ -299,7 +299,7 @@ public class DialogUtility extends VerticalLayout {
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
         });
-        content.add(title, descrizione, cancelButton);
+        content.add(titleLab, descrizione, cancelButton);
 
         d.add(content);
         d.open();

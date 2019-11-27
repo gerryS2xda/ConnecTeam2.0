@@ -24,6 +24,9 @@ public class EndGameEventListener {
         }
         if(acc.getTypeAccount().equals("student")){
             Broadcaster.removeAccountFromThisGrid(acc, nameGame); //assumiamo che nameGame sia uguale a quello della grid in GestStudentUI
+        }else if(acc.getTypeAccount().equals("teacher")){
+            Broadcaster.showDialogFinePartitaTeacher(nameGame);
         }
+
     }
 }

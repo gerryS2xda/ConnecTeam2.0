@@ -108,6 +108,14 @@ public class Broadcaster  {
         });
     }
 
+    public static synchronized void showDialogFinePartitaTeacher(String game){
+        teacherlisteners.forEach((account, broadcastListener) ->{
+            executor.execute(()->{
+                broadcastListener.showDialogFinePartitaTeacher(game);
+            });
+        });
+    }
+
     public static void setTeacherSession(WrappedSession session){
         teacherSession = session;
     }

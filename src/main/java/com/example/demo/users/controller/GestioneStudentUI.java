@@ -293,6 +293,11 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
+    public void showDialogFinePartitaTeacher(String nameGame){
+        //No implemeny
+    }
+
+    @Override
     //Aggiorna e fondi le liste di account
     public void updateAndMergeAccountList(){
         Map<Account, String> actualList = Broadcaster.getAccountListReceive();

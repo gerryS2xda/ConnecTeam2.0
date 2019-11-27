@@ -8,4 +8,5 @@ public interface BroadcastListenerTeacher {
     void startGameInBackground(String game);
     void removeAccountFromAllGrid(Account a);
     void removeAccountFromThisGrid(Account a, String gridName);
+    void showDialogFinePartitaTeacher(String nameGame);
 }

@@ -11,6 +11,7 @@ import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.users.broadcaster.BroadcastListenerTeacher;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
+import com.example.demo.utility.DialogUtility;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.accordion.AccordionPanel;
@@ -398,4 +399,13 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         }
     }
 
+    @Override
+    public void showDialogFinePartitaTeacher(String nameGame){
+        if(getUI().isPresent()) {
+            getUI().get().access(() -> {
+                DialogUtility dialogUtility = new DialogUtility();
+                dialogUtility.partitaTerminataDialogTeacher(nameGame, "Partita Terminata! Non risultano altri utenti connessi");
+            });
+        }
+    }
 }
