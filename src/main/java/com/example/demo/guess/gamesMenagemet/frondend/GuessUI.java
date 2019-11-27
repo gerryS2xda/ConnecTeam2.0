@@ -102,7 +102,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 UI.getCurrent().setPollInterval(1000);
             }
             guessController = new GuessController(partitaRepository);
-            guessController.setAccount(account); //invia account attuale a GuessController (serve per endgameEvent)
 
             if(account.getTypeAccount().equals("teacher"))
                 isTeacher = true;
@@ -578,5 +577,5 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }
 
     }
-    
+
 }

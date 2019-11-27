@@ -24,13 +24,9 @@ import java.util.*;
 @Lazy
 public class GuessController {
 
-    @Autowired
-    private EndGameEventBeanPublisher endGameEventBeanPublisher;
-
     private ItemRepository itemRepository;
     private Item item;
     private Random random= new Random();
-    private Account account = new Account();
     private PartitaThread partitaThread;
     private List<Account> accounts;
     private int i;
@@ -115,10 +111,6 @@ public class GuessController {
         return partitaThread;
     }
 
-    public void setAccount(Account account){
-        this.account = account;
-    }
-
     public class PartitaThread extends Thread{
         private Timer timer;
         @Override
@@ -169,14 +161,6 @@ public class GuessController {
             partitaThread.stopTimer();
             Broadcaster.partitanonVincente();
 
-            //invia un event quando la partita termina (BUG: account is null)
-            if(endGameEventBeanPublisher == null){
-                System.out.println("GUessCOntroller: endGameEventBean is null");
-            }
-            if(account == null){
-                System.out.println("GUessCOntroller: account is null");
-            }
-            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess", account, true);
         }
 
         public void stopTimer(){
