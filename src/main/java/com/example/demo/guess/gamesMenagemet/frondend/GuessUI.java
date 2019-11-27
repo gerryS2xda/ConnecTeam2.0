@@ -479,10 +479,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         getUI().get().access(() -> {
             reset();
             removeAll();
-            FireWorks fireWorks = new FireWorks();
-            add(fireWorks);
-            DialogUtility dialogUtility = new DialogUtility();
-            dialogUtility.partitaVincente(parola,punteggio,game);
+            if(account.getTypeAccount().equals("student")) {
+                FireWorks fireWorks = new FireWorks();
+                add(fireWorks);
+                DialogUtility dialogUtility = new DialogUtility();
+                dialogUtility.partitaVincente(parola, punteggio, game);
+            }else if(account.getTypeAccount().equals("teacher")){
+                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+            }
         });
 
     }
@@ -493,8 +497,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         getUI().get().access(() -> {
             reset();
             removeAll();
-            DialogUtility dialogUtility = new DialogUtility();
-            dialogUtility.partitanonVincente(game);
+            if(account.getTypeAccount().equals("student")) {
+                DialogUtility dialogUtility = new DialogUtility();
+                dialogUtility.partitanonVincente(game);
+            }else if(account.getTypeAccount().equals("teacher")){
+                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+            }
         });
     }
 
