@@ -271,17 +271,37 @@ public class DialogUtility extends VerticalLayout {
 
     }
 
-    public void partitaTerminataConMotivazione(String motivazione){
-        Dialog dialog = new Dialog();
-        Label label = new Label(motivazione);
-        Button button = new Button("Vai alla home");
-        button.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().navigate(ControllerMainUI.class);
-            dialog.close();
-            UI.getCurrent().getPage().reload();
+    public void partitaTerminataDialogTeacher(String motivazione){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("320px");
+        d.setHeight("160px");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label title = new Label("Partita terminata");
+        title.getStyle().set("font-size", "32px");
+
+        Label descrizione = new Label();
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.setText(motivazione);
+
+        Button cancelButton = new Button("Close");
+        cancelButton.getStyle().set("background-color","#007d99");
+        cancelButton.getStyle().set("cursor","pointer");
+        cancelButton.getStyle().set("color","white");
+        cancelButton.getStyle().set("margin-top", "25px");
+        cancelButton.addClickListener(buttonClickEvent -> {
+            d.close();
         });
-        button.getStyle().set("margin-left","20px");
-        dialog.add(label,button);
-        dialog.open();
+        content.add(title, descrizione, cancelButton);
+
+        d.add(content);
+        d.open();
     }
 }
