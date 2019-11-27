@@ -33,8 +33,6 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     private boolean vincente;
     boolean flag = false;
     private boolean isTeacher;
-    private int counterAccount = 0;
-
 
     public StartGameUI(GuessController guessController, boolean isTeacher) {
 
@@ -131,38 +129,36 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
                 stringIntegerMap.forEach((s, integer) -> {
                     if (integer == Broadcaster.getListeners().size()) {
-                        if(Broadcaster.getPartiteThread().size() == 0){
-                            flag = false;
-                        }else {
-                            for (Account i : Broadcaster.getPartiteThread().keySet()) {
-                                try {
-                                    Broadcaster.getPartiteThread().get(i).interrupt();
-                                    Broadcaster.getPartiteThread().get(i).stopTimer();
-                                } catch (Exception e) {
-                                    System.out.println(e.getMessage());
-                                } finally {
-                                    int punteggio = 0;
-                                    if (Broadcaster.getIndiziRicevuti() == 1) {
-                                        punteggio = 100;
-                                    } else if (Broadcaster.getIndiziRicevuti() == 2) {
-                                        punteggio = 60;
-                                    } else if (Broadcaster.getIndiziRicevuti() == 3) {
-                                        punteggio = 30;
-                                    } else if (Broadcaster.getIndiziRicevuti() == 4) {
-                                        punteggio = 10;
-                                    }
-
-                                    vincente = guessController.partitaVincente(s, Broadcaster.getItems().get(counterAccount));
-
-                                    if (vincente == false && flag == false) {
-                                        Broadcaster.partitanonVincente();
-                                    } else if (vincente == true && flag == false) {
-                                        Broadcaster.partitaVincente(s, punteggio);
-                                    }
-                                }
-                                counterAccount++;
+                        for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                            if (i == 0) {
+                                flag = false;
                             }
-                            counterAccount = 0; //resetta il counter
+                            try {
+                                Broadcaster.getPartiteThread().get(i).interrupt();
+                                Broadcaster.getPartiteThread().get(i).stopTimer();
+                            } catch (Exception e) {
+                                System.out.println(e.getMessage());
+                            } finally {
+                                int punteggio = 0;
+                                if (Broadcaster.getIndiziRicevuti() == 1) {
+                                    punteggio = 100;
+                                } else if (Broadcaster.getIndiziRicevuti() == 2) {
+                                    punteggio = 60;
+                                } else if (Broadcaster.getIndiziRicevuti() == 3) {
+                                    punteggio = 30;
+                                } else if (Broadcaster.getIndiziRicevuti() == 4) {
+                                    punteggio = 10;
+                                }
+
+                                vincente = guessController.partitaVincente(s, Broadcaster.getItems().get(i));
+
+                                if (vincente == false && flag == false) {
+                                    Broadcaster.partitanonVincente();
+                                } else if (vincente == true && flag == false) {
+                                    Broadcaster.partitaVincente(s, punteggio);
+                                }
+                            }
+
                         }
                     }
                 });

@@ -24,7 +24,7 @@ public class Broadcaster implements Serializable {
     static ArrayList<String> strings = new ArrayList<>();
     static int indiziRicevuti = 0;
     static ArrayList<Item> items = new ArrayList<>();
-    static Map<Account, GuessController.PartitaThread> partiteThread = new HashMap<>(); //associa ogni partita ad un account
+    static List<GuessController.PartitaThread> partiteThread = new ArrayList<>();
     static int in = 0;
 
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
@@ -45,9 +45,9 @@ public class Broadcaster implements Serializable {
         System.out.println(listeners.size());
     }
 
-    public static synchronized void startGame(UI ui, Account a, GuessController.PartitaThread partitaThread, Item item){
+    public static synchronized void startGame(UI ui, GuessController.PartitaThread partitaThread, Item item){
         items.add(item);
-        partiteThread.put(a, partitaThread);
+        partiteThread.add(partitaThread);
         listeners.forEach((account, broadcastListener) -> {
             executor.execute(() -> {
                 broadcastListener.startGame1(ui);
@@ -178,21 +178,8 @@ public class Broadcaster implements Serializable {
         return items;
     }
 
-    public static Map<Account, GuessController.PartitaThread> getPartiteThread() {
+    public static List<GuessController.PartitaThread> getPartiteThread() {
         return partiteThread;
-    }
-
-    public static void removePartitaThread(Account a){
-        if(partiteThread.containsKey(a)){
-            System.out.println("REMOVE: Account: " + a.toString() + " PartitaThread: " + Broadcaster.getPartiteThread().get(a));
-            try {
-                partiteThread.get(a).interrupt();
-                partiteThread.get(a).stopTimer();
-                partiteThread.remove(a);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
     }
 
     public static synchronized void logOut(Account account){

@@ -107,8 +107,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 isTeacher = true;
 
             //For: usato se vengono avviate partite diverse
-            for(Account i : Broadcaster.getPartiteThread().keySet()){
-                if(Broadcaster.getPartiteThread().get(i) != null){
+            for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                if (Broadcaster.getPartiteThread().get(i) != null) {
                     isStarted = true;
                 }
             }
@@ -191,12 +191,50 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 add(nameUserAndInfoBtnContainer());
             }
 
+            waitTeacherForStartGame();
+
         }catch (Exception e) {
             removeAll();
             ErrorPage errorPage = new ErrorPage();
             add(errorPage);
             e.printStackTrace();
         }
+    }
+
+
+    //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
+    private void waitTeacherForStartGame(){
+        System.out.println("Account: " + account.getNome() + "Thread id: " + Thread.currentThread().getName());
+        //Blocca esecuzione finche' tutti gli studenti (incluso il teacher) non sono connessi a questa pagina
+        while(Broadcaster.getListeners().size() <= maxNumeroStutentiConnessi);
+
+        if(account.getTypeAccount().equals("teacher")) {
+            //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
+            System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
+            if (isStarted != true) { //includi anche il teacher (solo studenti era ==)
+                System.out.println("GuessUI: Partita iniziata!");
+                for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                    if (Broadcaster.getPartiteThread().get(i) != null) {
+                        isStarted = true;
+                    }
+                }
+                if (isStarted != true) {
+                    partita = new Partita(new Timestamp(new Date().getTime()), "Guess");
+                    guessController.startGame(partita);
+                    partitaThread = guessController.getPartitaThread();
+                    item = guessController.getItem();
+                    Broadcaster.startGame(UI.getCurrent(), partitaThread, item);
+                } else {
+                    System.out.println("GUESSUI:TEST2");
+                    InfoEventUtility infoEventUtility = new InfoEventUtility();
+                    infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
+                }
+            }
+        }else{
+            //Attedi finche' non inizia la partita da parte del teacher
+            while(!isStarted);
+        }
+
     }
 
     private HorizontalLayout nameUserAndInfoBtnContainer(){
@@ -474,17 +512,20 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void browserIsLeaving() {
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato");
 
-        System.out.println("GuessUI.browserIsLeaving(): Prima #account: " + Broadcaster.getListeners().size());
-
-        for(Account i : Broadcaster.getPartiteThread().keySet()){
-            System.out.println("Account: " + i.toString() + " PartitaThread: " + Broadcaster.getPartiteThread().get(i));
-        }
-
         Broadcaster.unregister(account, this);
-        Broadcaster.removePartitaThread(account);
 
-        System.out.println("GuessUI.browserIsLeaving(): DOPO #account: " + Broadcaster.getListeners().size());
-        if(Broadcaster.getListeners().size() > 0) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
+        if(account.getTypeAccount().equals("teacher")){ //teacher ha chiuso la pagina, allora termina per tutti
+            for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                try {
+                    Broadcaster.getPartiteThread().get(i).interrupt();
+                    Broadcaster.getPartiteThread().get(i).stopTimer();
+                } catch (Exception e) {
+                   e.printStackTrace();
+                }
+            }
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+            reset();
+        }else if(Broadcaster.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
             showDialogFinePartitaNoTeacher(); //BUG: mostrato solo quando si disconnette il teacher
@@ -517,27 +558,38 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     }
 
+
     @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) { //void onAttach(AttachEvent attachEvent) comportamento simile
-        System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
-        if(isStarted != true && Broadcaster.getListeners().size() > maxNumeroStutentiConnessi) { //includi anche il teacher (solo studenti era ==)
-            System.out.println("GuessUI: Partita iniziata!");
-            for(Account i : Broadcaster.getPartiteThread().keySet()){
-                if(Broadcaster.getPartiteThread().get(i) != null){
-                    isStarted = true;
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        /*
+
+        //Blocca esecuzione finche' tutti gli studenti (incluso il teacher) non sono connessi a questa pagina
+        while(Broadcaster.getListeners().size() <= maxNumeroStutentiConnessi);
+
+        if(account.getTypeAccount().equals("teacher")) {
+            //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
+            System.out.println("GuessUI: #account: " + Broadcaster.getListeners().size() + "- #Max account: " + maxNumeroStutentiConnessi);
+            if (isStarted != true) { //includi anche il teacher (solo studenti era ==)
+                System.out.println("GuessUI: Partita iniziata!");
+                for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                    if (Broadcaster.getPartiteThread().get(i) != null) {
+                        isStarted = true;
+                    }
+                }
+                if (isStarted != true) {
+                    partita = new Partita(new Timestamp(new Date().getTime()), "Guess");
+                    guessController.startGame(partita);
+                    partitaThread = guessController.getPartitaThread();
+                    item = guessController.getItem();
+                    Broadcaster.startGame(UI.getCurrent(), partitaThread, item);
+                } else {
+                    System.out.println("GUESSUI:TEST2");
+                    InfoEventUtility infoEventUtility = new InfoEventUtility();
+                    infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
                 }
             }
-            if (isStarted != true) {
-                partita = new Partita(new Timestamp(new Date().getTime()), "Guess");
-                guessController.startGame(partita);
-                partitaThread = guessController.getPartitaThread();
-                item = guessController.getItem();
-                Broadcaster.startGame(UI.getCurrent(), account, partitaThread, item);
-            } else {
-                System.out.println("GUESSUI:TEST2");
-                InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
-            }
         }
+
+         */
     }
 }
