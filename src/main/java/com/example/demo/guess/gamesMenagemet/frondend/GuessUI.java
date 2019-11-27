@@ -485,6 +485,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaVincente(parola, punteggio, game);
             }else if(account.getTypeAccount().equals("teacher")){
+                Broadcaster.unregister(account, this);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             }
         });
@@ -501,6 +502,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitanonVincente(game);
             }else if(account.getTypeAccount().equals("teacher")){
+                Broadcaster.unregister(account, this);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             }
         });
@@ -540,6 +542,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void browserIsLeaving() {
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato");
 
+        if(!Broadcaster.getListeners().containsKey(account)){
+            return;
+        }
+
         Broadcaster.unregister(account, this);
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
@@ -556,7 +562,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }else if(Broadcaster.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             reset();
         }
