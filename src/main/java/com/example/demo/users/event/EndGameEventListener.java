@@ -21,7 +21,8 @@ public class EndGameEventListener {
             } else if (nameGame.equals("Maty")) {
                 Broadcaster.setIsMatyStart(false);
             }
-        }else if(acc.getTypeAccount().equals("student")){
+        }
+        if(acc.getTypeAccount().equals("student")){
             Broadcaster.removeAccountFromThisGrid(acc, nameGame); //assumiamo che nameGame sia uguale a quello della grid in GestStudentUI
         }
     }
