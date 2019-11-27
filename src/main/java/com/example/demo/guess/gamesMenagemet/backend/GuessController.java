@@ -10,6 +10,7 @@ import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -35,12 +36,14 @@ public class GuessController {
     private int i;
     private int totTime;
     boolean vinta = false;
+    private WrappedSession teacherSession;
 
     private PartitaRepository partitaRepository;
     protected Partita partita;
 
     public GuessController(PartitaRepository partitaRepository){
         this.partitaRepository= partitaRepository;
+        teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
     }
 
     protected void addPunteggio(Punteggio punteggio){
@@ -51,8 +54,14 @@ public class GuessController {
 
         this.partita = partita;
 
-        itemRepository = (ItemRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepository");
-        partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+        if(VaadinService.getCurrentRequest() != null) {
+            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
+            itemRepository = (ItemRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepository");
+            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+        }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
+            itemRepository = (ItemRepository) teacherSession.getAttribute("itemRepository");
+            partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
+        }
 
         int tot = itemRepository.numeroRighe();
         int rand = random.nextInt(tot)+1;
@@ -161,6 +170,12 @@ public class GuessController {
             Broadcaster.partitanonVincente();
 
             //invia un event quando la partita termina (BUG: account is null)
+            if(endGameEventBeanPublisher == null){
+                System.out.println("GUessCOntroller: endGameEventBean is null");
+            }
+            if(account == null){
+                System.out.println("GUessCOntroller: account is null");
+            }
             endGameEventBeanPublisher.doStuffAndPublishAnEvent("Guess", account, true);
         }
 
