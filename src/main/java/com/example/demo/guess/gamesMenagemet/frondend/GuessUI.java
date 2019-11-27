@@ -534,7 +534,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         Broadcaster.unregister(account, this);
 
-        if(account.getTypeAccount().equals("teacher")){ //teacher ha chiuso la pagina, allora termina per tutti
+        if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
                 try {
                     Broadcaster.getPartiteThread().get(i).interrupt();
@@ -548,20 +548,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }else if(Broadcaster.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            showDialogFinePartitaNoTeacher(); //BUG: mostrato solo quando si disconnette il teacher
+
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             reset();
-        }
-    }
-
-    private void showDialogFinePartitaNoTeacher(){
-        try {
-            getUI().get().access(() -> {
-                DialogUtility dialogUtility = new DialogUtility();
-                dialogUtility.partitaTerminataConMotivazione("Partita Terminata! Non risultano altri utenti connessi");
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
         }
     }
 
