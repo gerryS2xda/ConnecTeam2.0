@@ -31,7 +31,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -119,7 +118,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 Broadcaster.aggiornaUtentiConnessi(UI.getCurrent());
                 Broadcaster.addUsers(UI.getCurrent());
             } else {
-                System.out.println("GUESSUI:TEST1");
+                System.out.println("GUESSUI:TEST1 Account: " + account.getNome());
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
@@ -233,17 +232,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(!isStarted){
                 start.click();
             }
-        }/*else{
-            //Attedi finche' non inizia la partita da parte del teacher
-            while(!isStarted) {
-                for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                    if (Broadcaster.getPartiteThread().get(i) != null) {
-                        isStarted = true;
-                    }
-                }
-            }
         }
-*/
     }
 
     private HorizontalLayout nameUserAndInfoBtnContainer(){
@@ -361,26 +350,29 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void startGame1(UI ui) {
+        boolean flag = false;
+        int i = 0;
         try {
-            if(getUI().isPresent()) {
-                getUI().get().access(() -> {
-                    StartGameUI startGameUI = new StartGameUI(guessController, isTeacher);
-                    verticalLayout.add(startGameUI);
-                    indizio.getStyle().set("font-size", "30px");
-                    indizio.getStyle().set("margin-left", "15px");
-                    verticalLayout.add(secondi, indizio);
-                    add(verticalLayout);
-                });
-            }else{
-                ui.access(() -> {
-                    StartGameUI startGameUI = new StartGameUI(guessController, isTeacher);
-                    verticalLayout.add(startGameUI);
-                    indizio.getStyle().set("font-size", "30px");
-                    indizio.getStyle().set("margin-left", "15px");
-                    verticalLayout.add(secondi, indizio);
-                    add(verticalLayout);
-                });
+            while(!flag){ //finche' la ui non e' attached a this component, cioe' finche' getUI() doesn't contains an UI element
+                if(getUI().isPresent()) {
+                    getUI().get().accessSynchronously(() -> { //Locks the session of this UI and runs the provided command right away
+                        StartGameUI startGameUI = new StartGameUI(guessController, isTeacher);
+                        verticalLayout.add(startGameUI);
+                        indizio.getStyle().set("font-size", "30px");
+                        indizio.getStyle().set("margin-left", "15px");
+                        verticalLayout.add(secondi, indizio);
+                        add(verticalLayout);
+                    });
+                    flag = true;
+                }
+                i++;
             }
+
+            System.out.println("GuessUI.startGame1() - Account: " + account.getNome() + " CountDelayForGetUI: " + i);
+            /*if(i== 100000){  //dopo 100000 iterazioni, la UI non e' stata ottenuta ->  errore
+                throw new NoSuchElementException("No value present in getUI()");
+            }
+             */
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -486,7 +478,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 dialogUtility.partitaVincente(parola, punteggio, game);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
             }else if(account.getTypeAccount().equals("teacher")){
-                Broadcaster.unregister(account, this);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             }
         });
@@ -504,7 +495,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 dialogUtility.partitanonVincente(game);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
             }else if(account.getTypeAccount().equals("teacher")){
-                Broadcaster.unregister(account, this);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
             }
         });
@@ -522,7 +512,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     static public void reset(){
-        Broadcaster.getPartiteThread().clear();
+        Broadcaster.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
         Broadcaster.getVotes().clear();
         Broadcaster.getAccountList().clear();
         Broadcaster.getItems().clear();
@@ -542,42 +532,40 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @ClientCallable
     public void browserIsLeaving() {
-        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
+        //Pre-condition
         if(!Broadcaster.getListeners().containsKey(account)){
             return;
         }
 
-        Broadcaster.unregister(account, this);
+        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
-            for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                try {
-                    Broadcaster.getPartiteThread().get(i).interrupt();
-                    Broadcaster.getPartiteThread().get(i).stopTimer();
-                } catch (Exception e) {
-                   e.printStackTrace();
-                }
-            }
-            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
-            reset();
+            terminaPartitaFromTeacher();
         }else if(Broadcaster.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
+            Broadcaster.unregister(account, this);
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
-            reset();
+            terminaPartitaFromTeacher();
         }
     }
 
     @Override
-    public void browserIsLeavingCalled(Account account) {
+    public void terminaPartitaFromTeacher() {
         try {
             getUI().get().access(() -> {
-                DialogUtility dialogUtility = new DialogUtility();
-                dialogUtility.partitaTerminata(account);
+                reset();
+                removeAll();
+                if(account.getTypeAccount().equals("student")) {
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.partitaTerminataFromTeacher();
+                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+                }else{
+                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+                }
             });
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
     }
