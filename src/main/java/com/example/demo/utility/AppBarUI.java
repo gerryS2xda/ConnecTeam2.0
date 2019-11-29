@@ -80,6 +80,13 @@ public class AppBarUI extends HorizontalLayout {
         Button terminateGame = new Button("Termina partita", close);
         terminateGame.setHeight(APPBAR_HEIGHT);
         terminateGame.getStyle().set("background-color", "#0000");
+        terminateGame.addClickListener(buttonClickEvent -> {
+           if(nameGame.equals("Guess")){
+               com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.partitanonVincente();
+           }else if(nameGame.equals("Maty")){
+               com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.partitanonVincente();
+           }
+        });
 
         horizontalLayout.add(infoBtn, terminateGame);
         return horizontalLayout;

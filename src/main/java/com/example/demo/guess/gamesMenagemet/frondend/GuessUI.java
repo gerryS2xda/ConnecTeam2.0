@@ -484,6 +484,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 add(fireWorks);
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaVincente(parola, punteggio, game);
+                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
             }else if(account.getTypeAccount().equals("teacher")){
                 Broadcaster.unregister(account, this);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
@@ -501,6 +502,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(account.getTypeAccount().equals("student")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitanonVincente(game);
+                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
             }else if(account.getTypeAccount().equals("teacher")){
                 Broadcaster.unregister(account, this);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
@@ -540,7 +542,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @ClientCallable
     public void browserIsLeaving() {
-        System.out.println("GuessUI.browserIsLeaving() e' stato invocato");
+        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(!Broadcaster.getListeners().containsKey(account)){
             return;
