@@ -81,6 +81,16 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             }
             setId("TeacherMainUITabTest");
 
+            //verifica se l'account che sta tentando di accedere e' gia' loggato su un altro browser
+            for(Account i : Broadcaster.getTeacherListeners().keySet()){
+                if(i.equals(account)){
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
+                    return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
+                }
+            }
+
+
             //Registra un teacher listener
             Broadcaster.registerTeacher(account, this);
             Broadcaster.setTeacherSession(VaadinService.getCurrentRequest().getWrappedSession());

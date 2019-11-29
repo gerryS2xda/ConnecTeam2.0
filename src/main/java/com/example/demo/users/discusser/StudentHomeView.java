@@ -10,6 +10,7 @@ import com.example.demo.error.ErrorPage;
 import com.example.demo.users.event.AccountListEventBeanPublisher;
 import com.example.demo.users.broadcaster.BroadcastListener;
 import com.example.demo.users.broadcaster.Broadcaster;
+import com.example.demo.utility.DialogUtility;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
@@ -55,6 +56,16 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             if(account == null)
                 throw new IllegalArgumentException("StudentHomeView: Account is null");
+
+            //verifica se l'account che sta tentando di accedere e' gia' loggato su un altro browser
+            for(Account i : Broadcaster.getListeners().keySet()){
+                if(i.equals(account)){
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
+                    return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
+                }
+            }
+
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             if(partitaRepository == null)
                 throw new IllegalArgumentException("StudentHomeView: PartitaRepository is null");
