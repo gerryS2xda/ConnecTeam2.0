@@ -17,6 +17,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -138,6 +139,12 @@ public class DialogUtility extends VerticalLayout {
 
     public void partitaVincente(String parola, int punteggio, Game game){
         Dialog dialog = new Dialog();
+        dialog.setWidth("100%"); //min width: 600px (da impostare)
+        dialog.setMinHeight("420px");
+        dialog.setHeight("100%");
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setCloseOnEsc(false);
+
         VerticalLayout content = new VerticalLayout();
         Image image;
         Label label;
@@ -180,8 +187,6 @@ public class DialogUtility extends VerticalLayout {
                 }));
         UI.getCurrent().getPage().addStyleSheet(
                 "base://" + resource.getResourceUri().toString());
-        dialog.setWidth("600px");
-        dialog.setHeight("420px");
         listGiochi.addClickListener(buttonClickEvent -> {
             GuessUI.reset();
             UI.getCurrent().navigate(ControllerMainUI.class);
@@ -196,6 +201,12 @@ public class DialogUtility extends VerticalLayout {
     public void partitanonVincente(Game game){
         Label punti;
         Dialog dialog = new Dialog();
+        dialog.setWidth("100%");    //min width: 600px (da impostare)
+        dialog.setMinHeight("420px");
+        dialog.setHeight("100%");
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setCloseOnEsc(false);
+
         VerticalLayout content = new VerticalLayout();
         Image image;
         Label label;
@@ -207,7 +218,6 @@ public class DialogUtility extends VerticalLayout {
             image.setHeight("200px");
             label = new Label("Hai perso, ritenta!");
             label.getStyle().set("font-size","30px");
-            dialog.setWidth("600px");
             punti.getStyle().set("font-size","30px");
         }else {
             punti = new Label("Hai comunque ottenuto: "+5+ " punti");
@@ -220,14 +230,19 @@ public class DialogUtility extends VerticalLayout {
             image1.setWidth("70px");
             label.add(image1);
             label.getStyle().set("font-size","30px");
-            dialog.setWidth("800px");
             punti.getStyle().set("font-size","30px");
         }
 
-        Button listGiochi = new Button("Vai alla lista giochi");
+        HorizontalLayout btnContainer = new HorizontalLayout();
+        Button listGiochi = new Button("Vai alla sala di attesa");
         listGiochi.addClassName("my-style2");
+
+        Button closePage = new Button("Chiudi pagina");
+        closePage.addClassName("my-style2");
+
         content.addClassName("my-style");
         content.setAlignItems(Alignment.CENTER);
+
         String styles = ".my-style { "
                 + " }"
                 + " .my-style2 { "
@@ -243,14 +258,23 @@ public class DialogUtility extends VerticalLayout {
                 }));
         UI.getCurrent().getPage().addStyleSheet(
                 "base://" + resource.getResourceUri().toString());
-        dialog.setHeight("420px");
+
         listGiochi.addClickListener(buttonClickEvent -> {
             GuessUI.reset();
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
             dialog.close();
             UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
-        content.add(image,label,punti,listGiochi);
+
+        closePage.addClickListener(buttonClickEvent -> {
+            GuessUI.reset();
+            dialog.close();
+            UI.getCurrent().getPage().executeJs("window.close();");
+        });
+
+        btnContainer.add(listGiochi, closePage);
+
+        content.add(image,label,punti,btnContainer);
         dialog.add(content);
         dialog.open();
     }
@@ -258,6 +282,9 @@ public class DialogUtility extends VerticalLayout {
     public void partitaTerminata(Account account){
 
         Dialog dialog = new Dialog();
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setCloseOnEsc(false);
+        
         Label label = new Label("Partita terminta da: "+account.getNome());
         Button button = new Button("Vai alla home");
         button.addClickListener(buttonClickEvent -> {
@@ -275,8 +302,8 @@ public class DialogUtility extends VerticalLayout {
         Dialog d = new Dialog();
         d.setCloseOnEsc(false);
         d.setCloseOnOutsideClick(false);
-        d.setWidth("320px");
-        d.setHeight("160px");
+        d.setWidth("100%");
+        d.setHeight("100%");
 
         VerticalLayout content = new VerticalLayout();
         content.setSpacing(false);
