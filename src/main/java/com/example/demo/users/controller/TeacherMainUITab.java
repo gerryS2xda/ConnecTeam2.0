@@ -298,6 +298,10 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             }
         });
         newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
+        newGame.addClickListener(event ->{
+            InfoEventUtility infoEventUtility = new InfoEventUtility();
+            infoEventUtility.infoEventForTeacher("Coming soon...", "green");
+        });
         panel1.add(guess, maty, newGame);
         Div gamesItem = addDivInAccordionPanelContent("Giochi", ic, "0px");
         gamesItem.getStyle().set("width", "230px");
