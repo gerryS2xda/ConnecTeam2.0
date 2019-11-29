@@ -67,6 +67,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     private Div maty;
     private Div newGame;
     private EndGameEventBeanPublisher endGamePublisher;
+    private boolean isShowErrorDialog = false;
 
 
     public TeacherMainUITab(@Autowired StartGameEventBeanPublisher startGameEventPublisher, @Autowired EndGameEventBeanPublisher endGameEventBeanPublisher){
@@ -86,6 +87,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 if(i.equals(account)){
                     DialogUtility dialogUtility = new DialogUtility();
                     dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
+                    isShowErrorDialog = true;
                     return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
                 }
             }
@@ -366,6 +368,9 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     //Implements method of BeforeLeaveObserver interface
     @Override
     public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
+        if(isShowErrorDialog)
+            return; //Se viene mostrato il dialog di errore -> esci da questo metodo
+
         Broadcaster.unregisterTeacher(account, this);
         Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher

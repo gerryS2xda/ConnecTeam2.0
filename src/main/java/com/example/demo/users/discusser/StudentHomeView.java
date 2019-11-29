@@ -44,6 +44,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private AccountListEventBeanPublisher accountEventListpublisher;
     private VerticalLayout main;
     private Paragraph msgAttesa;
+    private boolean isShowErrorDialog = false;
 
     public StudentHomeView(@Autowired AccountListEventBeanPublisher accountEventPublisher) {
 
@@ -62,6 +63,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
                 if(i.equals(account)){
                     DialogUtility dialogUtility = new DialogUtility();
                     dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
+                    isShowErrorDialog = true;
                     return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
                 }
             }
@@ -214,15 +216,15 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         System.out.println("StudentHomeView: beforeLeave() is invoking");
+        if(isShowErrorDialog)
+            return; //Se viene mostrato il dialog di errore -> esci da questo metodo
 
-        if(Broadcaster.getListeners().containsKey(account)) {
-            Map<Account, String> tempList = new HashMap<>();    //invia solo account da cancellare tramite HashMap
-            tempList.put(account, "remove");
-            accountEventListpublisher.doStuffAndPublishAnEvent(tempList, "remove"); //invia event per rimozione account da accountList event inviato in precedenza
+        Map<Account, String> tempList = new HashMap<>();    //invia solo account da cancellare tramite HashMap
+        tempList.put(account, "remove");
+        accountEventListpublisher.doStuffAndPublishAnEvent(tempList, "remove"); //invia event per rimozione account da accountList event inviato in precedenza
 
-            Broadcaster.unregister(account, this);
-            UI.getCurrent().setPollInterval(-1);
-        }
+        Broadcaster.unregister(account, this);
+        UI.getCurrent().setPollInterval(-1);
     }
 
     //Implements methods of BroadcastListener interface
