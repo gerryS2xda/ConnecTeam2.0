@@ -74,12 +74,13 @@ public class NavBar extends HorizontalLayout {
         tre.add(statisticheIcon,routerLink2);
 
         //Container per pulsante "Logout" e link collegamento
-        Div quattro = new Div();
+        HorizontalLayout quattro = new HorizontalLayout();
+        //Div quattro = new Div();
         Icon logoutIcon = new Icon(VaadinIcon.SIGN_OUT);
         logoutIcon.setSize("30px");
         logoutIcon.setColor("#007d99");
         quattro.getStyle().set("position","absolute");
-        quattro.getStyle().set("left","89%");
+        quattro.getStyle().set("left","80%");
         Button routerLink3 = new Button("Logout");
         routerLink3.addClickListener(buttonClickEvent -> {
             VaadinSession.getCurrent().getSession().invalidate();
