@@ -61,6 +61,8 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             setId("StudentHomeView");
 
+            UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //access al <body> element
+
             NavBar navBar = new NavBar();
             add(navBar);
 
