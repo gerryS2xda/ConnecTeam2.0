@@ -208,6 +208,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             accountEventListpublisher.doStuffAndPublishAnEvent(tempList, "remove"); //invia event per rimozione account da accountList event inviato in precedenza
 
             Broadcaster.unregister(account, this);
+            UI.getCurrent().setPollInterval(-1);
         }
     }
 
