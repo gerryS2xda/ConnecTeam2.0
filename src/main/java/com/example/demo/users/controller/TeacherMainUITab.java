@@ -12,6 +12,7 @@ import com.example.demo.users.broadcaster.BroadcastListenerTeacher;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.DialogUtility;
+import com.example.demo.utility.InfoEventUtility;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.accordion.AccordionPanel;
@@ -263,11 +264,8 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 settings.removeClassName("highlight");
                 maty.removeClassName("highlight");
             }else{
-                Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
-                Notification notification = new Notification(content);
-                notification.setDuration(4000);
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.open();
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti", "black");
             }
         });
         maty = addDivInAccordionPanelContent("Maty", null, "64px");
@@ -295,11 +293,8 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 settings.removeClassName("highlight");
                 guess.removeClassName("highlight");
             }else{
-                Label content = new Label("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti");
-                Notification notification = new Notification(content);
-                notification.setDuration(4000);
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.open();
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti", "black");
             }
         });
         newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
@@ -385,7 +380,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     @Override
     public void startGameInBackground(String game){
         if(game.equals("Guess")){
-            getUI().get().access(()->{
+            getUI().get().accessSynchronously(()->{
                 guessView = new GuessUI(endGamePublisher);
                 add(guessView);
                 guessView.getStyle().set("display", "none");
