@@ -97,18 +97,6 @@ public class Broadcaster implements Serializable {
         }
     }
 
-    public static synchronized void browserIsLeavingCalled(Account account1){
-        try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.browserIsLeavingCalled(account1);
-                });
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static Map<Account, BroadcastListener> getListeners() {
         return listeners;
     }
@@ -166,6 +154,35 @@ public class Broadcaster implements Serializable {
         }
     }
 
+    public static synchronized void clearPartiteThread(){
+        int i = 0;
+        while(i < Broadcaster.getPartiteThread().size()){
+            try {
+                Broadcaster.getPartiteThread().get(i).interrupt();
+                Broadcaster.getPartiteThread().get(i).stopTimer();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+        if(i == Broadcaster.getPartiteThread().size()){ //tutti i thread legati alle partite sono terminati
+            Broadcaster.getPartiteThread().clear();
+        }
+    }
+
+    public static synchronized void terminaPartitaFromTeacher(){
+        try {
+            listeners.forEach((account, broadcastListener) -> {
+                executor.execute(() -> {
+                    broadcastListener.terminaPartitaFromTeacher();
+                });
+            });
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    //getter and setter methods
     public static int getIndiziRicevuti() {
         return indiziRicevuti;
     }

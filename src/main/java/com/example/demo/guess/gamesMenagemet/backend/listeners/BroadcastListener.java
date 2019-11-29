@@ -12,5 +12,5 @@ public interface BroadcastListener {
     void parolaVotata();
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();
-    void browserIsLeavingCalled(Account account);
+    void terminaPartitaFromTeacher();
 }

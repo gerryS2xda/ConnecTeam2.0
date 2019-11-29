@@ -82,7 +82,7 @@ public class AppBarUI extends HorizontalLayout {
         terminateGame.getStyle().set("background-color", "#0000");
         terminateGame.addClickListener(buttonClickEvent -> {
            if(nameGame.equals("Guess")){
-               com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.partitanonVincente();
+               com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
            }else if(nameGame.equals("Maty")){
                com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.partitanonVincente();
            }
