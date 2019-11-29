@@ -65,13 +65,20 @@ public class AppBarUI extends HorizontalLayout {
         horizontalLayout.getStyle().set("position", "absolute");
         horizontalLayout.getStyle().set("left", "60%");
 
-        Dialog d = descrizioneGiocoDialog();
+        DialogUtility dialogUtility = new DialogUtility();
+
         Icon info = new Icon(VaadinIcon.INFO_CIRCLE_O);
         info.setSize(ICON_BTN_SIZE);
         Button infoBtn = new Button("Info", info);
         infoBtn.setHeight(APPBAR_HEIGHT);
         infoBtn.getStyle().set("background-color", "#0000");
         infoBtn.addClickListener(buttonClickEvent -> {
+            Dialog d = new Dialog();
+            if(nameGame.equals("Guess")){
+                d = dialogUtility.descrizioneGiocoDialog(new Guess());
+            }else if(nameGame.equals("Maty")){
+                d = dialogUtility.descrizioneGiocoDialog(new Maty());
+            }
             d.open();
         });
 
@@ -90,46 +97,6 @@ public class AppBarUI extends HorizontalLayout {
 
         horizontalLayout.add(infoBtn, terminateGame);
         return horizontalLayout;
-    }
-
-    private Dialog descrizioneGiocoDialog(){
-        Dialog d = new Dialog();
-        d.setCloseOnEsc(false);
-        d.setCloseOnOutsideClick(false);
-        d.setWidth("640px");
-        d.setHeight("320px");
-
-        VerticalLayout content = new VerticalLayout();
-        content.setSpacing(false);
-        content.setPadding(false);
-        content.setAlignItems(Alignment.CENTER);
-        content.getStyle().set("height", "100%");
-
-        Label title = new Label("Info su Guess");
-        title.getStyle().set("font-size", "32px");
-
-        Label descrizione = new Label();
-        if(nameGame.equals("Guess")){
-            Guess guess = new Guess();
-            descrizione.setText(guess.getDescrizioneLungaGioco());
-        }else if(nameGame.equals("Maty")){
-            Maty maty = new Maty();
-            descrizione.setText(maty.getDescrizioneLungaGioco());
-        }
-        descrizione.getStyle().set("font-size", "16px");
-
-        Button cancelButton = new Button("Close");
-        cancelButton.getStyle().set("background-color","#007d99");
-        cancelButton.getStyle().set("cursor","pointer");
-        cancelButton.getStyle().set("color","white");
-        cancelButton.getStyle().set("margin-top", "50px");
-        cancelButton.addClickListener(buttonClickEvent -> {
-            d.close();
-        });
-        content.add(title, descrizione, cancelButton);
-
-        d.add(content);
-        return d;
     }
 
     //definire pulsante per aprire e chiudere la navbar vertical

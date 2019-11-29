@@ -257,44 +257,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         b.getStyle().set("margin-left","36px");
         b.getStyle().set("cursor","pointer");
         b.getStyle().set("color","white");
-        Dialog d = descrizioneGiocoDialog();
+
+        DialogUtility dialogUtility = new DialogUtility();
+        Dialog d = dialogUtility.descrizioneGiocoDialog(guess);
         b.addClickListener(buttonClickEvent -> {
             d.open();
         });
 
         hor1.add(nomeUser, b);
         return hor1;
-    }
-
-    private Dialog descrizioneGiocoDialog(){
-        Dialog d = new Dialog();
-        d.setCloseOnEsc(false);
-        d.setCloseOnOutsideClick(false);
-        d.setWidth("640px");
-        d.setHeight("320px");
-
-        VerticalLayout content = new VerticalLayout();
-        content.setSpacing(false);
-        content.setPadding(false);
-        content.setAlignItems(Alignment.CENTER);
-        content.getStyle().set("height", "100%");
-
-        Label title = new Label("Info su Guess");
-        title.getStyle().set("font-size", "32px");
-        Label descrizione = new Label(guess.getDescrizioneLungaGioco());
-        descrizione.getStyle().set("font-size", "16px");
-        Button cancelButton = new Button("Close");
-        cancelButton.getStyle().set("background-color","#007d99");
-        cancelButton.getStyle().set("cursor","pointer");
-        cancelButton.getStyle().set("color","white");
-        cancelButton.getStyle().set("margin-top", "50px");
-        cancelButton.addClickListener(buttonClickEvent -> {
-            d.close();
-        });
-        content.add(title, descrizione, cancelButton);
-
-        d.add(content);
-        return d;
     }
 
     //Implementazione metodi della Java interface 'BroadcasterListener'
