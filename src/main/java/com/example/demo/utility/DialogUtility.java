@@ -3,6 +3,7 @@ package com.example.demo.utility;
 
 import com.example.demo.games.Guess;
 import com.example.demo.games.Maty;
+import com.example.demo.mainView.MainView;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
@@ -385,5 +386,43 @@ public class DialogUtility extends VerticalLayout {
 
         d.add(content);
         return d;
+    }
+
+    public void showErrorDialog(String title, String motivazione, String colorTxt){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label titleLab = new Label(title);
+        titleLab.getStyle().set("font-size", "32px");
+        titleLab.getStyle().set("color", colorTxt);
+
+        Label descrizione = new Label();
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.setText(motivazione);
+        descrizione.getStyle().set("color", colorTxt);
+
+        Button cancelButton = new Button("Vai alla Home");
+        cancelButton.getStyle().set("background-color","#007d99");
+        cancelButton.getStyle().set("cursor","pointer");
+        cancelButton.getStyle().set("color","white");
+        cancelButton.getStyle().set("margin-top", "25px");
+        cancelButton.addClickListener(buttonClickEvent -> {
+            d.close();
+            VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente
+            UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
+        });
+        content.add(titleLab, descrizione, cancelButton);
+
+        d.add(content);
+        d.open();
     }
 }

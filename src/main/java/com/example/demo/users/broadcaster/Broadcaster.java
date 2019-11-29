@@ -27,6 +27,7 @@ public class Broadcaster  {
     static int countGuessUser = 0;
     static int countMatyUser = 0;
 
+    //static methods for discusser (student)
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.put(account, "");
         listeners.put(account, broadcastListener);
@@ -85,7 +86,7 @@ public class Broadcaster  {
         System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
     }
 
-    //static method for teacher (TeacherMainUITab)
+    //static methods for teacher (TeacherMainUITab)
     public static synchronized Registration registerTeacher(Account account, BroadcastListenerTeacher broadcastListener) {
         teacherlisteners.put(account, broadcastListener);
         System.out.println("Broadcaster User: chiamato registerTeacher "+ teacherlisteners.size()+ "  ui:"+ broadcastListener);
@@ -124,7 +125,7 @@ public class Broadcaster  {
         return teacherSession;
     }
 
-    //static method for GestioneStudentUI
+    //static methods for GestioneStudentUI
     public static synchronized Registration registerTeacherForGestStud(Account account, BroadcastListenerTeacher broadcastListener) {
         gestStudlisteners.put(account, broadcastListener);
         System.out.println("Broadcaster User: chiamato registerTeacherForGestStud "+ gestStudlisteners.size()+ "  ui:"+ broadcastListener);
