@@ -505,7 +505,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void browserIsLeaving() {
 
         //Pre-condition
-        if(!Broadcaster.getListeners().containsKey(account)){
+        boolean flag = false;
+        for(Account i : Broadcaster.getListeners().keySet()){
+            if(i.equals(account)){
+                flag = true;
+                break;
+            }
+        }
+        if(!flag){  //se il listener non contiene questo 'account' -> non fare nulla
             return;
         }
 
