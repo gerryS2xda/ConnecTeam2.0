@@ -284,11 +284,30 @@ public class DialogUtility extends VerticalLayout {
         Dialog dialog = new Dialog();
         dialog.setCloseOnOutsideClick(false);
         dialog.setCloseOnEsc(false);
-        
-        Label label = new Label("Partita terminta da: "+account.getNome());
+
+        Label label = new Label("Partita terminata da: "+account.getNome());
         Button button = new Button("Vai alla home");
         button.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
+            dialog.close();
+            UI.getCurrent().getPage().reload();
+        });
+        button.getStyle().set("margin-left","20px");
+        dialog.add(label,button);
+        dialog.open();
+
+    }
+
+    public void partitaTerminataFromTeacher(){
+
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setCloseOnEsc(false);
+
+        Label label = new Label("Partita terminata dal teacher");
+        Button button = new Button("Vai alla home");
+        button.addClickListener(buttonClickEvent -> {
+            UI.getCurrent().navigate(StudentHomeView.class);
             dialog.close();
             UI.getCurrent().getPage().reload();
         });
