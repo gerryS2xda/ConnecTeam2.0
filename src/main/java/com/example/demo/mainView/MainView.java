@@ -333,7 +333,6 @@ public class MainView extends VerticalLayout {
         b.addClickListener(buttonClickEvent -> {
 
             Account a = accountRepository.findOneByEmail("gregorio@gmail.com");
-            a.setTypeAccount("teacher"); //teacher per il tester
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -350,7 +349,6 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("luigi@gmail.com");
-            a.setTypeAccount("teacher"); //teacher per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -368,7 +366,6 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("michela@gmail.com");
-            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -385,7 +382,6 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("francesca@gmail.com");
-            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -402,7 +398,6 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("antonio@gmail.com");
-            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -419,7 +414,6 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("gianluca@gmail.com");
-            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -436,7 +430,6 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
             Account a = accountRepository.findOneByEmail("simone@gmail.com");
-            a.setTypeAccount("student"); //student per il tester (no salvato su DB)
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);

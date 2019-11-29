@@ -32,13 +32,13 @@ public class DemoApplication {
     public CommandLineRunner initializeData() {
         return args -> {
 
-            Account gregorio=new Account("Gregorio", "gregorio@gmail.com", "gregorio","0");
-            Account luigi=new Account("Luigi", "luigi@gmail.com", "luigi","0");
-            Account francesca=new Account("Francesca", "francesca@gmail.com", "francesca","1");
-            Account antonio=new Account("Antonio", "antonio@gmail.com", "antonio","0");
-            Account gianluca=new Account("Gianluca", "gianluca@gmail.com", "gianluca","0");
-            Account michela=new Account("Michela", "michela@gmail.com", "michela","1");
-            Account simone = new Account("Simone", "simone@gmail.com", "simone","0");
+            Account gregorio=new Account("Gregorio", "gregorio@gmail.com", "gregorio","0", "teacher");
+            Account luigi=new Account("Luigi", "luigi@gmail.com", "luigi","0", "teacher");
+            Account francesca=new Account("Francesca", "francesca@gmail.com", "francesca","1", "student");
+            Account antonio=new Account("Antonio", "antonio@gmail.com", "antonio","0", "student");
+            Account gianluca=new Account("Gianluca", "gianluca@gmail.com", "gianluca","0", "student");
+            Account michela=new Account("Michela", "michela@gmail.com", "michela","1", "student");
+            Account simone = new Account("Simone", "simone@gmail.com", "simone","0", "student");
 
             accountRepository.save(simone);
             accountRepository.save(luigi);
