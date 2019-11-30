@@ -1,6 +1,7 @@
 package com.example.demo.userOperation;
 
 import com.example.demo.mainView.MainView;
+import com.example.demo.users.discusser.StudentHomeView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
@@ -15,7 +16,6 @@ import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
-
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 @StyleSheet("frontend://stile/stile.css")
 public class NavBar extends HorizontalLayout {
 
-
+    //Questa barra di navigazione e' stata usata solo per i discusser
     public NavBar (){
 
         //Style nav bar orizzontale
@@ -40,7 +40,7 @@ public class NavBar extends HorizontalLayout {
         Icon homeIcon = new Icon(VaadinIcon.HOME);
         homeIcon.setSize("30px");
         homeIcon.setColor("#007d99");
-        RouterLink routerLink = new RouterLink("Home", HomeView.class);
+        RouterLink routerLink = new RouterLink("Home", StudentHomeView.class);
         routerLink.getStyle().set("text-decoration", "none");
         routerLink.addClassName("router-link");
         unorderedList.add(routerLink);
