@@ -82,14 +82,10 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             }
             setId("TeacherMainUITabTest");
 
+            String actualWebBrowser = VaadinSession.getCurrent().getBrowser().getBrowserApplication();
             //verifica se l'account che sta tentando di accedere e' gia' loggato su un altro browser
-            for(Account i : Broadcaster.getTeacherListeners().keySet()){
-                if(i.equals(account)){
-                    DialogUtility dialogUtility = new DialogUtility();
-                    dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
-                    isShowErrorDialog = true;
-                    return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
-                }
+            if (checkIfAccountIsAlreadyLogged(actualWebBrowser)) {  //utilizza confronto tra browser attuale e quello memorizzato al primo accesso
+                return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
             }
 
 
@@ -117,6 +113,25 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+    }
+
+    //private methods
+    private boolean checkIfAccountIsAlreadyLogged(String actualWebBrowser){
+        isShowErrorDialog = false;
+
+        for (Account i : Broadcaster.getAccountWithWebBrowserHashMap().keySet()) {
+            if (i.equals(account)) {   //se e' presente un account nella hashmap
+                String str = Broadcaster.getAccountWithWebBrowserHashMap().get(i).getBrowserApplication();
+                if(!actualWebBrowser.equals(str)) { //se il browser associato ad 'account' e' diverso da quello nella hashmap ad 'i'
+                    //'account' proviene da un altro browser
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
+                    isShowErrorDialog = true;
+                    break;
+                } //else: se sono uguali significa che si sta eseguendo un refresh della pagina
+            }
+        }
+        return isShowErrorDialog;
     }
 
     //Implementazione navBar verticale da usare come 'Tab' per navigare tra le varie View
@@ -373,6 +388,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
 
         Broadcaster.unregisterTeacher(account, this);
         Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
+        Broadcaster.removeAccountWithWebBrowser(account);
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
         if(guessView != null){
             guessView.browserIsLeaving();   //Necessario poiche' GuessUI nel teacher non ha una pagina dedicata (UI.navigate)

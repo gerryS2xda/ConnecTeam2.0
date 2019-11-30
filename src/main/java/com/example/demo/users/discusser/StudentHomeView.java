@@ -58,21 +58,17 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             if(account == null)
                 throw new IllegalArgumentException("StudentHomeView: Account is null");
 
-            //verifica se l'account che sta tentando di accedere e' gia' loggato su un altro browser
-            for(Account i : Broadcaster.getListeners().keySet()){
-                if(i.equals(account)){
-                    DialogUtility dialogUtility = new DialogUtility();
-                    dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
-                    isShowErrorDialog = true;
-                    return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
-                }
-            }
-
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             if(partitaRepository == null)
                 throw new IllegalArgumentException("StudentHomeView: PartitaRepository is null");
 
             setId("StudentHomeView");
+
+            String actualWebBrowser = VaadinSession.getCurrent().getBrowser().getBrowserApplication();
+            //verifica se l'account che sta tentando di accedere e' gia' loggato su un altro browser
+            if (checkIfAccountIsAlreadyLogged(actualWebBrowser)) {  //utilizza confronto tra browser attuale e quello memorizzato al primo accesso
+                return; //necessario, altrimenti viene caricata la pagina anche se mostra il Dialog
+            }
 
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //access al <body> element
 
@@ -96,6 +92,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             add(main);
 
             Broadcaster.register(account, this);
+            Broadcaster.addNewAccountWithWebBrowser(account, VaadinSession.getCurrent().getBrowser());
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "add"); //publish a new event for GestStudentUI
             UI.getCurrent().setPollInterval(3000);
@@ -115,6 +112,24 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     }
 
     //private methods
+    private boolean checkIfAccountIsAlreadyLogged(String actualWebBrowser){
+        isShowErrorDialog = false;
+
+        for (Account i : Broadcaster.getAccountWithWebBrowserHashMap().keySet()) {
+             if (i.equals(account)) {   //se e' presente un account nella hashmap
+                 String str = Broadcaster.getAccountWithWebBrowserHashMap().get(i).getBrowserApplication();
+                 if(!actualWebBrowser.equals(str)) { //se il browser associato ad 'account' e' diverso da quello nella hashmap ad 'i'
+                     //'account' proviene da un altro browser
+                     DialogUtility dialogUtility = new DialogUtility();
+                     dialogUtility.showErrorDialog("Errore", "L'utente che sta tentando di accedere al sito e' gia' loggato su un altro web browser!", "red");
+                     isShowErrorDialog = true;
+                     break;
+                 } //else: se sono uguali significa che si sta eseguendo un refresh della pagina
+             }
+        }
+        return isShowErrorDialog;
+    }
+
     private HorizontalLayout homeUser() {
 
         HorizontalLayout main = new HorizontalLayout();
@@ -224,6 +239,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         accountEventListpublisher.doStuffAndPublishAnEvent(tempList, "remove"); //invia event per rimozione account da accountList event inviato in precedenza
 
         Broadcaster.unregister(account, this);
+        Broadcaster.removeAccountWithWebBrowser(account);
         UI.getCurrent().setPollInterval(-1);
     }
 
@@ -235,7 +251,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             showErrorPage();
         }else {
             getUI().get().access(() -> {
-                System.out.println("StudentHomeView - redirectToGuess: a: " + account.toString());
                 getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/guess\";");
             });
         }

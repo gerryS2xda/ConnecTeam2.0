@@ -2,6 +2,7 @@ package com.example.demo.users.broadcaster;
 
 import com.example.demo.entity.Account;
 import com.example.demo.users.event.AccountListEvent;
+import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.shared.Registration;
 import java.util.HashMap;
@@ -16,22 +17,31 @@ public class Broadcaster  {
     private static boolean isMatyStart = false;
 
     //static field
-    static Executor executor = Executors.newSingleThreadExecutor();
-    static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener (per gli studenti)
-    static Map<Account, BroadcastListenerTeacher> gestStudlisteners = new HashMap();  //per GestioneStudentUI (usato per ricevere eventi su accountlist)
-    static Map<Account, BroadcastListenerTeacher> teacherlisteners = new HashMap(); //mappa un teacher account ad TeacherMainUITab
-    static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
-    static Map<Account, String> accountListReceive = new HashMap<>(); //lista di account ricevuti dall'event
-    static WrappedSession teacherSession; //memorizza la sessione del teacher per GuessUI e MatyUI (no memorizzazione stato partita)
-    static int in = 0;
-    static int countGuessUser = 0;
-    static int countMatyUser = 0;
+    private static Executor executor = Executors.newSingleThreadExecutor();
+    private static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener (per gli studenti)
+    private static Map<Account, BroadcastListenerTeacher> gestStudlisteners = new HashMap();  //per GestioneStudentUI (usato per ricevere eventi su accountlist)
+    private static Map<Account, BroadcastListenerTeacher> teacherlisteners = new HashMap(); //mappa un teacher account ad TeacherMainUITab
+    private static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
+    private static Map<Account, String> accountListReceive = new HashMap<>(); //lista di account ricevuti dall'event
+    private static WrappedSession teacherSession; //memorizza la sessione del teacher per GuessUI e MatyUI (no memorizzazione stato partita)
+    private static int in = 0;
+    private static int countGuessUser = 0;
+    private static int countMatyUser = 0;
+    private static Map<Account, WebBrowser> accountWB = new HashMap<>(); //associa ogni account a un web browser (necessario per controllo account gia' loggati)
+
+    public static synchronized void addNewAccountWithWebBrowser(Account account, WebBrowser wb){
+        accountWB.put(account, wb);
+    }
+
+    public static synchronized void removeAccountWithWebBrowser(Account account){
+        accountWB.remove(account);
+    }
 
     //static methods for discusser (student)
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.put(account, "");
         listeners.put(account, broadcastListener);
-        System.out.println("Broadcaster User: chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
+        System.out.println("Broadcaster User: chiamato register "+ listeners.size()+ "  Account:"+ account.getNome());
         return () -> {
             synchronized (Broadcaster.class) {
                 listeners.remove(account);
@@ -172,6 +182,8 @@ public class Broadcaster  {
         });
     }
 
+
+
     //getter and setter method
     public static Map<Account, BroadcastListener> getListeners() {
         return listeners;
@@ -216,5 +228,9 @@ public class Broadcaster  {
     public static void resetCounterUserGame(){
         countGuessUser = 0;
         countMatyUser = 0;
+    }
+
+    public static Map<Account, WebBrowser> getAccountWithWebBrowserHashMap(){
+        return accountWB;
     }
 }
