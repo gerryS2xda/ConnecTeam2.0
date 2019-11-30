@@ -13,12 +13,12 @@ public class StartGameEventListener {
     @Async  //esegui in un thread differente
     @EventListener
     public void handleReceiveStarGameEvent(StartGameEvent event){
-        System.out.println("EVENTLISTENER: Receive a custom event: " + event.getAccountList());
+        System.out.println("StartGameEventListener: receive a event.. ");
         Map<Account, String> dataReceive = event.getAccountList();
 
         for(Account i : dataReceive.keySet()){ //per tutti gli account ottenuti dall'event e quindi assegnati dal teacher
             String game = dataReceive.get(i); //dammi il nome del gioco associato all'account
-            System.out.println("handleReceiveStarGameEvent: Account: " + i.getNome() + " game:  " + game);
+            System.out.println("StartGameEventListener.handleReceiveStarGameEvent(): Account: " + i.getNome() + " game:  " + game);
             if (game.equals("Guess")) { //indirizza il giocatore nella pagina di Guess
                 Broadcaster.redirectToGuess(i);
             } else if (game.equals("Maty")) { //indirizza il giocatore nella pagina di Maty

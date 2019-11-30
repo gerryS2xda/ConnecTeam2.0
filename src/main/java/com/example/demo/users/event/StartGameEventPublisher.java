@@ -15,7 +15,7 @@ public class StartGameEventPublisher implements StartGameEventBeanPublisher{
 
     //method for publish an event
     public void doStuffAndPublishAnEvent(Map<Account, String> eventContent, boolean statusPartita){
-        System.out.println("Publish a custom event...");
+        System.out.println("StartGameEventPublisher: Publish a custom event...");
         StartGameEvent startGameEventEvent = new StartGameEvent(this, eventContent, statusPartita);
         applicationEventPublisher.publishEvent(startGameEventEvent);
     }

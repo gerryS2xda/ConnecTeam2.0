@@ -13,7 +13,8 @@ public class AccountListEventListener {
     @Async
     @EventListener
     public void handleReceiveAccountListEvent(AccountListEvent event){
-        System.out.println("EventListenerAccountTest: sono stato chiamato");
+        System.out.println("AccountListEventListener: receive an event");
+
         Broadcaster.setAccountListReceive(event);
         if(event.getOperationName().equals("add")){
             Broadcaster.updateListaUtentiConnessi();

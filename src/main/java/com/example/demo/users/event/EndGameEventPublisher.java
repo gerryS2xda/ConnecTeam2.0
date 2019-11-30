@@ -14,7 +14,7 @@ public class EndGameEventPublisher implements EndGameEventBeanPublisher {
 
     //method for publish an event
     public void doStuffAndPublishAnEvent(String nameGame, Account account, boolean isEndendForAll){
-        System.out.println("Publish an end game event...");
+        System.out.println("EndGameEventPublisher: Publish an end game event...");
         EndGameEvent endGameEvent = new EndGameEvent(this, nameGame, account, isEndendForAll);
         applicationEventPublisher.publishEvent(endGameEvent);
     }
