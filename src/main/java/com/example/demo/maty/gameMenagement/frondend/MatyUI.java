@@ -117,13 +117,14 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 account = (Account) teacherSession.getAttribute("user");
                 accountRepository = (AccountRepository) teacherSession.getAttribute("rep");
                 partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
-                UI.getCurrent().setPollInterval(1000);
             }
 
             matyController = new MatyController(partitaRepository);
 
-            if(account.getTypeAccount().equals("teacher"))
+            if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
+                UI.getCurrent().setPollInterval(1000);
+            }
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
