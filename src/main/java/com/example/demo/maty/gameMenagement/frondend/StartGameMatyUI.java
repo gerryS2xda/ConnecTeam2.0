@@ -37,7 +37,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private Button button;
     private MatyController matyController;
     private boolean vincente;
-    boolean flag = false;
+    private boolean flag = false;
     private String operazioneLabel;
     private String paroleVotateLabel;
     private String sendParolaButton;
@@ -48,18 +48,22 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private Div containerNumeriSS = new Div();
     private Div box = new Div();
     private Div wrapper = new Div();
-    Label cronologiaMosse = new Label("Cosa hanno fatto fino ad ora:");
+    private Label cronologiaMosse = new Label("Cosa hanno fatto fino ad ora:");
+    private boolean isTeacher;
 
-    public StartGameMatyUI(MatyController matyController, Account account) {
+    public StartGameMatyUI(MatyController matyController, Account account, boolean isTeacher) {
 
         try {
-
-            containerNumeriSS.addClassName("containerNumeriSS");
-            box.addClassName("box");
+            //Inizializzazione
             setId("StartGameMatyUI");
             this.account = account;
             this.matyController = matyController;
+            this.isTeacher = isTeacher;
             BroadcasterSuggerisciMaty.register(this);
+
+            containerNumeriSS.addClassName("containerNumeriSS");
+            box.addClassName("box");
+
             Image image = new Image("frontend/img/Maty.jpeg", "maty");
             image.setWidth("200px");
             image.setHeight("200px");
@@ -91,7 +95,13 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             }
             BroadcasterSuggerisciMaty.setOperazione();
             label.addClassName("labelSuggerisci");
-            add(label, image);
+
+            if(isTeacher){  //se teacher, rimuovi logo di maty
+                add(label);
+            }else {
+                add(label, image);
+            }
+
             Div divC = new Div();
             divC.addClassName("container11");
             sendParola.setId("btn");

@@ -156,15 +156,27 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             label.getStyle().set("font-size", "30px");
             device.add(label);
             device.setId("device");
+
             chat.addClassName("chat");
+
+            HorizontalLayout textFieldSendBtn = new HorizontalLayout();
+            textFieldSendBtn.setSpacing(false);
+            textFieldSendBtn.getStyle().set("margin-top", "12px");
             TextField message1 = new TextField();
-            Icon icon = VaadinIcon.PAPERPLANE_O.create();
+            Icon icon = new Icon(VaadinIcon.PAPERPLANE_O);
+            icon.setSize("24px");
             icon.setColor("white");
+            if(isTeacher)
+                icon.getStyle().set("left", "100px");
+
             Button send = new Button(icon);
             message1.addKeyDownListener(Key.ENTER, keyDownEvent -> {
                 String mess = message1.getValue();
                 if (!mess.equals("")) {
-                    BroadcasterChatMaty.broadcast(account.getNome() + ": " + message1.getValue()+":"+account.getId());
+                    if(account.getTypeAccount().equals("teacher"))
+                        BroadcasterChatMaty.broadcast("Teacher: " + message1.getValue()+":"+account.getId());
+                    else
+                        BroadcasterChatMaty.broadcast(account.getNome() + ": " + message1.getValue()+":"+account.getId());
                     message1.setValue("");
                 }
             });
@@ -178,10 +190,11 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 }
             });
             send.addClassName("buttonSendChat");
+            textFieldSendBtn.add(message1, send);
+
             chat.add(messageList);
             device.add(chat);
-            device.add(message1);
-            device.add(send);
+            device.add(textFieldSendBtn);
             add(device);
 
             //Container che mostra numero di utenti connessi e il pulsante 'Gioca' (Sala di attesa)
@@ -189,8 +202,10 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             containerNumeriSS.addClassName("containerNumeriSS");
             box.addClassName("box");
 
-            //Container nome utente e pulsante 'Info' su Guess
-            add(nameUserAndInfoBtnContainer());
+            //Container nome utente e pulsante 'Info' su Maty
+            if(!isTeacher) {
+                add(nameUserAndInfoBtnContainer());
+            }
 
             //Implementazione di un pulsante invisibile 'start' che verra' 'cliccato' dal teacher
             start = new Button();
@@ -228,6 +243,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private void waitAllUserForStartGame(){
         //Blocca esecuzione finche' tutti gli studenti (incluso il teacher) non sono connessi a questa pagina
         while(BroadcasterMaty.getListeners().size() <= maxNumeroStutentiConnessi);
+
+        System.out.println("waitAllUserForStartGame(): Listener: " + BroadcasterMaty.getListeners().size() + " maxNumeroStutentiConnessi: " + maxNumeroStutentiConnessi);
 
         if(account.getTypeAccount().equals("teacher")) {
             if(!isStarted){
@@ -315,7 +332,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             while(!flag) { //finche' la ui non e' attached a this component, cioe' finche' getUI() doesn't contains an UI element
                 if (getUI().isPresent()) {
                     getUI().get().accessSynchronously(() -> { //Locks the session of this UI and runs the provided command right away
-                        StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController, account);
+                        StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
                         verticalLayout.add(startGameMatyUI);
                         verticalLayout.add(secondi/*,indizio*/);
                         indizio.getStyle().set("font-size", "30px");
