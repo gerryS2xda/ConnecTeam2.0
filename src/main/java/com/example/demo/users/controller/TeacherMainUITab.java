@@ -28,12 +28,12 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.NoSuchElementException;
 
 @Push
 @Route("TeacherHomeView")
@@ -295,7 +295,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                     guessView.getStyle().set("display", "none");
                 }
                 if (matyView == null) {
-                    matyView = new MatyUI();
+                    matyView = new MatyUI(endGamePublisher);
                     add(matyView);
                 } else {
                     matyView.getStyle().set("display", "flex");
@@ -377,6 +377,9 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         if(guessView != null){
             guessView.browserIsLeaving();   //Necessario poiche' GuessUI nel teacher non ha una pagina dedicata (UI.navigate)
         }
+        if(matyView != null){
+            matyView.browserIsLeaving();   //Necessario poiche' MatyUI nel teacher non ha una pagina dedicata (UI.navigate)
+        }
     }
 
     //Implementazione 'BroadcasterListenerTeacher'
@@ -398,6 +401,14 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     //Inizializza istanza GuessUI/MatyUI quando teacher avvia la partita e rende la view dedicata non visibile
     @Override
     public void startGameInBackground(String game){
+        //Verifica presenza di qualche eccezione
+        try{
+            if(!getUI().isPresent())
+                throw new NoSuchElementException("TeacherMainUITab.startGameInBackground(): No value present in getUI()");
+        }catch(NoSuchElementException e){
+            e.printStackTrace();
+        }
+
         if(game.equals("Guess")){
             getUI().get().accessSynchronously(()->{
                 guessView = new GuessUI(endGamePublisher);
@@ -405,8 +416,8 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 guessView.getStyle().set("display", "none");
             });
         }else if(game.equals("Maty")){
-            getUI().get().access(()->{
-                matyView = new MatyUI();
+            getUI().get().accessSynchronously(()->{
+                matyView = new MatyUI(endGamePublisher);
                 add(matyView);
                 matyView.getStyle().set("display", "none");
             });
