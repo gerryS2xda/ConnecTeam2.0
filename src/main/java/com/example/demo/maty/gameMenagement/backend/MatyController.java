@@ -10,6 +10,7 @@ import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.db.ItemRepositoryMaty;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -23,9 +24,6 @@ import java.util.*;
 @Lazy
 public class MatyController {
 
-    @Autowired
-    private EndGameEventBeanPublisher endGameEventBeanPublisher;
-
     private ItemRepositoryMaty itemRepository;
     private ItemMaty item;
     private Random random= new Random();
@@ -33,13 +31,14 @@ public class MatyController {
     private List<Account> accounts;
     private int i;
     private int totTime;
-    boolean vinta = false;
-    private Account account = new Account();
+    private boolean vinta = false;
     private PartitaRepository partitaRepository;
+    private WrappedSession teacherSession;
     protected Partita partita;
 
     public MatyController(PartitaRepository partitaRepository){
         this.partitaRepository= partitaRepository;
+        teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
     }
 
     protected void addPunteggio(Punteggio punteggio){
@@ -50,8 +49,14 @@ public class MatyController {
 
         this.partita = parita;
 
-        itemRepository = (ItemRepositoryMaty) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepositoryMaty");
-        partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+        if(VaadinService.getCurrentRequest() != null) {
+            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
+            itemRepository = (ItemRepositoryMaty) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepositoryMaty");
+            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+        }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
+            itemRepository = (ItemRepositoryMaty) teacherSession.getAttribute("itemRepositoryMaty");
+            partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
+        }
 
         int tot = itemRepository.numeroRighe();
         int rand = random.nextInt(tot)+1;
@@ -113,10 +118,6 @@ public class MatyController {
         return partitaThread;
     }
 
-    public void setAccount(Account account){
-        this.account = account;
-    }
-
     public class PartitaThread extends Thread{
         private Timer timer;
         @Override
@@ -168,9 +169,6 @@ public class MatyController {
             partitaThread.stopTimer();
             BroadcasterMaty.setIndiziRicevuti(0);
             BroadcasterMaty.partitanonVincente();
-
-            //invia un event quando la partita termina (BUG: account null)
-            endGameEventBeanPublisher.doStuffAndPublishAnEvent("Maty", account, true);
         }
 
         public void stopTimer(){
