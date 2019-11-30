@@ -452,7 +452,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 wrapper.add(d);
                 wrapper.addClassName("box1");
                 add(wrapper);
-                getElement().executeJavaScript("setRandomColor()");
+                getElement().executeJs("setRandomColor()");
             }
 
         });

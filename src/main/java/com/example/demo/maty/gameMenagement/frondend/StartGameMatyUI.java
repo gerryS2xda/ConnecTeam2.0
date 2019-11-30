@@ -110,7 +110,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             sendParola.addClickListener(buttonClickEvent -> {
                 parolaLayout.removeAll();
-                getElement().executeJavaScript("sends()");
+                getElement().executeJs("sends()");
                 String mess = suggertisci.getValue();
                 if (!mess.equals(BroadcasterMaty.getItems().get(0).getParola())) {
                     if (!mess.equals("")) {
@@ -139,6 +139,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         }
                                         box.removeAll();
                                         wrapper.removeAll();
+
                                         Div circle = new Div();
                                         circle.addClassName("circle");
                                         circle.setId("colorpad1");
@@ -149,6 +150,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         circle.add(paragraph);
                                         box.add(circle);
                                         add(box);
+
                                         Div d = new Div();
                                         d.setWidth(null);
                                         Paragraph p = new Paragraph(mess);
@@ -156,11 +158,15 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         d.addClassName("paer");
                                         d.setId("colorpad");
                                         d.add(p);
+
                                         wrapper.add(d);
                                         wrapper.addClassName("box1");
                                         add(wrapper);
-                                        getElement().executeJavaScript("setRandomColor()");
+
+                                        getElement().executeJs("setRandomColor()");
+
                                         MessageList messageList = new MessageList("message-list");
+
                                         Div div = new Div();
                                         Label label = new Label(mess);
                                         label.getStyle().set("margin-right", "15px");
@@ -199,7 +205,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                                 wrapper.add(d1);
                                                 wrapper.addClassName("box1");
                                                 add(wrapper);
-                                                getElement().executeJavaScript("setRandomColor()");
+                                                getElement().executeJs("setRandomColor()");
                                                 checkIfWin();
                                             }
 
@@ -405,116 +411,59 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             }
 
         });
-
-
-
-
-
-
-
-
-        /*getUI().get().access(() -> {
-            BroadcasterMaty.numeroInserito(operazione);
-            try {
-                MessageList messageList = new MessageList("message-list");
-                Div div = new Div();
-                Label label = new Label(message);
-                label.getStyle().set("margin-right","15px");
-                button = new Button("Elimina ", VaadinIcon.MINUS.create());
-                button.setId("button");
-                button.addClickListener(buttonClickEvent -> {
-                    button.setEnabled(false);
-                    sendParola.setEnabled(true);
-                    int num = Integer.parseInt(message);
-                    if (operazione.equals("somma")) {
-                        BroadcasterMaty.addIntegers(
-                                BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - num);
-                        BroadcasterMaty.numeroInserito(operazione);
-                        checkIfWin();
-                    } else {
-                        BroadcasterMaty.addIntegers(
-                                BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + num);
-                        BroadcasterMaty.numeroInserito(operazione);
-                        checkIfWin();
-                    }
-
-                });
-
-                //deleteButtonStyle();
-                div.add(label, button);
-                messageList.add(div);
-                parolaLayout.add(messageList);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        });
-*/
-
     }
 
     @Override
     public void setOperazione() {
         for (int i = 0; i < BroadcasterSuggerisciMaty.getItems().size(); i++) {
-            try {
-                //System.out.println(BroadcasterSuggerisciMaty.getItems().get(i).getOperazione());
-                String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
-                if (operazione.equalsIgnoreCase("somma")) {
-                    operazioneLabel = "Somma un numero";
-                    paroleVotateLabel = "Il tuo numero è: ";
-                    sendParolaButton = "Somma";
-                    label.setText(operazioneLabel);
-                    paroleVotate.setText(paroleVotateLabel);
-                    sendParola.setText(sendParolaButton);
-                } else {
-                    operazioneLabel = "Sottrai un numero";
-                    paroleVotateLabel = "Il tuo numero è: ";
-                    sendParolaButton = "Sottrai";
-                    label.setText(operazioneLabel);
-                    paroleVotate.setText(paroleVotateLabel);
-                    sendParola.setText(sendParolaButton);
-                }
-            } catch (Exception e) {
-                // System.out.println(e.getMessage());
+            String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
+            if (operazione.equalsIgnoreCase("somma")) {
+                operazioneLabel = "Somma un numero";
+                paroleVotateLabel = "Il tuo numero è: ";
+                sendParolaButton = "Somma";
+                label.setText(operazioneLabel);
+                paroleVotate.setText(paroleVotateLabel);
+                sendParola.setText(sendParolaButton);
+            } else {
+                operazioneLabel = "Sottrai un numero";
+                paroleVotateLabel = "Il tuo numero è: ";
+                sendParolaButton = "Sottrai";
+                label.setText(operazioneLabel);
+                paroleVotate.setText(paroleVotateLabel);
+                sendParola.setText(sendParolaButton);
             }
         }
     }
 
-    void checkIfWin() {
+    public void checkIfWin() {
         for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
             if (i == 0) {
                 flag = false;
             }
-            try {
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            } finally {
-                int punteggio = 0;
-                if (BroadcasterMaty.getIndiziRicevuti() == 0) {
-                    punteggio = 120;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 1) {
-                    punteggio = 100;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 2) {
-                    punteggio = 60;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 3) {
-                    punteggio = 30;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 4) {
-                    punteggio = 10;
-                }
-                vincente = matyController.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),
-                        BroadcasterMaty.getItems().get(i));
-                if (vincente == false && flag == false) {
-                } else if (vincente == true && flag == false) {
-                    BroadcasterMaty.getPartiteThread().get(i).interrupt();
-                    BroadcasterMaty.getPartiteThread().get(i).stopTimer();
-                    BroadcasterMaty.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1)
-                            ,punteggio);
-                }
+            int punteggio = 0;
+            if (BroadcasterMaty.getIndiziRicevuti() == 0) {
+                punteggio = 120;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 1) {
+                punteggio = 100;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 2) {
+                punteggio = 60;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 3) {
+                punteggio = 30;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 4) {
+                punteggio = 10;
             }
+            vincente = matyController.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),
+            BroadcasterMaty.getItems().get(i));
 
+            if (vincente == true && flag == false) {
+               BroadcasterMaty.getPartiteThread().get(i).interrupt();
+               BroadcasterMaty.getPartiteThread().get(i).stopTimer();
+               BroadcasterMaty.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),punteggio);
+            }
         }
     }
 
-    void deleteButtonStyle() {
+    public void deleteButtonStyle() {
         button.getStyle().set("margin-left", "30px");
         button.getStyle().set("cursor", "pointer");
         button.getStyle().set("color", "white");
