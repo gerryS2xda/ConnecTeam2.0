@@ -91,7 +91,7 @@ public class AppBarUI extends HorizontalLayout {
            if(nameGame.equals("Guess")){
                com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
            }else if(nameGame.equals("Maty")){
-               com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.partitanonVincente();
+               com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
            }
         });
 
