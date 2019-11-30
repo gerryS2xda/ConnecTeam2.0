@@ -1,6 +1,5 @@
 package com.example.demo.guess.gamesMenagemet.frondend;
 
-import com.example.demo.entity.Account;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
@@ -9,7 +8,6 @@ import com.example.demo.guess.gamesMenagemet.backend.listeners.SuggerisciListene
 import com.example.demo.utility.MessageList;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -17,7 +15,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +28,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     private GuessController guessController;
     private Image logoGuess;
     private boolean vincente;
-    boolean flag = false;
+    private boolean flag = false;
     private boolean isTeacher;
 
     public StartGameUI(GuessController guessController, boolean isTeacher) {

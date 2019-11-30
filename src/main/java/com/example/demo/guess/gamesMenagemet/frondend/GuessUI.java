@@ -5,7 +5,6 @@ import com.example.demo.entity.Partita;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.gamesRules.Game;
 import com.example.demo.games.Guess;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
@@ -53,7 +52,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Item item;
     private Guess guess;
     private GuessController guessController;
-    MessageList messageList = new MessageList("chatlayoutmessage2");
+    private MessageList messageList = new MessageList("chatlayoutmessage2");
     private Label numeroUtenti = new Label();
     private Div containerUtenti = new Div();
     private Image imageU = new Image();
@@ -62,7 +61,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Label indizio = new Label("Indizi: ");
     private VerticalLayout verticalLayout = new VerticalLayout();
     private Div containerParoleVotate = new Div();
-    boolean isStarted = false;
+    private boolean isStarted = false;
     private Div chat = new Div();
     private Image image333;
     private boolean isTeacher = false;
@@ -268,6 +267,33 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         return hor1;
     }
 
+    private static void reset(){
+        try {
+            Broadcaster.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
+            Broadcaster.getVotes().clear();
+            Broadcaster.getAccountList().clear();
+            Broadcaster.getItems().clear();
+            Broadcaster.getListeners().clear();
+            BroadcasterChat.getListeners().clear();
+            BroadcasterSuggerisci.getListeners().clear();
+            Broadcaster.getStrings().clear();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    //public methods
+    public Image generateImage(Account account) {
+        Long id = account.getId();
+        StreamResource sr = new StreamResource("user", () ->  {
+            Account attached = accountRepository.findWithPropertyPictureAttachedById(id);
+            return new ByteArrayInputStream(attached.getProfilePicture());
+        });
+        sr.setContentType("image/png");
+        Image image = new Image(sr, "profile-picture");
+        return image;
+    }
+
     //Implementazione metodi della Java interface 'BroadcasterListener'
     @Override
     public void receiveBroadcast(String message) {
@@ -438,7 +464,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void partititaVincente(String parola,int punteggio) {
-        Game game = guess;
         getUI().get().access(() -> {
             reset();
             removeAll();
@@ -446,7 +471,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 FireWorks fireWorks = new FireWorks();
                 add(fireWorks);
                 DialogUtility dialogUtility = new DialogUtility();
-                dialogUtility.partitaVincente(parola, punteggio, game);
+                dialogUtility.partitaVincente(parola, punteggio, guess);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
             }else if(account.getTypeAccount().equals("teacher")){
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
@@ -457,13 +482,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     @Override
     public void partititanonVincente(){
-        Game game = guess;
         getUI().get().access(() -> {
             reset();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
                 DialogUtility dialogUtility = new DialogUtility();
-                dialogUtility.partitanonVincente(game);
+                dialogUtility.partitanonVincente(guess);
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
             }else if(account.getTypeAccount().equals("teacher")){
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
@@ -471,26 +495,24 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         });
     }
 
-    public Image generateImage(Account account) {
-        Long id = account.getId();
-        StreamResource sr = new StreamResource("user", () ->  {
-            Account attached = accountRepository.findWithPropertyPictureAttachedById(id);
-            return new ByteArrayInputStream(attached.getProfilePicture());
-        });
-        sr.setContentType("image/png");
-        Image image = new Image(sr, "profile-picture");
-        return image;
-    }
+    @Override
+    public void terminaPartitaFromTeacher() {
+        try {
+            getUI().get().access(() -> {
+                reset();
+                removeAll();
+                if(account.getTypeAccount().equals("student")) {
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.partitaTerminataFromTeacher();
+                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+                }else{
+                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-    static public void reset(){
-        Broadcaster.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
-        Broadcaster.getVotes().clear();
-        Broadcaster.getAccountList().clear();
-        Broadcaster.getItems().clear();
-        Broadcaster.getListeners().clear();
-        BroadcasterChat.getListeners().clear();
-        BroadcasterSuggerisci.getListeners().clear();
-        Broadcaster.getStrings().clear();
     }
 
     //Implements methods of PageConfigurator
@@ -526,26 +548,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
             terminaPartitaFromTeacher();
         }
-    }
-
-    @Override
-    public void terminaPartitaFromTeacher() {
-        try {
-            getUI().get().access(() -> {
-                reset();
-                removeAll();
-                if(account.getTypeAccount().equals("student")) {
-                    DialogUtility dialogUtility = new DialogUtility();
-                    dialogUtility.partitaTerminataFromTeacher();
-                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
-                }else{
-                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
-                }
-            });
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
     }
 
 }

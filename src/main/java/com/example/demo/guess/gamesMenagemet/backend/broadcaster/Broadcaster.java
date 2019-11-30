@@ -6,7 +6,6 @@ import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.BroadcastListener;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.shared.Registration;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,20 +16,20 @@ import java.util.concurrent.Executors;
 
 public class Broadcaster implements Serializable {
 
-    static Executor executor = Executors.newSingleThreadExecutor();
-    static Map<Account, BroadcastListener> listeners = new HashMap();
-    static List<Account> accountList = new ArrayList<>();
-    static Map<String,Integer> votes = new HashMap();
-    static ArrayList<String> strings = new ArrayList<>();
-    static int indiziRicevuti = 0;
-    static ArrayList<Item> items = new ArrayList<>();
-    static List<GuessController.PartitaThread> partiteThread = new ArrayList<>();
-    static int in = 0;
+    private static Executor executor = Executors.newSingleThreadExecutor();
+    private static Map<Account, BroadcastListener> listeners = new HashMap();
+    private static List<Account> accountList = new ArrayList<>();
+    private static Map<String,Integer> votes = new HashMap();
+    private static ArrayList<String> strings = new ArrayList<>();
+    private static int indiziRicevuti = 0;
+    private static ArrayList<Item> items = new ArrayList<>();
+    private static List<GuessController.PartitaThread> partiteThread = new ArrayList<>();
+    private static int in = 0;
 
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
         accountList.add(account);
         listeners.put(account,broadcastListener);
-        System.out.println("Broadcaster Guess: chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
+        System.out.println("BroadcasterGuess.register(): ListenersSize: "+ listeners.size()+ "  UI:"+ broadcastListener);
         return () -> {
             synchronized (Broadcaster.class) {
                 listeners.remove(account);
@@ -39,10 +38,9 @@ public class Broadcaster implements Serializable {
     }
 
     public static synchronized void unregister(Account account, BroadcastListener broadcastListener){
-        System.out.println(listeners.size());
+        System.out.println("BroadcasterGuess.unregister()");
         listeners.remove(account,broadcastListener);
         accountList.remove(account);
-        System.out.println(listeners.size());
     }
 
     public static synchronized void startGame(UI ui, GuessController.PartitaThread partitaThread, Item item){
@@ -81,7 +79,7 @@ public class Broadcaster implements Serializable {
                 });
             });
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -93,7 +91,7 @@ public class Broadcaster implements Serializable {
                 });
             });
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -114,7 +112,7 @@ public class Broadcaster implements Serializable {
                 });
             });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -138,7 +136,7 @@ public class Broadcaster implements Serializable {
                 });
             });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -150,23 +148,23 @@ public class Broadcaster implements Serializable {
                 });
             });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public static synchronized void clearPartiteThread(){
         int i = 0;
-        while(i < Broadcaster.getPartiteThread().size()){
-            try {
-                Broadcaster.getPartiteThread().get(i).interrupt();
-                Broadcaster.getPartiteThread().get(i).stopTimer();
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            while(i < getPartiteThread().size()){
+                getPartiteThread().get(i).interrupt();
+                getPartiteThread().get(i).stopTimer();
+                i++;
             }
-            i++;
-        }
-        if(i == Broadcaster.getPartiteThread().size()){ //tutti i thread legati alle partite sono terminati
-            Broadcaster.getPartiteThread().clear();
+            if(i == getPartiteThread().size()){ //tutti i thread legati alle partite sono terminati
+                getPartiteThread().clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -178,7 +176,7 @@ public class Broadcaster implements Serializable {
                 });
             });
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -198,15 +196,6 @@ public class Broadcaster implements Serializable {
     public static List<GuessController.PartitaThread> getPartiteThread() {
         return partiteThread;
     }
-
-    public static synchronized void logOut(Account account){
-        System.out.println(listeners.size());
-        listeners.remove(account);
-        accountList.remove(account);
-        System.out.println(listeners.size());
-
-    }
-
 
     public static int getIn() {
         return in;

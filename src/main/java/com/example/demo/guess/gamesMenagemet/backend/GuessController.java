@@ -8,14 +8,11 @@ import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
-import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -31,9 +28,8 @@ public class GuessController {
     private List<Account> accounts;
     private int i;
     private int totTime;
-    boolean vinta = false;
+    private boolean vinta = false;
     private WrappedSession teacherSession;
-
     private PartitaRepository partitaRepository;
     protected Partita partita;
 
@@ -124,7 +120,6 @@ public class GuessController {
             timer.scheduleAtFixedRate(new TimerTask() {
                 public void run() {
                     String time = String.format("%02d", totTime % 60);
-                    System.out.println(time);
                     Broadcaster.countDown(time);
                     if (totTime == 0 && i<3) {
                         String indizio = item.getIndizio(i);
