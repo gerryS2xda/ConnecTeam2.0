@@ -13,7 +13,7 @@ public interface BroadcastListenerMaty{
     void numeroInserito(String operazione);
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();
-    void browserIsLeavingCalled(Account account);
+    void terminaPartitaFromTeacher();
     void numeroDaSotrarre(String numero,String numOriginale);
     void numeroDaSommare(String numOriginaale);
 }

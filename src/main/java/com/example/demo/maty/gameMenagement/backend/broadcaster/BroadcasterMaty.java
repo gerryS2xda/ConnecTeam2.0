@@ -18,70 +18,23 @@ import java.util.concurrent.Executors;
 
 public class BroadcasterMaty implements Serializable {
 
-    static Executor executor = Executors.newSingleThreadExecutor();
-    static Map<Account, BroadcastListenerMaty> listeners = new HashMap();
-    static List<Account> accountList = new ArrayList<>();
-    static ArrayList<String> strings = new ArrayList<>();
-    static int indiziRicevuti = 0;
-    static ArrayList<ItemMaty> items = new ArrayList<>();
-    static List<MatyController.PartitaThread> partiteThread = new ArrayList<>();
-    static int in = 0;
-    static ArrayList<Integer> integers = new ArrayList<>();
-    static ArrayList<Integer> contClick = new ArrayList<>();
+    private static Executor executor = Executors.newSingleThreadExecutor();
+    private static Map<Account, BroadcastListenerMaty> listeners = new HashMap();
+    private static List<Account> accountList = new ArrayList<>();
+    private static ArrayList<String> strings = new ArrayList<>();
+    private static int indiziRicevuti = 0;
+    private static ArrayList<ItemMaty> items = new ArrayList<>();
+    private static List<MatyController.PartitaThread> partiteThread = new ArrayList<>();
+    private static int in = 0;
+    private static ArrayList<Integer> integers = new ArrayList<>();
+    private static ArrayList<Integer> contClick = new ArrayList<>();
 
-    public static ArrayList<Integer> getIntegers() {
-        return integers;
-    }
-
-    public static ArrayList<Integer> getContClick() {
-        return contClick;
-    }
-
-    public static synchronized void addContClick(){
-        contClick.add(new Integer(1));
-    }
-
-    public static synchronized void addIntegers(Integer integer){
-        integers.add(integer);
-    }
-
-    public static synchronized void numeroInserito(String operazione) {
-        try {
-
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.numeroInserito(operazione);
-                });
-            });
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static synchronized void partitanonVincente() {
-        try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.partititanonVincente();
-                });
-            });
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
+    //static methods
     public static synchronized Registration register(Account account, BroadcastListenerMaty broadcastListener) {
         accountList.add(account);
-        /*for (int i=0; i<Broadcaster.getAccountList().size(); i++){
-            if (accountList.get(i).getId() == account.getId()){
-                in++;
-            }
-        }
-        if (in == 1){
-            listeners.put(account,broadcastListener);
-        }*/
-        listeners.put(account,broadcastListener);
-        System.out.println("sono il boradcaster ed è stato chiamato register "+ listeners.size()+ "  ui:"+ broadcastListener);
+        listeners.put(account, broadcastListener);
+        System.out.println("BroadcasterMaty.register(): ListenersSize: "+ listeners.size()+ "  UI:"+ broadcastListener);
+
         return () -> {
             synchronized (BroadcasterMaty.class) {
                 listeners.remove(account);
@@ -90,10 +43,10 @@ public class BroadcasterMaty implements Serializable {
     }
 
     public static synchronized void unregister(Account account, BroadcastListenerMaty broadcastListener){
-        System.out.println(listeners.size());
+        System.out.println("BroadcasterMaty.unregister()");
         listeners.remove(account,broadcastListener);
         accountList.remove(account);
-        System.out.println(listeners.size());
+
     }
 
     public static synchronized void startGame(MatyController.PartitaThread partitaThread, ItemMaty item){
@@ -164,24 +117,25 @@ public class BroadcasterMaty implements Serializable {
         }
     }
 
-    public static synchronized void browserIsLeavingCalled(Account account1){
+    public static synchronized void addContClick(){
+        contClick.add(new Integer(1));
+    }
+
+    public static synchronized void addIntegers(Integer integer){
+        integers.add(integer);
+    }
+
+    public static synchronized void numeroInserito(String operazione) {
         try {
+
             listeners.forEach((account, broadcastListener) -> {
                 executor.execute(() -> {
-                    broadcastListener.browserIsLeavingCalled(account1);
+                    broadcastListener.numeroInserito(operazione);
                 });
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public static Map<Account, BroadcastListenerMaty> getListeners() {
-        return listeners;
-    }
-
-    public static List<Account> getAccountList() {
-        return accountList;
     }
 
     public static synchronized void partitaVincente(String s, Integer integer) {
@@ -194,6 +148,63 @@ public class BroadcasterMaty implements Serializable {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static synchronized void partitanonVincente() {
+        try {
+            listeners.forEach((account, broadcastListener) -> {
+                executor.execute(() -> {
+                    broadcastListener.partititanonVincente();
+                });
+            });
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static synchronized void clearPartiteThread(){
+        int i = 0;
+        try {
+            while(i < getPartiteThread().size()){
+                getPartiteThread().get(i).interrupt();
+                getPartiteThread().get(i).stopTimer();
+                i++;
+            }
+            if(i == getPartiteThread().size()){ //tutti i thread legati alle partite sono terminati
+                getPartiteThread().clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static synchronized void terminaPartitaFromTeacher(){
+        try {
+            listeners.forEach((account, broadcastListener) -> {
+                executor.execute(() -> {
+                    broadcastListener.terminaPartitaFromTeacher();
+                });
+            });
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    //getter and setter methods
+    public static ArrayList<Integer> getIntegers() {
+        return integers;
+    }
+
+    public static ArrayList<Integer> getContClick() {
+        return contClick;
+    }
+
+    public static Map<Account, BroadcastListenerMaty> getListeners() {
+        return listeners;
+    }
+
+    public static List<Account> getAccountList() {
+        return accountList;
     }
 
     public static int getIndiziRicevuti() {
