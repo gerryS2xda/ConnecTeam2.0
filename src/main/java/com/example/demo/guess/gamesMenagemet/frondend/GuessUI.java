@@ -267,7 +267,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         return hor1;
     }
 
-    private static void reset(){
+    //public methods
+    public static void reset(){
         try {
             Broadcaster.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
             Broadcaster.getVotes().clear();
@@ -282,7 +283,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }
     }
 
-    //public methods
     public Image generateImage(Account account) {
         Long id = account.getId();
         StreamResource sr = new StreamResource("user", () ->  {

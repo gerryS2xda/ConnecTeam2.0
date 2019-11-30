@@ -231,16 +231,20 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     @Override
     public void redirectToGuess(){
         System.out.println("StudentHomeView - redirectToGuess: ui " + getUI().get());
+        if(!getUI().isPresent()){
+            showErrorPage();
+        }else {
             getUI().get().access(() -> {
                 System.out.println("StudentHomeView - redirectToGuess: a: " + account.toString());
                 getUI().get().getPage().executeJs("window.location.href = \"http://localhost:8080/guess\";");
             });
-
+        }
     }
 
     @Override
     public void redirectToMaty(){
-        if(getUI().get() == null){
+        System.out.println("StudentHomeView - redirectToMaty: ui " + getUI().get());
+        if(!getUI().isPresent()){
             showErrorPage();
         }else {
             getUI().get().access(() -> {
