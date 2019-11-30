@@ -95,14 +95,6 @@ public class Broadcaster implements Serializable {
         }
     }
 
-    public static Map<Account, BroadcastListener> getListeners() {
-        return listeners;
-    }
-
-    public static Map<String, Integer> getVotes() {
-        return votes;
-    }
-
     public static synchronized void getVotoParola(Map<String, Integer> stringIntegerMap) {
         try {
             votes = stringIntegerMap;
@@ -118,14 +110,6 @@ public class Broadcaster implements Serializable {
 
     public static synchronized void addString(String s){
         strings.add(s);
-    }
-
-    public static ArrayList<String> getStrings() {
-        return strings;
-    }
-
-    public static List<Account> getAccountList() {
-        return accountList;
     }
 
     public static synchronized void partitaVincente(String s, Integer integer) {
@@ -181,6 +165,22 @@ public class Broadcaster implements Serializable {
     }
 
     //getter and setter methods
+    public static ArrayList<String> getStrings() {
+        return strings;
+    }
+
+    public static List<Account> getAccountList() {
+        return accountList;
+    }
+
+    public static Map<Account, BroadcastListener> getListeners() {
+        return listeners;
+    }
+
+    public static Map<String, Integer> getVotes() {
+        return votes;
+    }
+
     public static int getIndiziRicevuti() {
         return indiziRicevuti;
     }
