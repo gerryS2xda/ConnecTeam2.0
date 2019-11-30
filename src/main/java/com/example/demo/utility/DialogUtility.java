@@ -1,8 +1,5 @@
 package com.example.demo.utility;
 
-
-import com.example.demo.games.Guess;
-import com.example.demo.games.Maty;
 import com.example.demo.mainView.MainView;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.entity.Account;
@@ -27,7 +24,6 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.server.*;
-
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -39,7 +35,7 @@ public class DialogUtility extends VerticalLayout {
     private String control= "";
 
     public DialogUtility(){
-
+        //vuoto
     }
 
     public void loginDialog(Account account){
@@ -310,8 +306,8 @@ public class DialogUtility extends VerticalLayout {
         Label label = new Label("Partita terminata dal teacher");
         Button button = new Button("Vai alla home");
         button.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().navigate(StudentHomeView.class);
             dialog.close();
+            UI.getCurrent().navigate(StudentHomeView.class);
             UI.getCurrent().getPage().reload();
         });
         button.getStyle().set("margin-left","20px");
