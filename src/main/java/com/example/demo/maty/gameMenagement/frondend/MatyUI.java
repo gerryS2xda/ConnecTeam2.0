@@ -16,6 +16,7 @@ import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterSugge
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.BroadcastListenerMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.ChatListenerMaty;
+import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Key;
@@ -36,10 +37,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.InitialPageSettings;
-import com.vaadin.flow.server.PageConfigurator;
-import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
@@ -55,11 +54,8 @@ import java.util.Date;
 @StyleSheet("frontend://stile/animation.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam-Maty")
-public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListenerMaty, PageConfigurator, BeforeEnterObserver {
+public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListenerMaty, PageConfigurator {
 
-    //static field
-    //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
-    private static final int maxNumeroUtentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfMatyUser();
 
     //instance field
     private AccountRepository accountRepository;
@@ -80,44 +76,62 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private Partita partita;
     private MatyController.PartitaThread partitaThread;
     private ItemMaty item;
-    boolean isStarted = false;
+    private boolean isStarted = false;
     private Div chat = new Div();
-    MessageList messageList = new MessageList("chatlayoutmessage2");
-    HorizontalLayout containerAddendi= new HorizontalLayout();
+    private MessageList messageList = new MessageList("chatlayoutmessage2");
+    private HorizontalLayout containerAddendi= new HorizontalLayout();
     private Image image333;
     private boolean isTeacher = false;
+    private Label labelNum = new Label();
+    private EndGameEventBeanPublisher endGamePublisher;
+    //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
+    private int maxNumeroStutentiConnessi = 0;
+    private WrappedSession teacherSession;
+    private Button start; //pulsante che sara' invisibile
 
-    public MatyUI() {
+    public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
         try {
-
+            //Inizializzazione
             setId("MatyUI");
             getStyle().set("height", "100%");
+            maty = new Maty();
+            endGamePublisher = endGameEventBeanPublisher;
+            maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfMatyUser();
+            teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
 
             containerAddendi.addClassName("containerAddendi");
-            maty = new Maty();
 
-            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
-            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-            if(account == null)
-                throw new IllegalArgumentException("MatyUI: Account is null");
-            accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-            if(accountRepository == null)
-                throw new IllegalArgumentException("MatyUI: AccountRepository is null");
-            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-            if(partitaRepository == null)
-                throw new IllegalArgumentException("MatyUI: PartitaRepository is null");
+            if(VaadinService.getCurrentRequest() != null) {
+                //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
+                account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+                if (account == null)
+                    throw new IllegalArgumentException("MatyUI: Account is null");
+                accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
+                if (accountRepository == null)
+                    throw new IllegalArgumentException("MatyUI: AccountRepository is null");
+                partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
+                if (partitaRepository == null)
+                    throw new IllegalArgumentException("MatyUI: PartitaRepository is null");
+            }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
+                account = (Account) teacherSession.getAttribute("user");
+                accountRepository = (AccountRepository) teacherSession.getAttribute("rep");
+                partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
+                UI.getCurrent().setPollInterval(1000);
+            }
 
             matyController = new MatyController(partitaRepository);
-            matyController.setAccount(account);
+
             if(account.getTypeAccount().equals("teacher"))
                 isTeacher = true;
 
+            //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
                 if (BroadcasterMaty.getPartiteThread().get(i) != null) {
                     isStarted = true;
                 }
             }
+
             if (isStarted != true) {
                 BroadcasterMaty.register(account, this);
                 BroadcasterChatMaty.register(this);
@@ -177,12 +191,47 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             //Container nome utente e pulsante 'Info' su Guess
             add(nameUserAndInfoBtnContainer());
 
+            //Implementazione di un pulsante invisibile 'start' che verra' 'cliccato' dal teacher
+            start = new Button();
+            start.getStyle().set("display", "none");
+            start.addClickListener(buttonClickEvent -> {
+                System.out.println("Maty: Partita iniziata!");
+                for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
+                    if (BroadcasterMaty.getPartiteThread().get(i) != null) {
+                        isStarted = true;
+                    }
+                }
+                if (isStarted != true) {
+                    partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
+                    matyController.startGame(partita);
+                    partitaThread = matyController.getPartitaThread();
+                    item = matyController.getItem();
+                    BroadcasterMaty.startGame(partitaThread, item);
+                } else {
+                    InfoEventUtility infoEventUtility = new InfoEventUtility();
+                    infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
+                }
+            });
+            add(start);
+            waitAllUserForStartGame();
         }
         catch (Exception e) {
             removeAll();
             ErrorPage errorPage = new ErrorPage();
             add(errorPage);
             e.printStackTrace();
+        }
+    }
+
+    //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
+    private void waitAllUserForStartGame(){
+        //Blocca esecuzione finche' tutti gli studenti (incluso il teacher) non sono connessi a questa pagina
+        while(BroadcasterMaty.getListeners().size() <= maxNumeroStutentiConnessi);
+
+        if(account.getTypeAccount().equals("teacher")) {
+            if(!isStarted){
+                start.click();
+            }
         }
     }
 
@@ -219,6 +268,34 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         return hor1;
     }
 
+    //public methods
+    public Image generateImage(Account account) {
+        Long id = account.getId();
+        StreamResource sr = new StreamResource("user", () ->  {
+            Account attached = accountRepository.findWithPropertyPictureAttachedById(id);
+            return new ByteArrayInputStream(attached.getProfilePicture());
+        });
+        sr.setContentType("image/png");
+        Image image = new Image(sr, "profile-picture");
+        return image;
+    }
+
+    public static void reset(){
+        try {
+            BroadcasterMaty.getIntegers().clear();
+            BroadcasterMaty.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
+            BroadcasterSuggerisciMaty.getItems().clear();
+            BroadcasterMaty.getAccountList().clear();
+            BroadcasterMaty.getItems().clear();
+            BroadcasterMaty.getListeners().clear();
+            BroadcasterChatMaty.getListeners().clear();
+            BroadcasterSuggerisciMaty.getListeners().clear();
+            BroadcasterMaty.getContClick().clear();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     //Implementazione metodi della Java interface 'BroadcasterListener'
     @Override
     public void countUser(UI ui, String nome) {
@@ -231,17 +308,26 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
     @Override
     public void startGame1() {
+        boolean flag = false;
+        int i = 0;
         try {
-            getUI().get().access(() -> {
-                StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController,account);
-                verticalLayout.add(startGameMatyUI);
-                verticalLayout.add(secondi/*,indizio*/);
-                indizio.getStyle().set("font-size","30px");
-                indizio.getStyle().set("margin-left","15px");
-                add(verticalLayout);
-            });
+            while(!flag) { //finche' la ui non e' attached a this component, cioe' finche' getUI() doesn't contains an UI element
+                if (getUI().isPresent()) {
+                    getUI().get().accessSynchronously(() -> { //Locks the session of this UI and runs the provided command right away
+                        StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController, account);
+                        verticalLayout.add(startGameMatyUI);
+                        verticalLayout.add(secondi/*,indizio*/);
+                        indizio.getStyle().set("font-size", "30px");
+                        indizio.getStyle().set("margin-left", "15px");
+                        add(verticalLayout);
+                    });
+                    flag = true;
+                }
+                i++;
+            }
+            System.out.println("MatyUI.startGame1() - Account: " + account.getNome() + " CountDelayForGetUI: " + i);
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -356,29 +442,36 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
     @Override
     public void partititaVincente(String parola, int punteggio) {
-        Game game1 = maty;
         getUI().get().access(() -> {
             reset();
             removeAll();
-            FireWorks fireWorks = new FireWorks();
-            add(fireWorks);
-            DialogUtility dialogUtility = new DialogUtility();
-            dialogUtility.partitaVincente(parola,punteggio,game1);
+            if(account.getTypeAccount().equals("student")) {
+                FireWorks fireWorks = new FireWorks();
+                add(fireWorks);
+                DialogUtility dialogUtility = new DialogUtility();
+                dialogUtility.partitaVincente(parola, punteggio, maty);
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false);
+            }else if(account.getTypeAccount().equals("teacher")){
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true);
+            }
         });
     }
 
     @Override
     public void partititanonVincente() {
-        Game game1 = maty;
         getUI().get().access(() -> {
             reset();
             removeAll();
-            DialogUtility dialogUtility = new DialogUtility();
-            dialogUtility.partitanonVincente(game1);
+            if(account.getTypeAccount().equals("student")) {
+                DialogUtility dialogUtility = new DialogUtility();
+                dialogUtility.partitanonVincente(maty);
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false);
+            }else if(account.getTypeAccount().equals("teacher")){
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true);
+            }
         });
     }
 
-    Label labelNum = new Label();
     @Override
     public void numeroDaSotrarre(String numero,String numOriginzle) {
         getUI().get().access(() -> {
@@ -397,18 +490,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             labelNum.addClassName("labelNumSottrarre");
             add(labelNum);
         });
-    }
-
-    @Override
-    public void browserIsLeavingCalled(Account account) {
-        try {
-            getUI().get().access(() -> {
-                DialogUtility dialogUtility = new DialogUtility();
-                dialogUtility.partitaTerminata(account);
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
     }
 
     @Override
@@ -453,90 +534,58 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     }
 
     @Override
-    public void configurePage(InitialPageSettings initialPageSettings) {
-        BroadcasterMaty.getListeners().forEach((account1, broadcastListenerMaty) -> {
-            if (account.equals(account1)) {
-                String script = "window.onbeforeunload = function (e) " +
-                        "{ var e = e || window.event; document.getElementById(\"MatyUI\").$server.browserIsLeaving(); return; };";
-                initialPageSettings.addInlineWithContents(InitialPageSettings.Position.PREPEND, script, InitialPageSettings.WrapMode.JAVASCRIPT);
-            }
-        });
-    }
-
-    static public void reset(){
-
+    public void terminaPartitaFromTeacher() {
         try {
-            BroadcasterMaty.getIntegers().clear();
-            BroadcasterMaty.getPartiteThread().clear();
-            BroadcasterSuggerisciMaty.getItems().clear();
-            BroadcasterMaty.getAccountList().clear();
-            BroadcasterMaty.getItems().clear();
-            BroadcasterMaty.getListeners().clear();
-            BroadcasterChatMaty.getListeners().clear();
-            BroadcasterSuggerisciMaty.getListeners().clear();
-            BroadcasterMaty.getContClick().clear();
+            getUI().get().access(() -> {
+                reset();
+                removeAll();
+                if(account.getTypeAccount().equals("student")) {
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.partitaTerminataFromTeacher();
+                    endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false);
+                }else{
+                    endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true);
+                }
+            });
         }catch (Exception e){
             e.printStackTrace();
         }
+
     }
 
-    public Image generateImage(Account account) {
-        Long id = account.getId();
-        StreamResource sr = new StreamResource("user", () ->  {
-            Account attached = accountRepository.findWithPropertyPictureAttachedById(id);
-            return new ByteArrayInputStream(attached.getProfilePicture());
-        });
-        sr.setContentType("image/png");
-        Image image = new Image(sr, "profile-picture");
-        return image;
+    //Implements methods of PageConfigurator
+    @Override
+    public void configurePage(InitialPageSettings initialPageSettings) {
+        String script = "window.onbeforeunload = function (e) " +
+                "{ var e = e || window.event; document.getElementById(\"MatyUI\").$server.browserIsLeaving(); return; };";
+        initialPageSettings.addInlineWithContents(InitialPageSettings.Position.PREPEND, script, InitialPageSettings.WrapMode.JAVASCRIPT);
     }
 
     @ClientCallable
     public void browserIsLeaving() {
-        BroadcasterMaty.getListeners().forEach((account1, broadcastListener) -> {
-            System.out.println("Account registrato alla partita = "+account1.getNome());
-        });
-        try {
-            BroadcasterMaty.getListeners().forEach((account1, broadcastListener) -> {
-                if (account1.equals(account)) {
-                    BroadcasterMaty.browserIsLeavingCalled(account);
-                    BroadcasterMaty.unregister(account, this);
-                    for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
-                        try {
-                            BroadcasterMaty.getPartiteThread().get(i).interrupt();
-                            BroadcasterMaty.getPartiteThread().get(i).stopTimer();
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-                    reset();
-                }
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+
+        //Pre-condition
+        boolean flag = false;
+        for(Account i : BroadcasterMaty.getListeners().keySet()){
+            if(i.equals(account)){
+                flag = true;
+                break;
+            }
+        }
+        if(!flag){  //se il listener non contiene questo 'account' -> non fare nulla
+            return;
+        }
+
+        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
+
+        if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
+            terminaPartitaFromTeacher();
+        }else if(BroadcasterMaty.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
+            BroadcasterMaty.unregister(account, this);
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+        }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
+            terminaPartitaFromTeacher();
         }
     }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        System.out.println("Maty: #account: " + BroadcasterMaty.getListeners().size() + "- #Max account: " + maxNumeroUtentiConnessi);
-        if(isStarted != true && BroadcasterMaty.getListeners().size() == maxNumeroUtentiConnessi) {
-            System.out.println("MatyUI: Partita iniziata!");
-            for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
-                if (BroadcasterMaty.getPartiteThread().get(i) != null) {
-                    isStarted = true;
-                }
-            }
-            if (isStarted != true) {
-                partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
-                matyController.startGame(partita);
-                partitaThread = matyController.getPartitaThread();
-                item = matyController.getItem();
-                BroadcasterMaty.startGame(partitaThread, item);
-            } else {
-                InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
-            }
-        }
-    }
 }
