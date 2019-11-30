@@ -579,12 +579,12 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
-            terminaPartitaFromTeacher();
+            BroadcasterMaty.terminaPartitaFromTeacher();
         }else if(BroadcasterMaty.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             BroadcasterMaty.unregister(account, this);
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            terminaPartitaFromTeacher();
+            BroadcasterMaty.terminaPartitaFromTeacher();
         }
     }
 

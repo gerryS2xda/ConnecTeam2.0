@@ -541,12 +541,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
-            terminaPartitaFromTeacher();
+            Broadcaster.terminaPartitaFromTeacher();
         }else if(Broadcaster.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             Broadcaster.unregister(account, this);
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            terminaPartitaFromTeacher();
+            Broadcaster.terminaPartitaFromTeacher();
         }
     }
 
