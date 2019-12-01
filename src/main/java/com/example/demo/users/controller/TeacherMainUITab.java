@@ -386,16 +386,18 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         if(isShowErrorDialog)
             return; //Se viene mostrato il dialog di errore -> esci da questo metodo
 
+        if(Broadcaster.isGuessStart()){  //Una partita di Guess e' in corso?
+            com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
+        }
+        if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
+            com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
+        }
+        System.out.println("TeacherMainUITAB.beforeLeave(): Account:" + account.getNome() + " IsGuessStart: " + Broadcaster.isGuessStart() + " ISMartyStart: " + Broadcaster.isMatyStart());
+
         Broadcaster.unregisterTeacher(account, this);
         Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
         Broadcaster.removeAccountWithWebBrowser(account);
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
-
-        if(Broadcaster.isGuessStart()){  //Una partita di Guess e' in corso?
-            com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
-        }else if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
-            com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
-        }
     }
 
     //Implementazione 'BroadcasterListenerTeacher'
@@ -442,11 +444,14 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
 
     @Override
     public void showDialogFinePartitaTeacher(String nameGame){
-        if(getUI().isPresent()) {
-            getUI().get().access(() -> {
+
+        while(!getUI().isPresent()){
+            System.out.println("TeacherMainUITab.showDialogFinePartitaTeacher(): getUI() is Not present ");
+        } //attendi la UI
+        getUI().get().access(() -> {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaTerminataDialogTeacher(nameGame, "Partita Terminata! Non risultano altri utenti connessi");
-            });
-        }
+        });
+
     }
 }
