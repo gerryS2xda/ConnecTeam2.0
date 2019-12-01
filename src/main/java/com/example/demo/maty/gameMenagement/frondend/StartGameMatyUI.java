@@ -416,50 +416,62 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     @Override
     public void setOperazione() {
         for (int i = 0; i < BroadcasterSuggerisciMaty.getItems().size(); i++) {
-            String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
-            if (operazione.equalsIgnoreCase("somma")) {
-                operazioneLabel = "Somma un numero";
-                paroleVotateLabel = "Il tuo numero è: ";
-                sendParolaButton = "Somma";
-                label.setText(operazioneLabel);
-                paroleVotate.setText(paroleVotateLabel);
-                sendParola.setText(sendParolaButton);
-            } else {
-                operazioneLabel = "Sottrai un numero";
-                paroleVotateLabel = "Il tuo numero è: ";
-                sendParolaButton = "Sottrai";
-                label.setText(operazioneLabel);
-                paroleVotate.setText(paroleVotateLabel);
-                sendParola.setText(sendParolaButton);
+            try {
+                //System.out.println(BroadcasterSuggerisciMaty.getItems().get(i).getOperazione());
+                String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
+                if (operazione.equalsIgnoreCase("somma")) {
+                    operazioneLabel = "Somma un numero";
+                    paroleVotateLabel = "Il tuo numero è: ";
+                    sendParolaButton = "Somma";
+                    label.setText(operazioneLabel);
+                    paroleVotate.setText(paroleVotateLabel);
+                    sendParola.setText(sendParolaButton);
+                } else {
+                    operazioneLabel = "Sottrai un numero";
+                    paroleVotateLabel = "Il tuo numero è: ";
+                    sendParolaButton = "Sottrai";
+                    label.setText(operazioneLabel);
+                    paroleVotate.setText(paroleVotateLabel);
+                    sendParola.setText(sendParolaButton);
+                }
+            } catch (Exception e) {
+                // System.out.println(e.getMessage());
             }
         }
     }
 
-    public void checkIfWin() {
+    void checkIfWin() {
         for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
             if (i == 0) {
                 flag = false;
             }
-            int punteggio = 0;
-            if (BroadcasterMaty.getIndiziRicevuti() == 0) {
-                punteggio = 120;
-            } else if (BroadcasterMaty.getIndiziRicevuti() == 1) {
-                punteggio = 100;
-            } else if (BroadcasterMaty.getIndiziRicevuti() == 2) {
-                punteggio = 60;
-            } else if (BroadcasterMaty.getIndiziRicevuti() == 3) {
-                punteggio = 30;
-            } else if (BroadcasterMaty.getIndiziRicevuti() == 4) {
-                punteggio = 10;
+            try {
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            } finally {
+                int punteggio = 0;
+                if (BroadcasterMaty.getIndiziRicevuti() == 0) {
+                    punteggio = 120;
+                } else if (BroadcasterMaty.getIndiziRicevuti() == 1) {
+                    punteggio = 100;
+                } else if (BroadcasterMaty.getIndiziRicevuti() == 2) {
+                    punteggio = 60;
+                } else if (BroadcasterMaty.getIndiziRicevuti() == 3) {
+                    punteggio = 30;
+                } else if (BroadcasterMaty.getIndiziRicevuti() == 4) {
+                    punteggio = 10;
+                }
+                vincente = matyController.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),
+                        BroadcasterMaty.getItems().get(i));
+                if (vincente == false && flag == false) {
+                } else if (vincente == true && flag == false) {
+                    BroadcasterMaty.getPartiteThread().get(i).interrupt();
+                    BroadcasterMaty.getPartiteThread().get(i).stopTimer();
+                    BroadcasterMaty.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1)
+                            ,punteggio);
+                }
             }
-            vincente = matyController.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),
-            BroadcasterMaty.getItems().get(i));
 
-            if (vincente == true && flag == false) {
-               BroadcasterMaty.getPartiteThread().get(i).interrupt();
-               BroadcasterMaty.getPartiteThread().get(i).stopTimer();
-               BroadcasterMaty.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),punteggio);
-            }
         }
     }
 
