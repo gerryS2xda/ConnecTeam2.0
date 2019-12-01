@@ -12,7 +12,7 @@ public class EndGameEventListener {
     @Async  //esegui in un thread differente
     @EventListener
     public void handleReceiveEndGameEvent(EndGameEvent event){
-        System.out.println("EndGameEventListener: receive a event");
+        System.out.println("EndGameEventListener: receive a event; Account: " + event.getAccount().getNome());
         String nameGame = event.getNameOfGameEnded();
         Account acc = event.getAccount();
         if(event.isEndendForAll()) {
