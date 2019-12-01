@@ -33,7 +33,7 @@ public class BroadcasterMaty implements Serializable {
     public static synchronized Registration register(Account account, BroadcastListenerMaty broadcastListener) {
         accountList.add(account);
         listeners.put(account, broadcastListener);
-        System.out.println("BroadcasterMaty.register(): ListenersSize: "+ listeners.size()+ "  UI:"+ broadcastListener);
+        System.out.println("BroadcasterMaty.register(): ListenersSize: "+ listeners.size()+ " Account: " + account.getNome() +" UI:"+ broadcastListener);
 
         return () -> {
             synchronized (BroadcasterMaty.class) {

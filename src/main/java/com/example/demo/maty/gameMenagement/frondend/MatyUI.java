@@ -241,10 +241,10 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
     //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
     private void waitAllUserForStartGame(){
+        System.out.println("waitAllUserForStartGame(): Listener: " + BroadcasterMaty.getListeners().size() + " maxNumeroStutentiConnessi: " + maxNumeroStutentiConnessi);
+
         //Blocca esecuzione finche' tutti gli studenti (incluso il teacher) non sono connessi a questa pagina
         while(BroadcasterMaty.getListeners().size() <= maxNumeroStutentiConnessi);
-
-        System.out.println("waitAllUserForStartGame(): Listener: " + BroadcasterMaty.getListeners().size() + " maxNumeroStutentiConnessi: " + maxNumeroStutentiConnessi);
 
         if(account.getTypeAccount().equals("teacher")) {
             if(!isStarted){
