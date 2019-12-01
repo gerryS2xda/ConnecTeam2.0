@@ -33,13 +33,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -88,6 +85,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private int maxNumeroStutentiConnessi = 0;
     private WrappedSession teacherSession;
     private Button start; //pulsante che sara' invisibile
+    private Dialog attendiDialog;
 
     public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -124,6 +122,10 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
                 UI.getCurrent().setPollInterval(1000);
+            }else{
+                DialogUtility dialogUtility = new DialogUtility();
+                attendiDialog = dialogUtility.showDialog("Attendere...", "black");
+                attendiDialog.open();
             }
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
@@ -332,6 +334,9 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             while(!flag) { //finche' la ui non e' attached a this component, cioe' finche' getUI() doesn't contains an UI element
                 if (getUI().isPresent()) {
                     getUI().get().accessSynchronously(() -> { //Locks the session of this UI and runs the provided command right away
+                        if(account.getTypeAccount().equals("student")){
+                            attendiDialog.close();
+                        }
                         StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
                         verticalLayout.add(startGameMatyUI);
                         verticalLayout.add(secondi/*,indizio*/);

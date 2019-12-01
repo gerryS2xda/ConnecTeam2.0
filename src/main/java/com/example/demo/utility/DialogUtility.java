@@ -429,12 +429,20 @@ public class DialogUtility extends VerticalLayout {
         d.setWidth("100%");
         d.setHeight("100%");
 
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
         Label descrizione = new Label();
         descrizione.getStyle().set("font-size", "16px");
         descrizione.setText(text);
         descrizione.getStyle().set("color", colorTxt);
 
-        d.add(descrizione);
+        content.add(descrizione);
+
+        d.add(content);
         return d;
     }
 }

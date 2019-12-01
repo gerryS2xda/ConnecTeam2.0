@@ -69,7 +69,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
     private int maxNumeroStutentiConnessi = 0;
     private WrappedSession teacherSession;
-    private Button start; //pulsante che sara' invisibile
+    private Button start; //pulsante che sara'
+    private Dialog attendiDialog;
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -103,6 +104,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
                 UI.getCurrent().setPollInterval(1000);
+            }else{
+                DialogUtility dialogUtility = new DialogUtility();
+                attendiDialog = dialogUtility.showDialog("Attendere...", "black");
+                attendiDialog.open();
             }
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
@@ -354,6 +359,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             while(!flag){ //finche' la ui non e' attached a this component, cioe' finche' getUI() doesn't contains an UI element
                 if(getUI().isPresent()) {
                     getUI().get().accessSynchronously(() -> { //Locks the session of this UI and runs the provided command right away
+                        if(account.getTypeAccount().equals("student")){
+                            attendiDialog.close();
+                        }
                         StartGameUI startGameUI = new StartGameUI(guessController, isTeacher);
                         verticalLayout.add(startGameUI);
                         indizio.getStyle().set("font-size", "30px");
