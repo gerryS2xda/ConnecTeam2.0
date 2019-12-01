@@ -507,17 +507,21 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     @Override
     public void terminaPartitaFromTeacher() {
         try {
-            getUI().get().access(() -> {
-                reset();
-                removeAll();
-                if(account.getTypeAccount().equals("student")) {
-                    DialogUtility dialogUtility = new DialogUtility();
-                    dialogUtility.partitaTerminataFromTeacher();
-                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
-                }else{
-                    endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
-                }
-            });
+            if(getUI().isPresent()) {   //inserito per evitare exception (No value Present) dovuta al teacher quando effettua il logout e viene invocato questo metodo
+                getUI().get().access(() -> {
+                    reset();
+                    removeAll();
+                    if (account.getTypeAccount().equals("student")) {
+                        DialogUtility dialogUtility = new DialogUtility();
+                        dialogUtility.partitaTerminataFromTeacher();
+                        endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+                    } else {
+                        endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+                    }
+                });
+            }else{
+                System.out.println("GuessUI.terminaPartitaFromTeacher() - getUI is not present for Account: " + account.getNome());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
