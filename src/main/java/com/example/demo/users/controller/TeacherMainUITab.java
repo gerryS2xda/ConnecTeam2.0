@@ -390,11 +390,11 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
         Broadcaster.removeAccountWithWebBrowser(account);
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
-        if(guessView != null){
-            guessView.browserIsLeaving();   //Necessario poiche' GuessUI nel teacher non ha una pagina dedicata (UI.navigate)
-        }
-        if(matyView != null){
-            matyView.browserIsLeaving();   //Necessario poiche' MatyUI nel teacher non ha una pagina dedicata (UI.navigate)
+
+        if(Broadcaster.isGuessStart()){  //Una partita di Guess e' in corso?
+            com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
+        }else if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
+            com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
         }
     }
 
