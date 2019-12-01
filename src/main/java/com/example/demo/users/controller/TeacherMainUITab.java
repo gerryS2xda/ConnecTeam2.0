@@ -392,12 +392,12 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
             com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
         }
-        System.out.println("TeacherMainUITAB.beforeLeave(): Account:" + account.getNome() + " IsGuessStart: " + Broadcaster.isGuessStart() + " ISMartyStart: " + Broadcaster.isMatyStart());
 
         Broadcaster.unregisterTeacher(account, this);
         Broadcaster.unregisterTeacherForGestStud(account); //inserito qui perche' non viene usata una pagina dedicata per GestioneStudentUI (cioe' UI.navigate)
         Broadcaster.removeAccountWithWebBrowser(account);
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
+        Broadcaster.resetFlagIsGameStart(); //necessario, altrimenti quando teacher effettua logout non vengono impostati a false
     }
 
     //Implementazione 'BroadcasterListenerTeacher'

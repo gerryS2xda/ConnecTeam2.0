@@ -230,6 +230,11 @@ public class Broadcaster  {
         countMatyUser = 0;
     }
 
+    public static void resetFlagIsGameStart(){
+        isGuessStart = false;
+        isMatyStart = false;
+    }
+
     public static void setCountGuessUser(int countGuessUser) {
         Broadcaster.countGuessUser = countGuessUser;
     }
