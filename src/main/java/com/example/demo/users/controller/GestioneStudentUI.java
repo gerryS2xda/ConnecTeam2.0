@@ -379,8 +379,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                     sourceItems.remove(a);
                     gridMaty.setItems(sourceItems);
                 }
-                currentAccountList.replace(a, currentAccountList.get(a), "");
-                updateGridStudentCollegati();
+                currentAccountList.remove(a); //verrano reinseriti quando gli utenti navigano in 'StudentHomeView' a fine partita
             });
         }
     }
