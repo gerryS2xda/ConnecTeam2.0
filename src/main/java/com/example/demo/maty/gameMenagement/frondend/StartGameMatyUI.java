@@ -60,7 +60,11 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             this.matyController = matyController;
             this.isTeacher = isTeacher;
             BroadcasterSuggerisciMaty.register(this);
-            
+
+            if(isTeacher){
+                getStyle().set("height", "280px"); //necessario per visualizzare la label 'Tempo' nella posizione corretta
+            }
+
             containerNumeriSS.addClassName("containerNumeriSS");
             box.addClassName("box");
 
@@ -399,9 +403,20 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             parolaLayout.addClassName("suggerisciParolaLayout");
 
             cronologiaNUmeri.addClassName("cronologiaNumeri");
+            cronologiaNUmeri.setPadding(false);
+            cronologiaNUmeri.setSpacing(false);
 
             parolaLayout.setWidth("250px");
-            horizontalLayout.add(suggertisci, divC, parolaLayout,cronologiaMosse,cronologiaNUmeri);
+
+            VerticalLayout cronologiaContainer = new VerticalLayout();
+            cronologiaContainer.setSpacing(false);
+            cronologiaContainer.setPadding(false);
+            cronologiaNUmeri.getStyle().set("margin-top", "10px");
+            cronologiaNUmeri.getStyle().set("height", "180px");
+
+            cronologiaContainer.add(cronologiaMosse, cronologiaNUmeri);
+
+            horizontalLayout.add(suggertisci, divC, parolaLayout, cronologiaContainer);
             add(horizontalLayout);
 
         } catch (Exception e) {
@@ -430,6 +445,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             label.setEnabled(false);
             label.setId("button");
             div.add(label);
+            div.getStyle().set("margin-bottom", "12px");
             messageList.add(div);
             if (!account.getNome().equals(nome)) {
                 cronologiaNUmeri.add(messageList);
