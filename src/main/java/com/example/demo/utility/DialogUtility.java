@@ -1,6 +1,7 @@
 package com.example.demo.utility;
 
 import com.example.demo.mainView.MainView;
+import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
@@ -187,9 +188,13 @@ public class DialogUtility extends VerticalLayout {
         UI.getCurrent().getPage().addStyleSheet(
                 "base://" + resource.getResourceUri().toString());
         listGiochi.addClickListener(buttonClickEvent -> {
-            GuessUI.reset();
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            if(game.getNomeGioco().equals("Guess")){
+                GuessUI.reset();
+            }else if(game.getNomeGioco().equals("Maty")){
+                MatyUI.reset();
+            }
             dialog.close();
+            UI.getCurrent().navigate(ControllerMainUI.class);
             UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
         content.add(image,label,punti,listGiochi);
@@ -210,7 +215,7 @@ public class DialogUtility extends VerticalLayout {
         Image image;
         Label label;
 
-        if(game.getNomeGioco() == "Guess"){
+        if(game.getNomeGioco().equals("Guess")){
             punti = new Label("Hai ottenuto: "+0+ " punti");
             image = new Image("frontend/img/Guess.jpeg", "guess");
             image.setWidth("200px");
@@ -259,19 +264,17 @@ public class DialogUtility extends VerticalLayout {
                 "base://" + resource.getResourceUri().toString());
 
         listGiochi.addClickListener(buttonClickEvent -> {
-            GuessUI.reset();
-            UI.getCurrent().navigate(StudentHomeView.class);
+            if(game.getNomeGioco().equals("Guess")){
+                GuessUI.reset();
+            }else if(game.getNomeGioco().equals("Maty")){
+                MatyUI.reset();
+            }
             dialog.close();
+            UI.getCurrent().navigate(StudentHomeView.class);
             UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
 
-        closePage.addClickListener(buttonClickEvent -> {
-            GuessUI.reset();
-            dialog.close();
-            UI.getCurrent().getPage().executeJs("window.close();");
-        });
-
-        btnContainer.add(listGiochi, closePage);
+        btnContainer.add(listGiochi);
 
         content.add(image,label,punti,btnContainer);
         dialog.add(content);
