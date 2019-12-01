@@ -421,4 +421,20 @@ public class DialogUtility extends VerticalLayout {
         d.add(content);
         d.open();
     }
+
+    public Dialog showDialog(String text, String colorTxt){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        Label descrizione = new Label();
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.setText(text);
+        descrizione.getStyle().set("color", colorTxt);
+
+        d.add(descrizione);
+        return d;
+    }
 }
