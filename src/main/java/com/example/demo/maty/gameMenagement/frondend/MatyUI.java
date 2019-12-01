@@ -8,7 +8,6 @@ import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.games.Maty;
-import com.example.demo.gamesRules.Game;
 import com.example.demo.maty.gameMenagement.backend.MatyController;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterChatMaty;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;

@@ -47,7 +47,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private Account account;
     private Div containerNumeriSS = new Div();
     private Div box = new Div();
-    private Div wrapper = new Div();
+    private Div wrapper = new Div();    //<div class='box1'> contiene html dedicato per la pallina che si muove sullo schermo
     private Label cronologiaMosse = new Label("Cosa hanno fatto fino ad ora:");
     private boolean isTeacher;
 
@@ -60,7 +60,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             this.matyController = matyController;
             this.isTeacher = isTeacher;
             BroadcasterSuggerisciMaty.register(this);
-
+            
             containerNumeriSS.addClassName("containerNumeriSS");
             box.addClassName("box");
 
@@ -128,7 +128,12 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                             BroadcasterMaty.addIntegers(
                                                     BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + Integer.parseInt(mess));
                                         }
-                                        BroadcasterSuggerisciMaty.broadcast(mess, operazione,account.getNome(),true);
+                                        if(isTeacher) {
+                                            BroadcasterSuggerisciMaty.broadcast(mess, operazione, "Teacher", true);
+                                        }else{
+                                            BroadcasterSuggerisciMaty.broadcast(mess, operazione, account.getNome(), true);
+                                        }
+
                                         /*----INIZIO------------------------------------------------------------------------------------------------------------------------------------*/
                                         int j;
                                         containerNumeriSS.removeAll();
@@ -151,20 +156,21 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         box.add(circle);
                                         add(box);
 
-                                        Div d = new Div();
-                                        d.setWidth(null);
-                                        Paragraph p = new Paragraph(mess);
-                                        p.addClassName("parag2");
-                                        d.addClassName("paer");
-                                        d.setId("colorpad");
-                                        d.add(p);
+                                        if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
+                                            Div d = new Div();
+                                            d.setWidth(null);
+                                            Paragraph p = new Paragraph(mess);
+                                            p.addClassName("parag2");
+                                            d.addClassName("paer");
+                                            d.setId("colorpad");
+                                            d.add(p);
 
-                                        wrapper.add(d);
-                                        wrapper.addClassName("box1");
-                                        add(wrapper);
+                                            wrapper.add(d);
+                                            wrapper.addClassName("box1");
+                                            add(wrapper);
 
-                                        getElement().executeJs("setRandomColor()");
-
+                                            getElement().executeJs("setRandomColor()");
+                                        }
                                         MessageList messageList = new MessageList("message-list");
 
                                         Div div = new Div();
@@ -174,7 +180,11 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         button.setId("button");
                                         button.addClickListener(buttonClickEvent1 -> {
                                             parolaLayout.removeAll();
-                                            BroadcasterSuggerisciMaty.broadcast(mess, operazione,account.getNome(),false);
+                                            if(isTeacher) {
+                                                BroadcasterSuggerisciMaty.broadcast(mess, operazione, "Teacher", false);
+                                            }else{
+                                                BroadcasterSuggerisciMaty.broadcast(mess, operazione, account.getNome(), false);
+                                            }
                                             box.removeAll();
                                             wrapper.removeAll();
                                             button.setEnabled(false);
@@ -195,17 +205,20 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                                 circle1.add(paragraph1);
                                                 box.add(circle1);
                                                 add(box);
-                                                Div d1 = new Div();
-                                                d1.setWidth(null);
-                                                Paragraph p1 = new Paragraph("0");
-                                                p1.addClassName("parag2");
-                                                d1.addClassName("paer");
-                                                d1.setId("colorpad");
-                                                d1.add(p1);
-                                                wrapper.add(d1);
-                                                wrapper.addClassName("box1");
-                                                add(wrapper);
-                                                getElement().executeJs("setRandomColor()");
+
+                                                if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
+                                                    Div d1 = new Div();
+                                                    d1.setWidth(null);
+                                                    Paragraph p1 = new Paragraph("0");
+                                                    p1.addClassName("parag2");
+                                                    d1.addClassName("paer");
+                                                    d1.setId("colorpad");
+                                                    d1.add(p1);
+                                                    wrapper.add(d1);
+                                                    wrapper.addClassName("box1");
+                                                    add(wrapper);
+                                                    getElement().executeJs("setRandomColor()");
+                                                }
                                                 checkIfWin();
                                             }
 
@@ -244,8 +257,11 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         System.out.println(BroadcasterSuggerisciMaty.getItems().get(i).getParola());
                                         BroadcasterMaty.addIntegers(
                                                 BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - Integer.parseInt(mess));
-                                        BroadcasterSuggerisciMaty.broadcast(mess, operazione,account.getNome(),true);
-
+                                        if(isTeacher) {
+                                            BroadcasterSuggerisciMaty.broadcast(mess, operazione, "Teacher", true);
+                                        }else{
+                                            BroadcasterSuggerisciMaty.broadcast(mess, operazione, account.getNome(), true);
+                                        }
                                         /*------INIZIO----------------------------------------------------------------------------------------------------------------------------------*/
                                         int j;
                                         containerNumeriSS.removeAll();
@@ -266,17 +282,21 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         circle.add(paragraph);
                                         box.add(circle);
                                         add(box);
-                                        Div d = new Div();
-                                        d.setWidth(null);
-                                        Paragraph p = new Paragraph(mess);
-                                        p.addClassName("parag2");
-                                        d.addClassName("paer");
-                                        d.setId("colorpad");
-                                        d.add(p);
-                                        wrapper.add(d);
-                                        wrapper.addClassName("box1");
-                                        add(wrapper);
-                                        getElement().executeJavaScript("setRandomColor()");
+
+                                        if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
+                                            Div d = new Div();
+                                            d.setWidth(null);
+                                            Paragraph p = new Paragraph(mess);
+                                            p.addClassName("parag2");
+                                            d.addClassName("paer");
+                                            d.setId("colorpad");
+                                            d.add(p);
+                                            wrapper.add(d);
+                                            wrapper.addClassName("box1");
+                                            add(wrapper);
+                                            getElement().executeJs("setRandomColor()");
+                                        }
+
                                         MessageList messageList = new MessageList("message-list");
                                         Div div = new Div();
                                         Label label = new Label(mess);
@@ -285,7 +305,11 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                         button.setId("button");
                                         button.addClickListener(buttonClickEvent1 -> {
                                             parolaLayout.removeAll();
-                                            BroadcasterSuggerisciMaty.broadcast(mess, operazione,account.getNome(),false);
+                                            if(isTeacher) {
+                                                BroadcasterSuggerisciMaty.broadcast(mess, operazione, "Teacher", false);
+                                            }else{
+                                                BroadcasterSuggerisciMaty.broadcast(mess, operazione, account.getNome(), false);
+                                            }
                                             box.removeAll();
                                             wrapper.removeAll();
                                             button.setEnabled(false);
@@ -305,20 +329,21 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                                             circle1.add(paragraph1);
                                             box.add(circle1);
                                             add(box);
-                                            Div d1 = new Div();
-                                            d1.setWidth(null);
-                                            Paragraph p1 = new Paragraph("0");
-                                            p1.addClassName("parag2");
-                                            d1.addClassName("paer");
-                                            d1.setId("colorpad");
-                                            d1.add(p1);
-                                            wrapper.add(d1);
-                                            wrapper.addClassName("box1");
-                                            add(wrapper);
-                                            getElement().executeJavaScript("setRandomColor()");
+
+                                            if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
+                                                Div d1 = new Div();
+                                                d1.setWidth(null);
+                                                Paragraph p1 = new Paragraph("0");
+                                                p1.addClassName("parag2");
+                                                d1.addClassName("paer");
+                                                d1.setId("colorpad");
+                                                d1.add(p1);
+                                                wrapper.add(d1);
+                                                wrapper.addClassName("box1");
+                                                add(wrapper);
+                                                getElement().executeJs("setRandomColor()");
+                                            }
                                             checkIfWin();
-
-
                                         });
                                         //deleteButtonStyle();
                                         div.add(label, button);
