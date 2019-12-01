@@ -97,6 +97,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfMatyUser();
             teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
 
+            UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //accedi al <body> element
+
             containerAddendi.addClassName("containerAddendi");
 
             if(VaadinService.getCurrentRequest() != null) {
@@ -174,10 +176,11 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             message1.addKeyDownListener(Key.ENTER, keyDownEvent -> {
                 String mess = message1.getValue();
                 if (!mess.equals("")) {
-                    if(account.getTypeAccount().equals("teacher"))
-                        BroadcasterChatMaty.broadcast("Teacher: " + message1.getValue()+":"+account.getId());
-                    else
-                        BroadcasterChatMaty.broadcast(account.getNome() + ": " + message1.getValue()+":"+account.getId());
+                    if(isTeacher) {
+                        BroadcasterChatMaty.broadcast("Teacher: " + message1.getValue() + ":" + account.getId());
+                    }else {
+                        BroadcasterChatMaty.broadcast(account.getNome() + ": " + message1.getValue() + ":" + account.getId());
+                    }
                     message1.setValue("");
                 }
             });
