@@ -3,14 +3,12 @@ package com.example.demo.utility;
 import com.example.demo.mainView.MainView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
-
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -78,33 +76,20 @@ public class InfoEventUtility {
         notification.open();
     }
 
-    public void infoEventForTeacher(String info, String colorText){
+    public void infoEventForTeacher(String info, String colorText, String width){
+
         Paragraph content = new Paragraph();
         content.setText(info);
-        content.addClassName("my-style");
-        String styles = ".my-style { "
-                + "  width: 100%"
-                + "  height: 100%;"
-                + "  color: "+ colorText+ ";"
-                + " }";
+        content.getElement().getStyle().set("color", colorText);
 
-        /*
-         * The code below register the style file dynamically. Normally you
-         * use @StyleSheet annotation for the component class. This way is
-         * chosen just to show the style file source code.
-         */
-        StreamRegistration resource = UI.getCurrent().getSession()
-                .getResourceRegistry()
-                .registerResource(new StreamResource("styles.css", () -> {
-                    byte[] bytes = styles.getBytes(StandardCharsets.UTF_8);
-                    return new ByteArrayInputStream(bytes);
-                }));
-        UI.getCurrent().getPage().addStyleSheet(
-                "base://" + resource.getResourceUri().toString());
+        if(!width.equals(""))
+            content.getElement().getStyle().set("width", width);
+        content.getElement().getStyle().set("height", "100%");
 
         Notification notification = new Notification(content);
         notification.setDuration(4000);
         notification.setPosition(Notification.Position.MIDDLE);
+        notification.getElement().getStyle().set("width", "100%");
         notification.open();
     }
 }

@@ -292,7 +292,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 maty.removeClassName("highlight");
             }else{
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEventForTeacher("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti", "black");
+                infoEventUtility.infoEventForTeacher("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti", "black", "420px");
             }
         });
         maty = addDivInAccordionPanelContent("Maty", null, "64px");
@@ -321,13 +321,13 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 guess.removeClassName("highlight");
             }else{
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEventForTeacher("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti", "black");
+                infoEventUtility.infoEventForTeacher("La partita non e' iniziata! Premi 'Avvia' in Gestione Studenti", "black", "420px");
             }
         });
         newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
         newGame.addClickListener(event ->{
             InfoEventUtility infoEventUtility = new InfoEventUtility();
-            infoEventUtility.infoEventForTeacher("Coming soon...", "green");
+            infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
         });
         panel1.add(guess, maty, newGame);
         Div gamesItem = addDivInAccordionPanelContent("Giochi", ic, "0px");

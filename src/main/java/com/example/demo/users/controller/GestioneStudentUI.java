@@ -8,6 +8,7 @@ import com.example.demo.error.ErrorPage;
 import com.example.demo.userOperation.NavBarVertical;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
+import com.example.demo.utility.InfoEventUtility;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -243,6 +244,10 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
         Button btn = new Button("Avvia");
         btn.addClassName("btnUnderGrid");
+        btn.addClickListener(event ->{
+            InfoEventUtility infoEventUtility = new InfoEventUtility();
+            infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
+        });
 
         vert.add(gridNewGame, btn);
         return vert;
@@ -260,11 +265,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(currentAccountList, true);
             Broadcaster.setIsMatyStart(true);
         }else{
-            Label content = new Label("Almeno due utenti per poter iniziare la partita");
-            Notification notification = new Notification(content);
-            notification.setDuration(3000);
-            notification.setPosition(Notification.Position.MIDDLE);
-            notification.open();
+            InfoEventUtility infoEventUtility = new InfoEventUtility();
+            infoEventUtility.infoEventForTeacher("Almeno due utenti per poter iniziare la partita", "black", "330px");
         }
     }
 
