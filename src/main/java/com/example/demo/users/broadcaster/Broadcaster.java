@@ -230,6 +230,14 @@ public class Broadcaster  {
         countMatyUser = 0;
     }
 
+    public static void setCountGuessUser(int countGuessUser) {
+        Broadcaster.countGuessUser = countGuessUser;
+    }
+
+    public static void setCountMatyUser(int countMatyUser) {
+        Broadcaster.countMatyUser = countMatyUser;
+    }
+
     public static Map<Account, WebBrowser> getAccountWithWebBrowserHashMap(){
         return accountWB;
     }

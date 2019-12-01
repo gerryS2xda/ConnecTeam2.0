@@ -3,6 +3,7 @@ package com.example.demo.utility;
 import com.example.demo.games.Guess;
 import com.example.demo.games.Maty;
 import com.example.demo.userOperation.NavBarVertical;
+import com.example.demo.users.broadcaster.Broadcaster;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -90,8 +91,10 @@ public class AppBarUI extends HorizontalLayout {
         terminateGame.addClickListener(buttonClickEvent -> {
            if(nameGame.equals("Guess")){
                com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
+               Broadcaster.setCountGuessUser(0); //reset counter giocatori di Guess
            }else if(nameGame.equals("Maty")){
                com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
+               Broadcaster.setCountMatyUser(0); //reset counter giocatori di Maty
            }
         });
 
