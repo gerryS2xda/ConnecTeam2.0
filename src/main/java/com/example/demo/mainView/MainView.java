@@ -93,7 +93,6 @@ public class MainView extends VerticalLayout {
 
                 //Using Browser Window Resize Events for responsive
                 UI.getCurrent().getPage().addBrowserWindowResizeListener(browserWindowResizeEvent -> {
-                    System.out.println("MainView- Responsive  width: " + browserWindowResizeEvent.getWidth() + " height:" + browserWindowResizeEvent.getHeight());
                     loadResponsiveConfiguration(browserWindowResizeEvent.getWidth(), browserWindowResizeEvent.getHeight());
                 });
 
@@ -115,10 +114,10 @@ public class MainView extends VerticalLayout {
         logoImg = logoConnectTeam();
         pcImg = pcImage();
 
-        loginContainer = login();
+        loginContainer = login(false); //mostra il separatore tra login container e resto della pagina
         add(loginContainer);
 
-        registerContainer = register();
+        registerContainer = register(false);
         add(registerContainer);
 
         descrizione = descrizioneContainer();
@@ -169,7 +168,7 @@ public class MainView extends VerticalLayout {
         return container;
     }
 
-    private VerticalLayout login(){
+    private VerticalLayout login(boolean isInBtn){
 
         VerticalLayout divFormLogin = new VerticalLayout();
 
@@ -225,21 +224,26 @@ public class MainView extends VerticalLayout {
         Div space = new Div();
         space.setWidth("100%");
 
-        Span s = new Span();
-        s.getStyle().set("background-color", "#007d99");
-        s.getStyle().set("flex", "0 0 2px");
-        s.getStyle().set("align-self", "center");
-        s.getStyle().set("width", "90%");
-        s.getStyle().set("margin-top", "10px");
-
         divContainerFormLogin = new Div();
         divContainerFormLogin.add(emailField,passwordField,login,space,passwordDimenticata);
         divFormLogin.setHorizontalComponentAlignment(Alignment.END,divContainerFormLogin);
-        divFormLogin.add(divContainerFormLogin,s);
+
+        if(isInBtn) {
+            divFormLogin.add(divContainerFormLogin);
+        }else{
+            Span s = new Span();
+            s.getStyle().set("background-color", "#007d99");
+            s.getStyle().set("flex", "0 0 2px");
+            s.getStyle().set("align-self", "center");
+            s.getStyle().set("width", "90%");
+            s.getStyle().set("margin-top", "10px");
+            divFormLogin.add(divContainerFormLogin,s);
+        }
+
         return divFormLogin;
     }
 
-    private VerticalLayout register(){
+    private VerticalLayout register(boolean isInBtn){
 
         VerticalLayout divForm = new VerticalLayout();
 
@@ -303,7 +307,7 @@ public class MainView extends VerticalLayout {
         divContainerFormRegister = new Div();
 
         submit.addClickListener(buttonClickEvent -> {
-            if (group.getValue()=="Uomo"){
+            if (group.getValue().equals("Uomo")){
                 binder.getBean().setSesso("0");
             }else {
                 binder.getBean().setSesso("1");
@@ -316,9 +320,16 @@ public class MainView extends VerticalLayout {
             registraNewAccount(binder.getBean());
         });
 
-        divContainerFormRegister.getElement().getStyle().set("margin-right","100px");
-        divContainerFormRegister.getElement().getStyle().set("position","relative");
-        divContainerFormRegister.getElement().getStyle().set("top","-20px");
+        if(isInBtn){
+            divContainerFormRegister.getElement().getStyle().set("margin-right","0");
+            divContainerFormRegister.getElement().getStyle().set("position","relative");
+            divContainerFormRegister.getElement().getStyle().set("top","0");
+        }else{
+            divContainerFormRegister.getElement().getStyle().set("margin-right","100px");
+            divContainerFormRegister.getElement().getStyle().set("position","relative");
+            divContainerFormRegister.getElement().getStyle().set("top","-20px");
+        }
+
 
         Div space = new Div();
         space.setWidth("100%");
@@ -404,6 +415,7 @@ public class MainView extends VerticalLayout {
             registerContainer.getStyle().set("display", "flex"); //VerticalLayout richiede display:flex
             loginContainer.getStyle().set("position", "relative");
             loginContainer.getStyle().set("top", "0");
+            isBtnRegisterLoginShow = false;
             remove(btnContainer);
         }
     }
@@ -418,7 +430,7 @@ public class MainView extends VerticalLayout {
            Dialog d = new Dialog();
            d.setWidth("100%");
            d.setHeight("100%");
-           d.add(login());
+           d.add(login(true));
            d.open();
         });
 
@@ -427,7 +439,7 @@ public class MainView extends VerticalLayout {
             Dialog d = new Dialog();
             d.setWidth("100%");
             d.setHeight("100%");
-            d.add(register());
+            d.add(register(true));
             d.open();
         });
 
