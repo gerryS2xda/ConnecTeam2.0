@@ -121,7 +121,6 @@ public class NavBar extends HorizontalLayout {
 
         //Using Browser Window Resize Events for responsive
         UI.getCurrent().getPage().addBrowserWindowResizeListener(browserWindowResizeEvent -> {
-            System.out.println("NavBar- Responsive  width: " + browserWindowResizeEvent.getWidth() + " height:" + browserWindowResizeEvent.getHeight());
             loadResponsiveConfiguration(browserWindowResizeEvent.getWidth(), browserWindowResizeEvent.getHeight());
         });
     }

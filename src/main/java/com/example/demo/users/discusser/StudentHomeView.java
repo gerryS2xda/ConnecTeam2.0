@@ -100,7 +100,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             //Using Browser Window Resize Events for responsive
             UI.getCurrent().getPage().addBrowserWindowResizeListener(browserWindowResizeEvent -> {
-                System.out.println("StudentHomeView- Responsive  width: " + browserWindowResizeEvent.getWidth() + " height:" + browserWindowResizeEvent.getHeight());
                 loadResponsiveConfiguration(browserWindowResizeEvent.getWidth(), browserWindowResizeEvent.getHeight());
             });
         }catch (Exception e){
