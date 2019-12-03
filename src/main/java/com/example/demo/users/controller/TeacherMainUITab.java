@@ -89,9 +89,10 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             }
 
 
-            //Registra un teacher listener
+            //Registra un teacher listener, add teacherSession to List, add account in HashMap<Account, WebBrowser>
             Broadcaster.registerTeacher(account, this);
             Broadcaster.setTeacherSession(VaadinService.getCurrentRequest().getWrappedSession());
+            Broadcaster.addNewAccountWithWebBrowser(account, VaadinSession.getCurrent().getBrowser());
 
             startGameEventBeanPublisher = startGameEventPublisher;
             endGamePublisher = endGameEventBeanPublisher; //for GuessUI istance
@@ -400,6 +401,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         Broadcaster.removeAccountWithWebBrowser(account);
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
         Broadcaster.resetFlagIsGameStart(); //necessario, altrimenti quando teacher effettua logout non vengono impostati a false
+        Broadcaster.removeAccountWithWebBrowser(account);
         UI.getCurrent().setPollInterval(-1); //Quando teacher esce da questa pagina, disattiva il 'Poll'
     }
 
