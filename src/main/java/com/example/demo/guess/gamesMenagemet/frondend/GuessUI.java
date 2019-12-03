@@ -103,7 +103,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
-                UI.getCurrent().setPollInterval(1000);
+                //UI.getCurrent().setPollInterval(1000); Per il teacher: da usare solo le pagina viene caricata con UI.navigate(...)
             }else{
                 DialogUtility dialogUtility = new DialogUtility();
                 attendiDialog = dialogUtility.showDialog("Attendere...", "black");

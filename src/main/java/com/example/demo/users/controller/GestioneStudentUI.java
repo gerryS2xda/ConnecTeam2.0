@@ -82,7 +82,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
             add(guidetxt, contStud, contGuess, contMaty, contNewGame);
 
-            UI.getCurrent().setPollInterval(5000);
+            //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
             removeAll();
             getStyle().set("background-color","white");

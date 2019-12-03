@@ -122,7 +122,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
-                UI.getCurrent().setPollInterval(1000);
+                //UI.getCurrent().setPollInterval(1000); //Per il teacher: Da usare solo le pagina viene caricata con UI.navigate(...)
             }else{
                 DialogUtility dialogUtility = new DialogUtility();
                 attendiDialog = dialogUtility.showDialog("Attendere...", "black");

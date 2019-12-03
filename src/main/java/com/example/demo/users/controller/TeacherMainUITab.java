@@ -105,6 +105,8 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             mainView = new ControllerMainUI();
             add(mainView);
             home.addClassName("highlight");
+
+            UI.getCurrent().setPollInterval(1000); //Usato sia per GestioneStudentUI, GuessUI e MatyUI poiche' non vengono caricate con UI.navigate()
         }catch(Exception e){
             removeAll();
             getStyle().set("background-color","white");
@@ -398,6 +400,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         Broadcaster.removeAccountWithWebBrowser(account);
         Broadcaster.resetCounterUserGame(); //vincolato ad un solo teacher
         Broadcaster.resetFlagIsGameStart(); //necessario, altrimenti quando teacher effettua logout non vengono impostati a false
+        UI.getCurrent().setPollInterval(-1); //Quando teacher esce da questa pagina, disattiva il 'Poll'
     }
 
     //Implementazione 'BroadcasterListenerTeacher'
