@@ -23,6 +23,12 @@ import java.nio.charset.StandardCharsets;
 @StyleSheet("frontend://stile/stile.css")
 public class NavBar extends HorizontalLayout {
 
+    //instance field
+    private HorizontalLayout homeContainer;
+    private HorizontalLayout settingsContainer;
+    private HorizontalLayout statisticsContainer;
+    private HorizontalLayout logOutContainer;
+
     //Questa barra di navigazione e' stata usata solo per i discusser
     public NavBar (){
 
@@ -36,7 +42,7 @@ public class NavBar extends HorizontalLayout {
         main.getStyle().set("padding","10px");
 
         //Container per pulsante "Home" e link collegamento
-        Div uno = new Div();
+        homeContainer = new HorizontalLayout();
         Icon homeIcon = new Icon(VaadinIcon.HOME);
         homeIcon.setSize("30px");
         homeIcon.setColor("#007d99");
@@ -46,10 +52,10 @@ public class NavBar extends HorizontalLayout {
         unorderedList.add(routerLink);
         Div space = new Div();
         space.setWidth("100%");
-        uno.add(homeIcon,routerLink);
+        homeContainer.add(homeIcon,routerLink);
 
         //Container per pulsante "Impostazioni" e link collegamento
-        Div due = new Div();
+        settingsContainer = new HorizontalLayout();
         Icon settingIcon = new Icon(VaadinIcon.COGS);
         settingIcon.setSize("30px");
         settingIcon.setColor("#007d99");
@@ -58,10 +64,10 @@ public class NavBar extends HorizontalLayout {
         routerLink1.addClassName("router-link");
         Div space1 = new Div();
         space1.setWidth("100%");
-        due.add(settingIcon,routerLink1);
+        settingsContainer.add(settingIcon,routerLink1);
 
         //Container per pulsante "Statistiche" e link collegamento
-        Div tre = new Div();
+        statisticsContainer = new HorizontalLayout();
         Icon statisticheIcon = new Icon(VaadinIcon.PIE_BAR_CHART);
         statisticheIcon.setSize("30px");
         statisticheIcon.setSize("30px");
@@ -71,12 +77,13 @@ public class NavBar extends HorizontalLayout {
         routerLink2.addClassName("router-link");  //style extra definito in stile.css
         Div space2 = new Div();
         space2.setWidth("100%");
-        tre.add(statisticheIcon,routerLink2);
+        statisticsContainer.add(statisticheIcon,routerLink2);
 
         //Container per pulsante "Logout" e link collegamento
-        HorizontalLayout quattro = new HorizontalLayout();
-        quattro.getStyle().set("position","absolute");
-        quattro.getStyle().set("left","88%");
+        logOutContainer = new HorizontalLayout();
+        logOutContainer.getStyle().set("position","absolute");
+        logOutContainer.getStyle().set("left","88%");
+        logOutContainer.getStyle().set("top", "6px");
 
         Icon logoutIcon = new Icon(VaadinIcon.SIGN_OUT);
         logoutIcon.setSize("30px");
@@ -94,7 +101,7 @@ public class NavBar extends HorizontalLayout {
         routerLink3.addClassName("buttonLogOut");
         Div space3 = new Div();
         space3.setWidth("100%");
-        quattro.add(logoutIcon,routerLink3);
+        logOutContainer.add(logoutIcon,routerLink3);
         String styles = ".router-link { "
                 + "margin-left: 10px;"
                 + "font-size: 20px;"
@@ -109,8 +116,32 @@ public class NavBar extends HorizontalLayout {
         UI.getCurrent().getPage().addStyleSheet(
                 "base://" + resource.getResourceUri().toString());
 
-        main.add(uno,due,tre,quattro);  //aggingi i div alla nav bar
+        main.add(homeContainer, settingsContainer, statisticsContainer, logOutContainer);  //aggingi i div alla nav bar
         add(main);  //aggiungi la navbar nella view generale
+
+        //Using Browser Window Resize Events for responsive
+        UI.getCurrent().getPage().addBrowserWindowResizeListener(browserWindowResizeEvent -> {
+            System.out.println("NavBar- Responsive  width: " + browserWindowResizeEvent.getWidth() + " height:" + browserWindowResizeEvent.getHeight());
+            loadResponsiveConfiguration(browserWindowResizeEvent.getWidth(), browserWindowResizeEvent.getHeight());
+        });
     }
 
+    private void loadResponsiveConfiguration(int widthBrowser, int heightBrowser){
+
+        if(widthBrowser <= 1000){
+            logOutContainer.getStyle().set("left", "80%");
+        }else{
+            logOutContainer.getStyle().set("position","absolute");
+            logOutContainer.getStyle().set("left","88%");
+            return;
+        }
+
+        if(widthBrowser <= 650){
+            logOutContainer.getStyle().set("position", "initial");
+        }else{
+            logOutContainer.getStyle().set("position","absolute");
+            logOutContainer.getStyle().set("left", "80%");
+            return;
+        }
+    }
 }

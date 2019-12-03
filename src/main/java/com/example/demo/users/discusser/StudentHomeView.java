@@ -45,6 +45,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
     private VerticalLayout main;
     private Paragraph msgAttesa;
     private boolean isShowErrorDialog = false;
+    private Label nomeGiocatore;
 
     public StudentHomeView(@Autowired AccountListEventBeanPublisher accountEventPublisher) {
 
@@ -96,6 +97,12 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             accountEventListpublisher.doStuffAndPublishAnEvent(Broadcaster.getAccountList(), "add"); //publish a new event for GestStudentUI
             UI.getCurrent().setPollInterval(3000);
+
+            //Using Browser Window Resize Events for responsive
+            UI.getCurrent().getPage().addBrowserWindowResizeListener(browserWindowResizeEvent -> {
+                System.out.println("StudentHomeView- Responsive  width: " + browserWindowResizeEvent.getWidth() + " height:" + browserWindowResizeEvent.getHeight());
+                loadResponsiveConfiguration(browserWindowResizeEvent.getWidth(), browserWindowResizeEvent.getHeight());
+            });
         }catch (Exception e){
             showErrorPage();
             e.printStackTrace();
@@ -139,7 +146,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         verticalLayout.addClassName("positioning2");
         HorizontalLayout layoutWelcome = new HorizontalLayout();
         layoutWelcome.addClassName("banner");
-        String welcome=null;
+        String welcome = "";
 
         if(account.getSesso().equals("1")){
             welcome = "Benvenuta ";
@@ -175,7 +182,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         VerticalLayout layoutNomeEPartita = new VerticalLayout();
         layoutNomeEPartita.add(imageU);
 
-        Label nomeGiocatore = new Label(welcome + account.getNome());
+        nomeGiocatore = new Label(welcome + account.getNome());
         layoutNomeEPartita.addClassName("layoutNomeEPartita");
         layoutNomeEPartita.add(nomeGiocatore);
         nomeGiocatore.addClassName("welcomeLabel");
@@ -225,6 +232,21 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         Image image = new Image(sr, "profile-picture");
         return image;
 
+    }
+
+    private void loadResponsiveConfiguration(int widthBrowser, int heightBrowser){
+
+        if(widthBrowser <= 600 || heightBrowser <= 480){
+            imageU.setWidth("80px");
+            imageU.setHeight("80px");
+            msgAttesa.getStyle().set("font-size", "18px");
+            nomeGiocatore.getStyle().set("font-size", "2em");
+        }else{
+            imageU.setWidth("170px");
+            imageU.setHeight("170px");
+            msgAttesa.getStyle().set("font-size", "20px");
+            nomeGiocatore.getStyle().set("font-size", "3em");
+        }
     }
 
     //Implements methods of BeforeLeaveObserver
