@@ -58,8 +58,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private List<Grid<Account>> gridGruppi;
     private List<Gruppo> gruppi;
     private Label title;
-    private Button start;
-    private Button editSettings;
     private HorizontalLayout gridContainer;
     private AppBarUI appBarUI;
 
@@ -103,6 +101,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
             gridContainer = new HorizontalLayout();
             gridContainer.addClassName("gridContainer");
+            gridContainer.setWidth("75%");
 
             updateGridStudentCollegati();
 

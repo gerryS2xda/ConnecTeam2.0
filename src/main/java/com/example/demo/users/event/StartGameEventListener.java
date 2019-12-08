@@ -20,6 +20,8 @@ public class StartGameEventListener {
         List<Gruppo> dataReceive = event.getGruppiList();
         String nomeGioco = event.getNomeGioco(); //nome del gioco che e' stata avviato
 
+        Broadcaster.setGruppiListReceive(dataReceive);
+
         for(int i = 0; i < dataReceive.size(); i++){
             String game = dataReceive.get(i).getNomeGioco();
             for(Account a : dataReceive.get(i).getMembri()){
@@ -31,8 +33,6 @@ public class StartGameEventListener {
                 }
             }
         }
-
-        Broadcaster.setGruppiListReceive(dataReceive);
 
         //Avvia il gioco in background per il teacher (necessario perche' non viene memorizzato stato attuale della partita)
         if(nomeGioco.equals("Guess")) {

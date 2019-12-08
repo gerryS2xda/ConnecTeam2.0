@@ -1,13 +1,18 @@
 package com.example.demo.guess.gamesMenagemet.frondend;
 
+import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSuggerisci;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.SuggerisciListener;
 import com.example.demo.utility.MessageList;
+import com.example.demo.utility.Utils;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -17,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @StyleSheet("frontend://stile/stile.css")
@@ -30,13 +36,23 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     private boolean vincente;
     private boolean flag = false;
     private boolean isTeacher;
+    private Account account; //account che sta interagendo con il gioco
+    private List<Gruppo> gruppi = new ArrayList<Gruppo>();
+    private Gruppo g; //gruppo a cui appartiene questo account
+    private Div azioni;
 
-    public StartGameUI(GuessController guessController, boolean isTeacher) {
+    public StartGameUI(GuessController guessController, boolean isTeacher, Account account) {
 
         try {
+            gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
             setId("StartGameUI");
             this.guessController = guessController;
             this.isTeacher = isTeacher;
+            this.account = account;
+            g = Utils.findGruppoByAccount(gruppi, account);
+            azioni = new Div();
+            azioni.setId("AzioniparolaSuggerita");
+
 
             BroadcasterSuggerisci.register(this);
 
@@ -111,6 +127,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             horizontalLayout.setId("paroleSuggeriteBtnPlus");
 
             Label label = new Label();  //parola suggerita
+            label.setId("parolaSuggerita");
             label.getStyle().set("margin-top", "8px");
             label.setText(message);
 
@@ -167,15 +184,23 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             button.getStyle().set("cursor","pointer");
             button.getStyle().set("color","white");
 
+            azioni.add(label, button);
+            g.getAzioniAccount().put(account, azioni);
+
+            //Solo ai membri dell'account a verra' mostrato la parola suggerita
+            for(Account a : g.getMembri()){
+                horizontalLayout.add(label, button);
+                messageList.add(horizontalLayout);
+                parolaLayout.add(messageList);
+            }
+
             if(isTeacher){
                 horizontalLayout.getStyle().set("width", "350px");
                 icon.getStyle().set("left", "100px");
                 button.getStyle().set("width", "32px");
-            }
 
-            horizontalLayout.add(label, button);
-            messageList.add(horizontalLayout);
-            parolaLayout.add(messageList);
+
+            }
 
         });
 
@@ -202,6 +227,5 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     void disableButton(){
         button.setEnabled(false);
     }
-
 
 }

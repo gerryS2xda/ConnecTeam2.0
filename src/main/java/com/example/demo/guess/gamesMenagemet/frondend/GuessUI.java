@@ -1,6 +1,7 @@
 package com.example.demo.guess.gamesMenagemet.frondend;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.entity.Partita;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
@@ -32,7 +33,9 @@ import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Push
 @Route("guess")
@@ -71,6 +74,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private WrappedSession teacherSession;
     private Button start; //pulsante che sara'
     private Dialog attendiDialog;
+    private List<Gruppo> gruppi = new ArrayList<Gruppo>();
+    private Gruppo g; //gruppo a cui appartiene questo account
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -82,6 +87,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             endGamePublisher = endGameEventBeanPublisher;
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
             teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
+            gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
 
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
@@ -100,6 +106,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
             }
             guessController = new GuessController(partitaRepository);
+            g = Utils.findGruppoByAccount(gruppi, account);
 
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
@@ -366,7 +373,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                         if(account.getTypeAccount().equals("student")){
                             attendiDialog.close();
                         }
-                        StartGameUI startGameUI = new StartGameUI(guessController, isTeacher);
+                        StartGameUI startGameUI = new StartGameUI(guessController, isTeacher, account);
                         verticalLayout.add(startGameUI);
                         indizio.getStyle().set("font-size", "30px");
                         indizio.getStyle().set("margin-left", "15px");
@@ -465,11 +472,34 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 }else
                     a = " voti";
 
-                Label label = new Label(s +" ha "+ integer + a );
-                MessageList messageList = new MessageList("message-list");
-                messageList.add(label);
-                containerParoleVotate.add(messageList);
-                add(containerParoleVotate);
+                //Solo ai membri dell'account a verra' mostrato la parola suggerita
+
+                if(Utils.isAccountInThisGruppo(g, account)){
+                    Label label = new Label(s + " ha " + integer + a);
+                    label.setId("parolaVotata");
+                    g.getAzioniAccount().put(account, label);
+
+                    MessageList messageList = new MessageList("message-list");
+                    messageList.add(label);
+                    containerParoleVotate.add(messageList);
+                    add(containerParoleVotate);
+                }
+
+                if(isTeacher){
+                    for(Account x : g.getAzioniAccount().keySet()){
+                        Label label = (Label) g.getAzioniAccount().get(x);
+                        if(label.getId().get().equals("parolaVotata")){
+                            MessageList messageList = new MessageList("message-list");
+                            messageList.add(label);
+                            containerParoleVotate.add(messageList);
+                            add(containerParoleVotate);
+                        }else{
+                            System.out.println("GuessUI.parolaVotata(): label non presente");
+                        }
+
+                    }
+                }
+
             });
 
         });
