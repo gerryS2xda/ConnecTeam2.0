@@ -407,7 +407,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
 
     //Implementazione 'BroadcasterListenerTeacher'
     @Override
-    public void updateAndMergeAccountList(){
+    public void updateGridStudentCollegati(){
         //no implement
     }
 

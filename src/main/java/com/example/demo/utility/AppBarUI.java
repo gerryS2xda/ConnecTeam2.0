@@ -19,8 +19,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class AppBarUI extends HorizontalLayout {
 
     //static field
-    private static final String ICON_BTN_SIZE = "24px";
-    private static final String APPBAR_HEIGHT = "2.75rem";
+    public static final String ICON_BTN_SIZE = "24px";
+    public static final String APPBAR_HEIGHT = "2.75rem";
 
     //instance field
     private boolean isVerticalLayoutPage;
@@ -101,6 +101,7 @@ public class AppBarUI extends HorizontalLayout {
         horizontalLayout.add(infoBtn, terminateGame);
         return horizontalLayout;
     }
+
 
     //definire pulsante per aprire e chiudere la navbar vertical
     //definire un metodo statico per open and close nella NavBarVertical

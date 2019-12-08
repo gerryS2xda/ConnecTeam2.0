@@ -4,7 +4,7 @@ import com.example.demo.entity.Account;
 
 public interface BroadcastListenerTeacher {
 
-    void updateAndMergeAccountList();
+    void updateGridStudentCollegati();
     void startGameInBackground(String game);
     void removeAccountFromAllGrid(Account a);
     void removeAccountFromThisGrid(Account a, String gridName);

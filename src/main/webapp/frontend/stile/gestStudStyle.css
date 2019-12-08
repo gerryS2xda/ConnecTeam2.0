@@ -1,4 +1,19 @@
 
+.titleStyle{
+    font-size: 32px;
+    color: black;
+    text-align: center;
+}
+
+.containerTitleGuide{
+    align-items: center;
+    position: absolute;
+    top: 60px;
+    margin-right: 5%;
+    right: 0;
+    width: 80%;
+}
+
 .guideText{
     width: 80%;
     position: absolute;
@@ -6,11 +21,15 @@
 }
 
 .gridContainerVertLayout{
-    width: 250px;
-    height: 70%;
-    margin-left: 5%;
-    margin-top: 13%;    /* valore precedente: 10% */
     background-color: #FFFFFF;
+    margin-left: 0;
+}
+
+.gridContainer{
+    width: 80%;  /* valore precedente: 70% o 100%*/
+    height: 400px;
+    margin-left: 5%;
+    margin-top: 180px; /* valore precedente: 13% */
 }
 
 .btnUnderGrid{
@@ -20,4 +39,26 @@
     background-color: #007d99;
     margin-left: 20%;
     color: #FFFFFF;
+}
+
+/* Dialog settings style */
+.titleDialog{
+    font-size: 24px;
+    width: 100%;
+    text-align: center;
+}
+
+.dialogLabel1{
+    font-size: 16px;
+    margin-top: 6px;
+}
+
+.dialogLabel2{
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+.btnContainerDialog{
+    align-self: center;
+    margin-top: 16px;
 }

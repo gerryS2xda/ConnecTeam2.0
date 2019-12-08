@@ -1,11 +1,15 @@
 package com.example.demo.users.broadcaster;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.users.event.AccountListEvent;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.shared.Registration;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -28,6 +32,7 @@ public class Broadcaster  {
     private static int countGuessUser = 0;
     private static int countMatyUser = 0;
     private static Map<Account, WebBrowser> accountWB = new HashMap<>(); //associa ogni account a un web browser (necessario per controllo account gia' loggati)
+    private static List<Gruppo> gruppiListReceive = new ArrayList<Gruppo>();
 
     public static synchronized void addNewAccountWithWebBrowser(Account account, WebBrowser wb){
         accountWB.put(account, wb);
@@ -161,7 +166,7 @@ public class Broadcaster  {
     public static synchronized void updateListaUtentiConnessi(){
         gestStudlisteners.forEach((account, broadcastListener) -> {
            executor.execute(() ->{
-               broadcastListener.updateAndMergeAccountList();
+               broadcastListener.updateGridStudentCollegati();
            });
         });
     }
@@ -245,5 +250,13 @@ public class Broadcaster  {
 
     public static Map<Account, WebBrowser> getAccountWithWebBrowserHashMap(){
         return accountWB;
+    }
+
+    public static List<Gruppo> getGruppiListReceive() {
+        return gruppiListReceive;
+    }
+
+    public static void setGruppiListReceive(List<Gruppo> gruppiListReceive) {
+        Broadcaster.gruppiListReceive = gruppiListReceive;
     }
 }

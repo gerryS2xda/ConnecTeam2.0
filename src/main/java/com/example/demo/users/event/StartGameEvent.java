@@ -1,27 +1,29 @@
 package com.example.demo.users.event;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import org.springframework.context.ApplicationEvent;
 
+import java.util.List;
 import java.util.Map;
 
 public class StartGameEvent extends ApplicationEvent {
 
     //instance field
-    private Map<Account, String> accountList;
-    private boolean isStartPartita = false;
+    private List<Gruppo> gruppiList;  //mappa il nome di un gioco ad una lista di gruppi
+    private String nomeGioco; //nome del gioco che e' stato avviato
 
-    public StartGameEvent(Object source, Map<Account, String> accounts, boolean flag){
+    public StartGameEvent(Object source, List<Gruppo> gruppi, String nomeGioco){
         super(source);
-        accountList = accounts;
-        isStartPartita = flag;
+        gruppiList = gruppi;
+        this.nomeGioco = nomeGioco;
     }
 
-    public Map<Account, String> getAccountList(){
-        return accountList;
+    public List<Gruppo> getGruppiList(){
+        return gruppiList;
     }
 
-    public boolean isStartPartita(){
-        return isStartPartita;
+    public String getNomeGioco(){
+        return nomeGioco;
     }
 }
