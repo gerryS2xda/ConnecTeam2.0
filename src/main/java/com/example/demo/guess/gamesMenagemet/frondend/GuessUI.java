@@ -27,15 +27,14 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Push
 @Route("guess")
@@ -228,6 +227,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 }
             });
             add(start);
+
+            if(isTeacher){
+                showSelectsFieldGruppiForTeacher();
+            }
+
             waitAllUserForStartGame();
 
         }catch (Exception e) {
@@ -282,6 +286,45 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         hor1.add(nomeUser, b);
         return hor1;
+    }
+
+    private void showSelectsFieldGruppiForTeacher(){
+        HorizontalLayout hor1 = new HorizontalLayout();
+        hor1.getStyle().set("margin-top", "16px");
+        hor1.getStyle().set("position", "absolute");
+        hor1.getStyle().set("top", "60px");
+
+        Label lab1 = new Label("Seleziona gruppo: ");
+        lab1.getStyle().set("font-size", "16px");
+        lab1.getStyle().set("margin-top", "8px");
+
+        Select<String> selects = new Select<>();
+        List<String> items = new ArrayList<String>();
+
+        for(Gruppo g : gruppi){
+            items.add(g.getId());
+        }
+
+        selects.setItems(items);
+        if(items.size() > 0)
+            selects.setValue(items.get(0));
+
+        selects.addValueChangeListener(event ->{
+           String value = event.getValue();
+           Gruppo g = Utils.findGruppoByName(gruppi, value);
+           if(g.getMembri().size() > 0){
+               containerParoleVotate.removeAll();
+               Label label = (Label) g.getAzioniAccount().get(g.getMembri().get(0));
+
+               MessageList messageList = new MessageList("message-list");
+               messageList.add(label);
+               containerParoleVotate.add(messageList);
+               add(containerParoleVotate);
+           }
+        });
+
+        hor1.add(lab1, selects);
+        add(hor1);
     }
 
     //public methods
@@ -473,7 +516,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     a = " voti";
 
                 //Solo ai membri dell'account a verra' mostrato la parola suggerita
-
                 if(Utils.isAccountInThisGruppo(g, account)){
                     Label label = new Label(s + " ha " + integer + a);
                     label.setId("parolaVotata");
@@ -483,21 +525,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     messageList.add(label);
                     containerParoleVotate.add(messageList);
                     add(containerParoleVotate);
-                }
-
-                if(isTeacher){
-                    for(Account x : g.getAzioniAccount().keySet()){
-                        Label label = (Label) g.getAzioniAccount().get(x);
-                        if(label.getId().get().equals("parolaVotata")){
-                            MessageList messageList = new MessageList("message-list");
-                            messageList.add(label);
-                            containerParoleVotate.add(messageList);
-                            add(containerParoleVotate);
-                        }else{
-                            System.out.println("GuessUI.parolaVotata(): label non presente");
-                        }
-
-                    }
                 }
 
             });
