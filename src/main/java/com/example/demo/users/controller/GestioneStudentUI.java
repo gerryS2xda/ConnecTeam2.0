@@ -434,7 +434,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     //Potrebbe essere rimosso
     @Override
-    public void removeAccountFromThisGrid(Account a, String gridName){
+    public void removeAccountFromThisGrid(Account a, String nomeGioco){
+        if(getUI().isPresent()) {
+            getUI().get().access(() -> {
+                
+            });
+        }
+
 /*
         if(getUI().isPresent()){
             getUI().get().access(()->{

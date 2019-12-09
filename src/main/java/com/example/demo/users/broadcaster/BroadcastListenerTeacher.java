@@ -7,6 +7,6 @@ public interface BroadcastListenerTeacher {
     void updateGridStudentCollegati();
     void startGameInBackground(String game);
     void removeAccountFromAllGrid(Account a);
-    void removeAccountFromThisGrid(Account a, String gridName);
+    void removeAccountFromThisGrid(Account a, String nomeGioco);
     void showDialogFinePartitaTeacher(String nameGame);
 }
