@@ -416,11 +416,6 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         //no implement
     }
 
-    @Override
-    public void removeAccountFromThisGrid(Account a, String nomeGioco){
-        //no implement
-    }
-
     //Inizializza istanza GuessUI/MatyUI quando teacher avvia la partita e rende la view dedicata non visibile
     @Override
     public void startGameInBackground(String game){
