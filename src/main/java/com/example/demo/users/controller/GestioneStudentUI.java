@@ -135,7 +135,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
             }else{
-                startGameTemp();
+                startGame();
             }
         });
 
@@ -306,7 +306,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             gridContainer.add(vert);
 
             Gruppo g = new Gruppo();
-            g.setId(i);
+            g.setId("Gruppo "+j);
             g.setNomeGioco(nomeGioco);
             gruppi.add(g);
         }
@@ -332,7 +332,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     //Inizia la partita di Guess o Maty quando teacher preme 'Inizia partita'
-    private void startGameTemp(){
+    private void startGame(){
 
         //Riempi la lista dei membri di ogni gruppo
         for(int i = 0; i < gridGruppi.size(); i++){
@@ -390,9 +390,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     public void updateGridStudentCollegati(){
         Map<Account, String> actualList = Broadcaster.getAccountListReceive();
         for(Account i : actualList.keySet()){
-            for(int j = 0; j < gruppi.size(); j++){
-                for(int k = 0; k < gruppi.get(j).getMembri().size(); k++){
-                    Account x = gruppi.get(j).getMembri().get(k);
+            for(Gruppo g : gruppi){
+                for(Account x : g.getMembri()){
                     if(x.equals(i)){
                         actualList.remove(i);
                     }
