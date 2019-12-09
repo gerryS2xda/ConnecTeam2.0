@@ -164,8 +164,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         content.setSpacing(false);
         content.setPadding(false);
 
-        Label title = new Label("Gestione gruppi");
-        title.addClassName("titleDialog");
+        Label titleDialog = new Label("Gestione gruppi");
+        titleDialog.addClassName("titleDialog");
 
         HorizontalLayout hor1 = new HorizontalLayout();
         hor1.getStyle().set("margin-top", "16px");
@@ -215,7 +215,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         });
         btnContainer.add(b, close);
 
-        content.add(title, hor1, hor2, btnContainer);
+        content.add(titleDialog, hor1, hor2, btnContainer);
         d.add(content);
         d.open();
     }
