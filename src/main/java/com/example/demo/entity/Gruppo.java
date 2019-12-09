@@ -12,20 +12,20 @@ import java.util.*;
 public class Gruppo {
 
     //instance field
-    private int id;
+    private String id;  //es. Gruppo 1
     private String nomeGioco;
     private List<Account> membri;
     private Map<Account, Component> azioniAccount; //mappa le azioni (memorizzate come 'Component') all'Account che le ha commesse
 
     //Constructor
     public Gruppo(){
-        id = 0;
+        id = "";
         nomeGioco = "";
         membri = new ArrayList<Account>();
         azioniAccount = new HashMap<>();
     }
 
-    public Gruppo(int id, String nomeGioco, List<Account> membri, Map<Account, Component> azioniAccount) {
+    public Gruppo(String id, String nomeGioco, List<Account> membri, Map<Account, Component> azioniAccount) {
         this.id = id;
         this.nomeGioco = nomeGioco;
         this.membri = membri;
@@ -33,11 +33,11 @@ public class Gruppo {
     }
 
     //getter and setter
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
