@@ -34,4 +34,15 @@ public class Utils {
         }
         return b;
     }
+
+    public static Gruppo findGruppoByName(List<Gruppo> gruppi, String nome){
+        Gruppo x = new Gruppo();
+        for(Gruppo g : gruppi){
+            if(g.getId().equals(nome)){
+                x = g;
+                break;
+            }
+        }
+        return x;
+    }
 }
