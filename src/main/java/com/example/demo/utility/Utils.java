@@ -4,6 +4,7 @@ import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.vaadin.flow.component.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,5 +60,17 @@ public class Utils {
             }
         }
         return c;
+    }
+
+    public static ArrayList<Component> getComponentsByElementId(Map<Account, Component> azioni, String valueId){
+        ArrayList<Component> list = new ArrayList<Component>();
+
+        for(Account i: azioni.keySet()){
+            String str = azioni.get(i).getElement().getAttribute("id");
+            if(str.equals(valueId)){
+                list.add(azioni.get(i));
+            }
+        }
+        return list;
     }
 }
