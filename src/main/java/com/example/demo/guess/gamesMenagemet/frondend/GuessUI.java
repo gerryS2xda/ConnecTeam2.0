@@ -45,6 +45,9 @@ import java.util.*;
 @PageTitle("ConnecTeam-Guess")
 public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
 
+    //static field
+    private static Gruppo tempGruppo; //usato per containerParoleVotateTeacher
+
     //instance field
     private Account account;
     private AccountRepository accountRepository;
@@ -75,6 +78,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Dialog attendiDialog;
     private List<Gruppo> gruppi = new ArrayList<Gruppo>();
     private Gruppo g; //gruppo a cui appartiene questo account
+    //Test
+    private Div containerParoleVotateTeacher = new Div();
+    private Div paroleVotateDiv;
+
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -194,10 +201,17 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
+            containerParoleVotateTeacher.addClassName("containerParoleVotate");
             if(isTeacher){
+                containerParoleVotateTeacher.getStyle().set("width", "15%");
+                containerParoleVotateTeacher.getStyle().set("top", "30%");
+                containerParoleVotateTeacher.getStyle().set("height", "150px");
+                /*
                 containerParoleVotate.getStyle().set("width", "15%");
                 containerParoleVotate.getStyle().set("top", "30%");
                 containerParoleVotate.getStyle().set("height", "150px");
+
+                 */
             }
 
             //Container nome utente e pulsante 'Info' su Guess
@@ -288,6 +302,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         return hor1;
     }
 
+
+
     private void showSelectsFieldGruppiForTeacher(){
         HorizontalLayout hor1 = new HorizontalLayout();
         hor1.getStyle().set("margin-top", "16px");
@@ -312,15 +328,20 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         selects.addValueChangeListener(event ->{
            String value = event.getValue();
            Gruppo g = Utils.findGruppoByName(gruppi, value);
-           if(g.getMembri().size() > 0){
-               containerParoleVotate.removeAll();
-               Label label = (Label) g.getAzioniAccount().get(g.getMembri().get(0));
 
-               MessageList messageList = new MessageList("message-list");
-               messageList.add(label);
-               containerParoleVotate.add(messageList);
-               add(containerParoleVotate);
-           }
+           containerParoleVotateTeacher.getStyle().set("display", "block");
+           containerParoleVotateTeacher.getChildren().forEach(component -> {
+               Div d = (Div) component;
+               String str = d.getElement().getAttribute("id");
+               System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): TEST ID:" + str);
+               if(str.equals("PV" + g.getId())){
+                   d.getStyle().set("display", "block");
+                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): TEST");
+               }else{
+                   d.getStyle().set("display", "none");
+                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): TEST ELSE");
+               }
+           });
         });
 
         hor1.add(lab1, selects);
@@ -508,6 +529,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void parolaVotata() {
         getUI().get().access(() -> {
             containerParoleVotate.removeAll();
+            containerParoleVotateTeacher.removeAll(); //richiede che teacher seleziona nuovamente il gruppo
             Broadcaster.getVotes().forEach((s, integer) -> {
                 String a = "";
                 if(integer == 1){
@@ -515,20 +537,28 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 }else
                     a = " voti";
 
+                Label label = new Label(s + " ha " + integer + a);
+                label.getElement().setAttribute("id", "parolaVotata");
                 //Solo ai membri dell'account a verra' mostrato la parola suggerita
                 if(Utils.isAccountInThisGruppo(g, account)){
-                    Label label = new Label(s + " ha " + integer + a);
-                    label.setId("parolaVotata");
                     g.getAzioniAccount().put(account, label);
 
                     MessageList messageList = new MessageList("message-list");
                     messageList.add(label);
                     containerParoleVotate.add(messageList);
                     add(containerParoleVotate);
+                    tempGruppo = g;
+                }
+                if(isTeacher){
+                    MessageList msgList = new MessageList("message-list");
+                    msgList.getElement().setAttribute("id", "PV" + tempGruppo.getId());
+                    msgList.getStyle().set("display", "none");
+                    msgList.add(label);
+                    containerParoleVotateTeacher.add(msgList);
+                    add(containerParoleVotateTeacher);
                 }
 
             });
-
         });
     }
 
