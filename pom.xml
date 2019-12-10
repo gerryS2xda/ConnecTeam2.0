@@ -48,6 +48,11 @@
             <name>mvn-vaadin</name>
             <url>https://mvnrepository.com/repos/vaadin-addons</url>
         </repository>
+        <repository>
+            <id>vaadinRepo</id>
+            <name>mvn-vaadin2</name>
+            <url>http://vaadin.com/nexus/content/repositories/vaadin-addons/</url>
+        </repository>
     </repositories>
 
     <dependencies>
