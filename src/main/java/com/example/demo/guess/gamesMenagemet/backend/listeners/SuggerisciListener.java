@@ -1,7 +1,7 @@
 package com.example.demo.guess.gamesMenagemet.backend.listeners;
 
-import com.vaadin.flow.component.button.Button;
+import com.example.demo.entity.Gruppo;
 
 public interface SuggerisciListener {
-    Button receiveBroadcast(String message);
+    void receiveBroadcast(Gruppo gruppo, String message);
 }

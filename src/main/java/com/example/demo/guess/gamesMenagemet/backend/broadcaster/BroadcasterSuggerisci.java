@@ -1,5 +1,6 @@
 package com.example.demo.guess.gamesMenagemet.backend.broadcaster;
 
+import com.example.demo.entity.Gruppo;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.SuggerisciListener;
 
 import java.io.Serializable;
@@ -14,9 +15,9 @@ public class BroadcasterSuggerisci implements Serializable {
         listeners.add(listener);
     }
 
-    public static void broadcast(final String message) {
+    public static void broadcast(Gruppo g, final String message) {
         for (SuggerisciListener listener : listeners) {
-            listener.receiveBroadcast(message);
+            listener.receiveBroadcast(g, message);
         }
     }
 
