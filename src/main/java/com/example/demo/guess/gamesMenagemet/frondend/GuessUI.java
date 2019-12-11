@@ -40,7 +40,7 @@ import java.util.*;
 @Route("guess")
 @HtmlImport("chat.html")
 @StyleSheet("frontend://stile/stile.css")
-@StyleSheet("frontend://stile/style.css")
+@StyleSheet("frontend://stile/guessStyle.css")
 @StyleSheet("frontend://stile/chat.css")
 @PageTitle("ConnecTeam-Guess")
 public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
@@ -78,10 +78,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Dialog attendiDialog;
     private List<Gruppo> gruppi = new ArrayList<Gruppo>();
     private Gruppo g; //gruppo a cui appartiene questo account
-    //Test
     private Div containerParoleVotateTeacher = new Div();
-    private Div paroleVotateDiv;
-
+    private Gruppo currentGroupSelect;
+    private StartGameUI startGameUI;
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -94,6 +93,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
             teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
             gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
+            currentGroupSelect = new Gruppo();
+            tempGruppo = new Gruppo();
 
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
@@ -111,8 +112,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 accountRepository = (AccountRepository) teacherSession.getAttribute("rep");
                 partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
             }
-            guessController = new GuessController(partitaRepository);
-            g = Utils.findGruppoByAccount(gruppi, account);
 
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
@@ -122,6 +121,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 attendiDialog = dialogUtility.showDialog("Attendere...", "black");
                 attendiDialog.open();
             }
+            //Inizializzazione per StartGameUI
+            guessController = new GuessController(partitaRepository);
+            g = Utils.findGruppoByAccount(gruppi, account);
+            startGameUI = new StartGameUI(guessController, isTeacher, account);
+
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
             for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
@@ -201,18 +205,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             containerUtenti.addClassName("layoutUsers");
             containerParoleVotate.addClassName("containerParoleVotate");
-            containerParoleVotateTeacher.addClassName("containerParoleVotate");
-            if(isTeacher){
-                containerParoleVotateTeacher.getStyle().set("width", "15%");
-                containerParoleVotateTeacher.getStyle().set("top", "30%");
-                containerParoleVotateTeacher.getStyle().set("height", "150px");
-                /*
-                containerParoleVotate.getStyle().set("width", "15%");
-                containerParoleVotate.getStyle().set("top", "30%");
-                containerParoleVotate.getStyle().set("height", "150px");
-
-                 */
-            }
+            containerParoleVotateTeacher.addClassName("containerParoleVotateTeacher");
 
             //Container nome utente e pulsante 'Info' su Guess
             if(!isTeacher) {
@@ -273,9 +266,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         HorizontalLayout hor1 = new HorizontalLayout();
         hor1.setSpacing(false);
         hor1.setPadding(false);
-        hor1.getStyle().set("position","absolute");
-        hor1.getStyle().set("top","10%");
-        hor1.getStyle().set("left","20%");
+        hor1.addClassName("nameUserAndInfoBtnContainer");
 
         String str = "Benvenuta ";
         if(account.getSesso().equals("0")){
@@ -286,11 +277,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         nomeUser.getStyle().set("font-size","40px");
 
         Button b = new Button("Info su Guess");
-        b.getStyle().set("background-color","#007d99");
-        b.getStyle().set("margin-top","16px");
-        b.getStyle().set("margin-left","36px");
-        b.getStyle().set("cursor","pointer");
-        b.getStyle().set("color","white");
+        b.addClassName("btnInfoGuess");
 
         DialogUtility dialogUtility = new DialogUtility();
         Dialog d = dialogUtility.descrizioneGiocoDialog(guess);
@@ -306,9 +293,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     private void showSelectsFieldGruppiForTeacher(){
         HorizontalLayout hor1 = new HorizontalLayout();
-        hor1.getStyle().set("margin-top", "16px");
-        hor1.getStyle().set("position", "absolute");
-        hor1.getStyle().set("top", "60px");
+        hor1.addClassName("showSelectsFieldGruppiForTeacherContainer");
 
         Label lab1 = new Label("Seleziona gruppo: ");
         lab1.getStyle().set("font-size", "16px");
@@ -327,21 +312,23 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         selects.addValueChangeListener(event ->{
            String value = event.getValue();
-           Gruppo g = Utils.findGruppoByName(gruppi, value);
+           currentGroupSelect = Utils.findGruppoByName(gruppi, value);
 
            containerParoleVotateTeacher.getStyle().set("display", "block");
            containerParoleVotateTeacher.getChildren().forEach(component -> {
                Div d = (Div) component;
                String str = d.getElement().getAttribute("id");
-               System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): TEST ID:" + str);
-               if(str.equals("PV" + g.getId())){
+               System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): ContainerParoleVotate ID:" + str);
+               if(str.equals("PV" + currentGroupSelect.getId())){
                    d.getStyle().set("display", "block");
-                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): TEST");
+                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): ContainerParoleVotate TEST");
                }else{
                    d.getStyle().set("display", "none");
-                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): TEST ELSE");
+                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher():  ContainerParoleVotate TEST ELSE");
                }
            });
+
+           startGameUI.showParolaSuggeritaAndBtnTeacher(currentGroupSelect.getId());
         });
 
         hor1.add(lab1, selects);
@@ -437,7 +424,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                         if(account.getTypeAccount().equals("student")){
                             attendiDialog.close();
                         }
-                        StartGameUI startGameUI = new StartGameUI(guessController, isTeacher, account);
+                        //StartGameUI startGameUI = new StartGameUI(guessController, isTeacher, account);
                         verticalLayout.add(startGameUI);
                         indizio.getStyle().set("font-size", "30px");
                         indizio.getStyle().set("margin-left", "15px");
@@ -489,26 +476,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
                 if(account1.getProfilePicture() != null){
                     imageU = generateImage(account1);
-                    imageU.getStyle().set("width","50px");
-                    imageU.getStyle().set("height","50px");
-                    imageU.getStyle().set("border-radius","80px");
+                    imageU.addClassName("imgUserProfile");
 
-                }else {
-                    if(account1.getSesso()=="1"){
+                }else if(account1.getSesso()=="1"){
                         imageU = new Image("frontend/img/profiloGirl.png", "foto profilo");
-                        imageU.getStyle().set("width","50px");
-                        imageU.getStyle().set("height","50px");
-                        imageU.getStyle().set("border-radius","80px");
-
-                    }
-                    else {
+                        imageU.addClassName("imgUserProfile");
+                    } else {
                         imageU = new Image("frontend/img/profiloBoy.png", "foto profilo");
-                        imageU.getStyle().set("width","50px");
-                        imageU.getStyle().set("height","50px");
-                        imageU.getStyle().set("border-radius","80px");
-
+                        imageU.addClassName("imgUserProfile");
                     }
-                }
 
                 System.out.println("Account id  = "+account1.getId());
 
@@ -529,7 +505,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void parolaVotata() {
         getUI().get().access(() -> {
             containerParoleVotate.removeAll();
-            containerParoleVotateTeacher.removeAll(); //richiede che teacher seleziona nuovamente il gruppo
+            containerParoleVotateTeacher.removeAll();
             Broadcaster.getVotes().forEach((s, integer) -> {
                 String a = "";
                 if(integer == 1){
@@ -556,6 +532,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     msgList.add(label);
                     containerParoleVotateTeacher.add(msgList);
                     add(containerParoleVotateTeacher);
+
+                    if(currentGroupSelect.getId().equals(tempGruppo.getId())){
+                        msgList.getStyle().set("display", "block");
+                    }
                 }
 
             });
