@@ -3,6 +3,8 @@ package com.example.demo.utility;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,5 +74,31 @@ public class Utils {
             }
         }
         return list;
+    }
+
+    public static Div getDivFromListByAttribute(ArrayList<Div> list, String attr, String value){
+        Div d = new Div();
+
+        for(Div i : list){
+            if(i.getElement().getAttribute(attr).equals(value)){
+                d = i;
+                break;
+            }
+        }
+
+        return d;
+    }
+
+    public static VerticalLayout getVerticalLayoutFromListByAttribute(ArrayList<VerticalLayout> list, String attr, String value){
+        VerticalLayout d = new VerticalLayout();
+
+        for(VerticalLayout i : list){
+            if(i.getElement().getAttribute(attr).equals(value)){
+                d = i;
+                break;
+            }
+        }
+
+        return d;
     }
 }
