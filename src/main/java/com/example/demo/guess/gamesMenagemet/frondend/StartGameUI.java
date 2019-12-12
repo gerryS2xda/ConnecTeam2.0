@@ -11,7 +11,6 @@ import com.example.demo.utility.MessageList;
 import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -168,7 +167,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                                 Broadcaster.getPartiteThread().get(i).interrupt();
                                 Broadcaster.getPartiteThread().get(i).stopTimer();
                             } catch (Exception e) {
-                                System.out.println(e.getMessage());
+                                e.printStackTrace();
                             } finally {
                                 int punteggio = 0;
                                 if (Broadcaster.getIndiziRicevuti() == 1) {
@@ -251,7 +250,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                                 Broadcaster.getPartiteThread().get(i).interrupt();
                                 Broadcaster.getPartiteThread().get(i).stopTimer();
                             } catch (Exception e) {
-                                System.out.println(e.getMessage());
+                                e.printStackTrace();
                             } finally {
                                 int punteggio = 0;
                                 if (Broadcaster.getIndiziRicevuti() == 1) {
@@ -292,15 +291,8 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
         Map<String, Integer> hm = new HashMap<String, Integer>();
         for (String i : list) {
             Integer j = hm.get(i);
-            System.out.println("StartGameUI.countFrequencies(): String: " + i + " Integer: " + j);
             hm.put(i, (j == null) ? 1 : j + 1);
         }
-
-        /*for (Map.Entry<String, Integer> val : hm.entrySet()) {
-            System.out.println("Element " + val.getKey() + " "
-                    + "occurs"
-                    + ": " + val.getValue() + " times");
-        }*/
 
         return hm;
     }

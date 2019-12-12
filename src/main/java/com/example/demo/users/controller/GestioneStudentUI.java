@@ -11,7 +11,6 @@ import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
 import com.example.demo.utility.InfoEventUtility;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -26,7 +25,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -112,7 +110,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             ErrorPage errorPage = new ErrorPage();
             add(errorPage);
             e.printStackTrace();
-            System.out.println(e.getMessage());
         }
 
     }
@@ -195,7 +192,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         b.addClickListener(buttonClickEvent -> {
             nomeGioco = selects.getValue();
             numeroGruppi = new Double(numberField.getValue()).intValue();
-            System.out.println("GestStudentUI: nomeGioco: " + nomeGioco + "  numeroGruppi: " + numeroGruppi);
             getStyle().set("display", "flex");
 
             title.setText("Gestione gruppi per " + nomeGioco);
@@ -224,7 +220,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
         ComponentEventListener<GridDragStartEvent<Account>> dragStartListener = event -> {
             draggedItems = event.getDraggedItems();
-            System.out.println("TestStartDrag");
             dragSource = event.getSource();
             gridStud.setDropMode(GridDropMode.BETWEEN); //imposta modalita' di trascinamento delle righe; GridDropMode.BETWEEN: il drop event si verifica tra righe della Grid
             for(int i = 0; i < gridGruppi.size(); i++){
@@ -234,7 +229,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         };
 
         ComponentEventListener<GridDragEndEvent<Account>> dragEndListener = event -> {
-            System.out.println("TestEndDrag");
             draggedItems = null;
             dragSource = null;
             gridStud.setDropMode(null);
@@ -266,7 +260,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                     + (event.getDropLocation() == GridDropLocation.BELOW ? 1: 0)).orElse(0);
             targetItems.addAll(index, draggedItems);
             targetGrid.setItems(targetItems);
-            System.out.println(draggedItems.toString() + "\n targetGridname: " + targetGrid.getId().get());
         };
 
         gridStud.setSelectionMode(Grid.SelectionMode.NONE); //non mostra checkbox per selezionare la riga

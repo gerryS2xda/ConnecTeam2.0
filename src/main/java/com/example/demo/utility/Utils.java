@@ -24,8 +24,6 @@ public class Utils {
             }
         }
 
-        System.out.println("Utils: Account: " + account.getNome() + " Gruppo: " + x.getId());
-
         return x;
     }
 

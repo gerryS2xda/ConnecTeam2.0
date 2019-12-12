@@ -17,14 +17,14 @@ public class GameList {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) throws DuplicateGameNameException {
-        System.out.println("i giochi sono " + list.size());
-        HashSet<String> hashSet = new HashSet<>(); //usato per trovare eventuali collisioni
+        System.out.println("GameList: I giochi sono " + list.size());
+        HashSet<String> hashSet = new HashSet<>();
         for(Game i : list) {
             if(!hashSet.add(i.getNomeGioco().toLowerCase()))
                 throw  new DuplicateGameNameException("nome duplicato: "+ i.getNomeGioco());
         }
         list.forEach(controller -> {
-            System.out.println(controller.getClass().getName());
+            System.out.println("GameList: " + controller.getClass().getName());
         });
 
     }

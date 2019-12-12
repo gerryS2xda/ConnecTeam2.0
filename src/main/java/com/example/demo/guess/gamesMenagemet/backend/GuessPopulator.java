@@ -15,7 +15,7 @@ public class GuessPopulator {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-         System.out.println("Sono GUESS e sono stato chiamato");
+         System.out.println("GuessPopulator: sono GUESS e sono stato chiamato");
 
          Item item1= new Item("Eneide");
          item1.addIndizio(0,"Tra il 29 A.C e il 19 A.C");
@@ -66,7 +66,10 @@ public class GuessPopulator {
          item6.addIndizio(3,"per trasportare il cemento da ROma  Milano");
          repositoryI.save(item6);*/
 
+         /*  LOG usato per il testing di 'ItemRepository'
          repositoryI.findAll().forEach(System.out::println);
+
+          */
 
     }
 }

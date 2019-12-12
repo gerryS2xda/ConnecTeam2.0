@@ -118,9 +118,12 @@ public class DemoApplication {
             partita12.addPunteggio(new Punteggio(francesca,60));
             partitaRepository.save(partita12);
 
+            /* LOG for testing
             accountRepository.findAll().forEach(account -> {
                 System.out.println(account.getEmail());
             });
+
+             */
         };
     }
 }
