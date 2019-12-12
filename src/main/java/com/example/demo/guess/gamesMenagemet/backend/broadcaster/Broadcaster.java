@@ -1,6 +1,7 @@
 package com.example.demo.guess.gamesMenagemet.backend.broadcaster;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.BroadcastListener;
@@ -20,7 +21,7 @@ public class Broadcaster implements Serializable {
     private static Map<Account, BroadcastListener> listeners = new HashMap();
     private static List<Account> accountList = new ArrayList<>();
     private static Map<String,Integer> votes = new HashMap();
-    private static ArrayList<String> strings = new ArrayList<>();
+    private static Map<Gruppo, List<String>> paroleVotate = new HashMap<>();   //contiene le parole 'Suggerite'
     private static int indiziRicevuti = 0;
     private static ArrayList<Item> items = new ArrayList<>();
     private static List<GuessController.PartitaThread> partiteThread = new ArrayList<>();
@@ -95,12 +96,12 @@ public class Broadcaster implements Serializable {
         }
     }
 
-    public static synchronized void getVotoParola(Map<String, Integer> stringIntegerMap) {
+    public static synchronized void getVotoParola(Gruppo g, Map<String, Integer> stringIntegerMap) {
         try {
             votes = stringIntegerMap;
             listeners.forEach((account, broadcastListener) -> {
                 executor.execute(() -> {
-                    broadcastListener.parolaVotata();
+                    broadcastListener.parolaVotata(g);
                 });
             });
         } catch (Exception e) {
@@ -108,8 +109,21 @@ public class Broadcaster implements Serializable {
         }
     }
 
-    public static synchronized void addString(String s){
-        strings.add(s);
+    public static synchronized void addParolaVotata(Gruppo g, String s){
+
+        if(!paroleVotate.containsKey(g)){
+            ArrayList<String> list = new ArrayList<String>();
+            list.add(s);
+            paroleVotate.put(g, list);
+        }else{
+            for(Gruppo x : paroleVotate.keySet()){
+                if(x.equals(g)){
+                    paroleVotate.get(x).add(s);
+                    break;
+                }
+            }
+        }
+
     }
 
     public static synchronized void partitaVincente(String s, Integer integer) {
@@ -165,8 +179,8 @@ public class Broadcaster implements Serializable {
     }
 
     //getter and setter methods
-    public static ArrayList<String> getStrings() {
-        return strings;
+    public static Map<Gruppo, List<String>> getParoleVotateHM() {
+        return paroleVotate;
     }
 
     public static List<Account> getAccountList() {
