@@ -29,8 +29,6 @@ import java.util.Map;
 public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
     //instance field
-    private VerticalLayout parolaLayout = new VerticalLayout();
-    private VerticalLayout parolaLayoutTeacher = new VerticalLayout();
     private GuessController guessController;
     private Image logoGuess;
     private boolean vincente;
@@ -38,7 +36,8 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     private boolean isTeacher;
     private Account account; //account che sta interagendo con il gioco
     private List<Gruppo> gruppi = new ArrayList<Gruppo>();
-    private Gruppo g; //gruppo a cui appartiene questo account
+    private ArrayList<VerticalLayout> parolaLayoutList;
+    private ArrayList<VerticalLayout> parolaLayoutTeacherList;
 
 
     public StartGameUI(GuessController guessController, boolean isTeacher, Account account) {
@@ -49,9 +48,10 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             this.guessController = guessController;
             this.isTeacher = isTeacher;
             this.account = account;
-            g = Utils.findGruppoByAccount(gruppi, account);
+            parolaLayoutList = new ArrayList<VerticalLayout>();
+            parolaLayoutTeacherList = new ArrayList<VerticalLayout>();
 
-            BroadcasterSuggerisci.register(this);
+            BroadcasterSuggerisci.register(account, this);
 
             logoGuess = new Image("frontend/img/Guess.jpeg", "guess");
             logoGuess.setWidth("200px");
@@ -79,7 +79,11 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             sendParola.addClickListener(buttonClickEvent -> {
                 String mess = suggertisci.getValue();
                 if (!mess.equals("")) {
-                    BroadcasterSuggerisci.broadcast(g, suggertisci.getValue());
+                    if(isTeacher){
+                        BroadcasterSuggerisci.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), suggertisci.getValue());
+                    }else {
+                        BroadcasterSuggerisci.broadcast(Utils.findGruppoByAccount(gruppi, account), suggertisci.getValue());
+                    }
                     suggertisci.setValue("");
                 }
             });
@@ -93,16 +97,25 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
             sendParola.getStyle().set("cursor", "pointer");
             sendParola.setWidth(null);
-            parolaLayout.addClassName("suggerisciParolaLayout");
-            parolaLayoutTeacher.addClassName("suggerisciParolaLayoutTeacher");
-            horizontalLayout.add(suggertisci, sendParola, parolaLayout, parolaLayoutTeacher);
-            if(isTeacher){
-                parolaLayout.getStyle().set("display", "none");
-                parolaLayoutTeacher.getStyle().set("display", "block");
-            }else{
-                parolaLayout.getStyle().set("display", "block");
-                parolaLayoutTeacher.getStyle().set("display", "none");
+
+            horizontalLayout.add(suggertisci, sendParola);
+
+            for(Gruppo x : gruppi){
+                VerticalLayout vert = new VerticalLayout();
+                vert.getElement().setAttribute("name", x.getId());
+                vert.addClassName("suggerisciParolaLayout");
+                vert.getStyle().set("display", "none");
+                parolaLayoutList.add(vert);
+
+                VerticalLayout vert2 = new VerticalLayout();
+                vert2.getElement().setAttribute("name", x.getId());
+                vert2.addClassName("suggerisciParolaLayoutTeacher");
+                vert2.getStyle().set("display", "none");
+                parolaLayoutTeacherList.add(vert2);
+
+                horizontalLayout.add(vert, vert2);
             }
+
             add(horizontalLayout);
         }
 
@@ -119,9 +132,15 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     //NOTA: Primo listener e' il teacher e quindi: gruppo.getId() e' una stringa vuota
     @Override
     public void receiveBroadcast(Gruppo gruppo, String message) {  //gruppo da cui e' stata 'suggerita' la parola (serve per teacher)
-        getUI().get().access(() -> {
-            MessageList messageList = new MessageList("message-list");
+        if(isTeacher){
+            receiveBroadcastTeacher(gruppo, message);
+            return;
+        }
 
+        getUI().get().access(() -> {
+            VerticalLayout parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutList, "name", gruppo.getId());
+
+            MessageList messageList = new MessageList("message-list");
             HorizontalLayout horizontalLayout = new HorizontalLayout();
 
             Label label = new Label();  //parola suggerita
@@ -134,9 +153,9 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             button.addClassName("btnPlus");
 
             button.addClickListener(buttonClickEvent -> {
-                Broadcaster.addString(message);
-                Map<String, Integer> stringIntegerMap = countFrequencies(Broadcaster.getStrings());
-                Broadcaster.getVotoParola(stringIntegerMap);
+                Broadcaster.addParolaVotata(gruppo, message);
+                Map<String, Integer> stringIntegerMap = countFrequencies(Broadcaster.getParoleVotateHM().get(gruppo));
+                Broadcaster.getVotoParola(gruppo, stringIntegerMap);
                 button.setEnabled(false);
 
                 stringIntegerMap.forEach((s, integer) -> {
@@ -176,16 +195,19 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                 });
             });
 
-            //Solo ai membri del gruppo in cui si trova account a verra' mostrato la parola suggerita
+            //Solo ai membri del gruppo in cui si trova account 'a' verra' mostrato la parola suggerita
             for(Account a : gruppo.getMembri()){
                 horizontalLayout.add(label, button);
                 messageList.add(horizontalLayout);
                 parolaLayout.add(messageList);
-
-                g.getAzioniAccount().put(account, messageList);
             }
 
-            receiveBroadcastTeacher(gruppo, message);
+            if(Utils.isAccountInThisGruppo(gruppo, account)){
+                parolaLayout.getStyle().set("display", "flex");
+            }else{
+                parolaLayout.getStyle().set("display", "none");
+            }
+
         });
 
     }
@@ -196,6 +218,8 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
      */
     public void receiveBroadcastTeacher(Gruppo gruppo, String message) {
         getUI().get().access(() -> {
+            VerticalLayout parolaLayoutTeacher = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", gruppo.getId());
+
             MessageList messageListTeacher = new MessageList("message-list");
             HorizontalLayout horizontalLayoutTeacher = new HorizontalLayout();
             horizontalLayoutTeacher.getStyle().set("width", "350px");
@@ -212,9 +236,9 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             button.addClassName("btnPlus");
             button.setWidth("32px");
             button.addClickListener(buttonClickEvent -> {
-                Broadcaster.addString(message);
-                Map<String, Integer> stringIntegerMap = countFrequencies(Broadcaster.getStrings());
-                Broadcaster.getVotoParola(stringIntegerMap);
+                Broadcaster.addParolaVotata(gruppo, message);
+                Map<String, Integer> stringIntegerMap = countFrequencies(Broadcaster.getParoleVotateHM().get(gruppo));
+                Broadcaster.getVotoParola(gruppo, stringIntegerMap);
                 button.setEnabled(false);
 
                 stringIntegerMap.forEach((s, integer) -> {
@@ -256,7 +280,6 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
             horizontalLayoutTeacher.add(label, button);
             messageListTeacher.getElement().setAttribute("id", "PL"+gruppo.getId());
-            messageListTeacher.getStyle().set("display", "none");
             messageListTeacher.add(horizontalLayoutTeacher);
             parolaLayoutTeacher.add(messageListTeacher);
 
@@ -264,11 +287,12 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
     }
 
-    public Map<String, Integer> countFrequencies(ArrayList<String> list) {
+    public Map<String, Integer> countFrequencies(List<String> list) {
 
         Map<String, Integer> hm = new HashMap<String, Integer>();
         for (String i : list) {
             Integer j = hm.get(i);
+            System.out.println("StartGameUI.countFrequencies(): String: " + i + " Integer: " + j);
             hm.put(i, (j == null) ? 1 : j + 1);
         }
 
@@ -281,16 +305,15 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
         return hm;
     }
 
-    public void showParolaSuggeritaAndBtnTeacher(String currentGroupId){
-        parolaLayoutTeacher.getChildren().forEach(component -> {
-            Div d = (Div) component;
-            String str = d.getElement().getAttribute("id");
-            if(str.equals("PL" + currentGroupId)){
-                d.getStyle().set("display", "block");
-            }else{
-                d.getStyle().set("display", "none");
-            }
-        });
-    }
 
+
+    public void showParolaSuggeritaAndBtnTeacher(String currentGroupId){
+
+        for(VerticalLayout i : parolaLayoutTeacherList){ //Nascondi tutti i parolaLayoutTeacherList e mostra solo quelli del currentGroupId
+            i.getStyle().set("display", "none");
+        }
+
+        VerticalLayout vert = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", currentGroupId);
+        vert.getStyle().set("display", "flex");
+    }
 }
