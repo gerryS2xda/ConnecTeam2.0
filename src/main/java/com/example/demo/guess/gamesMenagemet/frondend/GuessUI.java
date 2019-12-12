@@ -46,7 +46,7 @@ import java.util.*;
 public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
 
     //static field
-    private static Gruppo tempGruppo; //usato per containerParoleVotateTeacher
+    public static Gruppo currentGroupSelect;
 
     //instance field
     private Account account;
@@ -65,7 +65,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Label secondi = new Label();
     private Label indizio = new Label("Indizi: ");
     private VerticalLayout verticalLayout = new VerticalLayout();
-    private Div containerParoleVotate = new Div();
     private boolean isStarted = false;
     private Div chat = new Div();
     private Image image333;
@@ -77,9 +76,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Button start; //pulsante che sara'
     private Dialog attendiDialog;
     private List<Gruppo> gruppi = new ArrayList<Gruppo>();
-    private Gruppo g; //gruppo a cui appartiene questo account
-    private Div containerParoleVotateTeacher = new Div();
-    private Gruppo currentGroupSelect;
+    private ArrayList<Div> containersPVTeacher; //container parole votate per teacher
+    private ArrayList<Div> containersParoleVotate; //container parole votate per student
     private StartGameUI startGameUI;
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
@@ -94,7 +92,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
             gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
             currentGroupSelect = new Gruppo();
-            tempGruppo = new Gruppo();
+            containersPVTeacher = new ArrayList<Div>();
+            containersParoleVotate = new ArrayList<Div>();
 
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
@@ -123,7 +122,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
             //Inizializzazione per StartGameUI
             guessController = new GuessController(partitaRepository);
-            g = Utils.findGruppoByAccount(gruppi, account);
             startGameUI = new StartGameUI(guessController, isTeacher, account);
 
 
@@ -204,8 +202,20 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             add(device);
 
             containerUtenti.addClassName("layoutUsers");
-            containerParoleVotate.addClassName("containerParoleVotate");
-            containerParoleVotateTeacher.addClassName("containerParoleVotateTeacher");
+
+            for(Gruppo y : gruppi){
+                Div d = new Div();
+                d.getElement().setAttribute("name", y.getId());
+                d.addClassName("containerParoleVotateTeacher");
+                d.getStyle().set("display", "none");
+                containersPVTeacher.add(d);
+
+                Div d2 = new Div();
+                d2.getElement().setAttribute("name", y.getId());
+                d2.addClassName("containerParoleVotate");
+                d2.getStyle().set("display", "none");
+                containersParoleVotate.add(d2);
+            }
 
             //Container nome utente e pulsante 'Info' su Guess
             if(!isTeacher) {
@@ -314,25 +324,22 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
            String value = event.getValue();
            currentGroupSelect = Utils.findGruppoByName(gruppi, value);
 
-           containerParoleVotateTeacher.getStyle().set("display", "block");
-           containerParoleVotateTeacher.getChildren().forEach(component -> {
-               Div d = (Div) component;
-               String str = d.getElement().getAttribute("id");
-               System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): ContainerParoleVotate ID:" + str);
-               if(str.equals("PV" + currentGroupSelect.getId())){
-                   d.getStyle().set("display", "block");
-                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher(): ContainerParoleVotate TEST");
-               }else{
-                   d.getStyle().set("display", "none");
-                   System.out.println("GuessUI.showSelectsFieldGruppiForTeacher():  ContainerParoleVotate TEST ELSE");
-               }
-           });
+           hideAllContainerPVTeacher();
+           Div containerPVteacher = Utils.getDivFromListByAttribute(containersPVTeacher, "name", currentGroupSelect.getId());
+           containerPVteacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
 
            startGameUI.showParolaSuggeritaAndBtnTeacher(currentGroupSelect.getId());
         });
 
         hor1.add(lab1, selects);
         add(hor1);
+    }
+
+    //private methods
+    private void hideAllContainerPVTeacher(){
+        for(Div i : containersPVTeacher){
+            i.getStyle().set("display", "none");
+        }
     }
 
     //public methods
@@ -345,7 +352,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             Broadcaster.getListeners().clear();
             BroadcasterChat.getListeners().clear();
             BroadcasterSuggerisci.getListeners().clear();
-            Broadcaster.getStrings().clear();
+            Broadcaster.getParoleVotateHM().clear();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -502,10 +509,45 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void parolaVotata() {
+    public void parolaVotata(Gruppo gruppo) {   //gruppo da cui proviene la parola inserita
+
+        if(isTeacher){
+            parolaVotataTeacher(gruppo);
+            return;
+        }
+
         getUI().get().access(() -> {
-            containerParoleVotate.removeAll();
-            containerParoleVotateTeacher.removeAll();
+            Div containerPV = Utils.getDivFromListByAttribute(containersParoleVotate, "name", gruppo.getId());
+            containerPV.removeAll();
+
+            Broadcaster.getVotes().forEach((s, integer) -> {
+                String a = "";
+                if(integer == 1){
+                    a = " voto";
+                }else
+                    a = " voti";
+
+                //Solo ai membri dell'account a verra' mostrato la parola suggerita
+                if(Utils.isAccountInThisGruppo(gruppo, account)){
+                    Label label = new Label(s + " ha " + integer + a);
+                    label.getElement().setAttribute("id", "parolaVotata");
+                    MessageList messageList = new MessageList("message-list");
+                    messageList.add(label);
+                    containerPV.add(messageList);
+                    containerPV.getStyle().set("display", "block");
+                    add(containerPV);
+                }else{  //per gli account che non fanno parte del gruppo, containerPV rimane invisibile
+                    containerPV.getStyle().set("display", "none");
+                }
+            });
+        });
+    }
+
+    public void parolaVotataTeacher(Gruppo gruppo) {   //gruppo da cui proviene la parola inserita
+        getUI().get().access(() -> {
+            Div containerPVTeacher = Utils.getDivFromListByAttribute(containersPVTeacher, "name", gruppo.getId());
+            containerPVTeacher.removeAll();
+
             Broadcaster.getVotes().forEach((s, integer) -> {
                 String a = "";
                 if(integer == 1){
@@ -515,29 +557,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
                 Label label = new Label(s + " ha " + integer + a);
                 label.getElement().setAttribute("id", "parolaVotata");
-                //Solo ai membri dell'account a verra' mostrato la parola suggerita
-                if(Utils.isAccountInThisGruppo(g, account)){
-                    g.getAzioniAccount().put(account, label);
-
-                    MessageList messageList = new MessageList("message-list");
-                    messageList.add(label);
-                    containerParoleVotate.add(messageList);
-                    add(containerParoleVotate);
-                    tempGruppo = g;
-                }
-                if(isTeacher){
-                    MessageList msgList = new MessageList("message-list");
-                    msgList.getElement().setAttribute("id", "PV" + tempGruppo.getId());
-                    msgList.getStyle().set("display", "none");
-                    msgList.add(label);
-                    containerParoleVotateTeacher.add(msgList);
-                    add(containerParoleVotateTeacher);
-
-                    if(currentGroupSelect.getId().equals(tempGruppo.getId())){
-                        msgList.getStyle().set("display", "block");
-                    }
-                }
-
+                MessageList msgList = new MessageList("message-list");
+                msgList.getElement().setAttribute("id", "PV" + gruppo.getId());
+                msgList.add(label);
+                containerPVTeacher.add(msgList);
+                add(containerPVTeacher);
             });
         });
     }
