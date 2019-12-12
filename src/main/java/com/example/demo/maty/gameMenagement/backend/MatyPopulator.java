@@ -30,7 +30,10 @@ public class MatyPopulator {
   item2.addIndizio(3,"Parti da capo! Sottrai 70 e poi sottrai 100");
   itemRepositoryMaty.save(item2);
 
-  itemRepositoryMaty.findAll().forEach(System.out::println);
+  /* LOG usato per testing
+     itemRepositoryMaty.findAll().forEach(System.out::println);
+
+   */
 
  }
 }
