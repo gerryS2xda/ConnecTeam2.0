@@ -58,7 +58,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Guess guess;
     private GuessController guessController;
     private MessageList messageList = new MessageList("chatlayoutmessage2");
-    private Label numeroUtenti = new Label();
     private VerticalLayout chatMessages = new VerticalLayout();
     private Label secondi = new Label();
     private Label indizio = new Label("Indizi: ");
@@ -133,7 +132,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if (isStarted != true) {
                 Broadcaster.register(account, this);
                 BroadcasterChat.register(this);
-                Broadcaster.aggiornaUtentiConnessi(UI.getCurrent());
             } else {
                 System.out.println("GUESSUI:TEST1 Account: " + account.getNome());
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
@@ -403,15 +401,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
             divmessage.add(label,div);
             messageList.add(divmessage);
-        });
-    }
-
-    @Override
-    public void countUser(UI ui, String nome) {
-        ui.getUI().get().access(() -> {
-            numeroUtenti.setEnabled(false);
-            numeroUtenti.setText("Utenti connessi: "+Broadcaster.getListeners().size());
-            numeroUtenti.setEnabled(true);
         });
     }
 
