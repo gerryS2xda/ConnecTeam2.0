@@ -8,7 +8,6 @@ public interface BroadcastListener {
     void startGame1(UI ui);
     void receiveIndizio(String message);
     void countDown(String n);
-    void addUsers(UI ui,int i);
     void parolaVotata(Gruppo g);
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();

@@ -84,18 +84,6 @@ public class Broadcaster implements Serializable {
         }
     }
 
-    public static synchronized void addUsers(UI ui){
-        try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.addUsers(ui,in);
-                });
-            });
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public static synchronized void getVotoParola(Gruppo g, Map<String, Integer> stringIntegerMap) {
         try {
             votes = stringIntegerMap;

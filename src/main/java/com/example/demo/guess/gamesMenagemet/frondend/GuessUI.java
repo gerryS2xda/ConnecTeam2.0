@@ -59,8 +59,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private GuessController guessController;
     private MessageList messageList = new MessageList("chatlayoutmessage2");
     private Label numeroUtenti = new Label();
-    private Div containerUtenti = new Div();
-    private Image imageU = new Image();
     private VerticalLayout chatMessages = new VerticalLayout();
     private Label secondi = new Label();
     private Label indizio = new Label("Indizi: ");
@@ -136,7 +134,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 Broadcaster.register(account, this);
                 BroadcasterChat.register(this);
                 Broadcaster.aggiornaUtentiConnessi(UI.getCurrent());
-                Broadcaster.addUsers(UI.getCurrent());
             } else {
                 System.out.println("GUESSUI:TEST1 Account: " + account.getNome());
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
@@ -200,8 +197,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             device.add(chat);
             device.add(textFieldSendBtn);
             add(device);
-
-            containerUtenti.addClassName("layoutUsers");
 
             for(Gruppo y : gruppi){
                 Div d = new Div();
@@ -473,39 +468,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             secondi.getStyle().set("margin-left","15px");
             secondi.setEnabled(true);
         });
-    }
-
-    @Override
-    public void addUsers(UI ui, int in) {
-        ui.getUI().get().access(() -> {
-            containerUtenti.removeAll();
-            Broadcaster.getListeners().forEach((account1, broadcastListener) -> {
-
-                if(account1.getProfilePicture() != null){
-                    imageU = generateImage(account1);
-                    imageU.addClassName("imgUserProfile");
-
-                }else if(account1.getSesso()=="1"){
-                        imageU = new Image("frontend/img/profiloGirl.png", "foto profilo");
-                        imageU.addClassName("imgUserProfile");
-                    } else {
-                        imageU = new Image("frontend/img/profiloBoy.png", "foto profilo");
-                        imageU.addClassName("imgUserProfile");
-                    }
-
-                System.out.println("Account id  = "+account1.getId());
-
-                Button button = new Button(imageU);
-                button.addClassName("buttonUserGuess");
-                button.setText(account1.getNome());
-                button.setEnabled(false);
-                MessageList messageList = new MessageList("message-list");
-                messageList.add(button);
-                containerUtenti.add(messageList);
-
-            });
-        });
-        //getUI().get().getPage().reload();
     }
 
     @Override
