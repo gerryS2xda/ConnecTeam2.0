@@ -1,6 +1,6 @@
 package com.example.demo.guess.gamesMenagemet.backend.listeners;
 
-import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.vaadin.flow.component.UI;
 
 public interface BroadcastListener {
@@ -9,7 +9,7 @@ public interface BroadcastListener {
     void receiveIndizio(String message);
     void countDown(String n);
     void addUsers(UI ui,int i);
-    void parolaVotata();
+    void parolaVotata(Gruppo g);
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();
     void terminaPartitaFromTeacher();
