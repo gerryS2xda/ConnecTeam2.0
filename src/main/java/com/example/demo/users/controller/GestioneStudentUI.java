@@ -6,7 +6,6 @@ import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.userOperation.NavBarVertical;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
 import com.example.demo.utility.InfoEventUtility;
@@ -24,7 +23,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -55,11 +53,19 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private int countMatyUser = 0;
     private int numeroGruppi = 0; //numeri di gruppi di creare
     private String nomeGioco = ""; //nome del gioco che si sta gestendo
-    private List<Grid<Account>> gridGruppi;
-    private List<Gruppo> gruppi;
-    private Label title;
+    private List<Grid<Account>> gridGruppiGuess;
+    private List<Grid<Account>> gridGruppiMaty;
+    private List<Gruppo> gruppiGuess;
+    private List<Gruppo> gruppiMaty;
     private HorizontalLayout gridContainer;
     private AppBarUI appBarUI;
+    private HorizontalLayout mainGuess;
+    private HorizontalLayout mainMaty;
+    private GestioneStudentUIGuess gestioneStudentUIGuess;
+    private GestioneStudentUIMaty gestioneStudentUIMaty;
+    private Tabs containerGridGuess;
+    private Tabs containerGridMaty;
+    private boolean isGridContainerAddToUI;
 
     public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
 
@@ -68,9 +74,14 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             accRep = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             startGameEventBeanPublisher = startGameEventPublisher;
-            gridGruppi = new ArrayList<Grid<Account>>();
-            gruppi = new ArrayList<Gruppo>();
             setId("GestioneStudentUI"); //setta id del root element di questo component
+            gridGruppiGuess = new ArrayList<Grid<Account>>();
+            gridGruppiMaty = new ArrayList<Grid<Account>>();
+            gruppiGuess = new ArrayList<Gruppo>();
+            gruppiMaty = new ArrayList<Gruppo>();
+            containerGridGuess = new Tabs();
+            containerGridMaty = new Tabs();
+            isGridContainerAddToUI = false;
 
             //Registra un teacher listener
             Broadcaster.registerTeacherForGestStud(account, this);
@@ -83,27 +94,28 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             add(appBarUI);
             showButtonInAppBar();
 
-            VerticalLayout containerTitleGuide = new VerticalLayout();
-            containerTitleGuide.setPadding(false);
-            containerTitleGuide.setSpacing(false);
-            containerTitleGuide.addClassName("containerTitleGuide");
-            containerTitleGuide.setWidth("80%");
-            containerTitleGuide.getStyle().set("left", NavBarVertical.NAVBAR_WIDTH);
+            //Inizializza main layout di GestioneStudentiUI per guess e maty e all'inizio imposta come invisibili
+            gestioneStudentUIGuess = new GestioneStudentUIGuess();
+            mainGuess = new HorizontalLayout();
+            mainGuess.getElement().setAttribute("id", "mainGuess");
+            mainGuess.getStyle().set("display", "none");
+            mainGuess.add(gestioneStudentUIGuess);  //non include 'gridContainer' -> usare 'nomeGioco' = Guess
 
-            title = new Label("Gestione gruppi");
-            title.addClassName("titleStyle");
+            gestioneStudentUIMaty = new GestioneStudentUIMaty();
+            mainMaty = new HorizontalLayout();
+            mainMaty.getElement().setAttribute("id", "mainMaty");
+            mainMaty.getStyle().set("display", "none");
+            mainMaty.add(gestioneStudentUIMaty);  //non include 'gridContainer' -> usare 'nomeGioco' = Maty
 
-            Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gioco che desiderate." +
-                    "Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
-
-            containerTitleGuide.add(title, guidetxt);
-            add(containerTitleGuide);
+            add(mainGuess, mainMaty);
 
             gridContainer = new HorizontalLayout();
             gridContainer.addClassName("gridContainer");
+            gridContainer.getStyle().set("margin-top", "200px"); //valore precedente: 180px
             gridContainer.setWidth("75%");
 
             updateGridStudentCollegati();
+
 
             //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
@@ -191,25 +203,40 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.addClassName("btnContainerDialog");
         Button b = new Button("OK");
+        b.setDisableOnClick(true); //un solo click alla volta e' ammesso, viene riattivato quando si chiude il dialog
         b.addClickListener(buttonClickEvent -> {
             nomeGioco = selects.getValue();
             numeroGruppi = new Double(numberField.getValue()).intValue();
+            if(numeroGruppi < 1 || numeroGruppi > MAX_NUM_GRUPPI){
+                buttonClickEvent.getSource().setEnabled(true);
+                return;
+            }
+
             getStyle().set("display", "flex");
 
-            title.setText(nomeGioco);
+            if(!isGridContainerAddToUI){
+                VerticalLayout contStud = containerListStudent();
+                gridContainer.add(contStud);  //aggiungi solo una volta grid 'Studenti collegati', essa vale per tutte le schermate giochi
 
-            VerticalLayout contStud = containerListStudent();
-            gridContainer.add(contStud);
+                add(gridContainer);
+                isGridContainerAddToUI = true;
+            }
 
-            createGridsAndGroups();
+            if(nomeGioco.equals("Guess")){
+                setConfigurationForGuess();
+            }else if(nomeGioco.equals("Maty")){
+                setConfigurationForMaty();
+            }
+
             configurationGridDragAndDrop();
 
             d.close();
+            buttonClickEvent.getSource().setEnabled(true);
         });
 
         Button close = new Button("Chiudi");
         close.addClickListener(buttonClickEvent -> {
-            getStyle().set("display", "none");
+            //getStyle().set("display", "none");
             d.close();
         });
         btnContainer.add(b, close);
@@ -219,24 +246,70 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         d.open();
     }
 
+    public void setConfigurationForGuess(){
+        gestioneStudentUIGuess.setNumeroGruppi(numeroGruppi);
+        gestioneStudentUIGuess.setNomeGioco(nomeGioco);
+        gestioneStudentUIGuess.setTitleLabel(nomeGioco);
+
+        containerGridMaty.getStyle().set("display", "none");
+        containerGridGuess = gestioneStudentUIGuess.createGridsAndGroups();
+        containerGridGuess.getStyle().set("display", "flex");
+
+        gridGruppiGuess = gestioneStudentUIGuess.getGridGruppi();
+        gruppiGuess = gestioneStudentUIGuess.getGruppi();
+
+        gridContainer.add(containerGridGuess); //aggiunge un Tabs con id = 'tabsGUESS'
+        mainGuess.getStyle().set("display", "flex");
+        mainMaty.getStyle().set("display", "none");
+    }
+
+    public void setConfigurationForMaty(){
+        gestioneStudentUIMaty.setNumeroGruppi(numeroGruppi);
+        gestioneStudentUIMaty.setNomeGioco(nomeGioco);
+        gestioneStudentUIMaty.setTitleLabel(nomeGioco);
+
+        containerGridGuess.getStyle().set("display", "none");
+        containerGridMaty = gestioneStudentUIMaty.createGridsAndGroups();
+        containerGridMaty.getStyle().set("display", "flex");
+
+        gridGruppiMaty = gestioneStudentUIMaty.getGridGruppi();
+        gruppiMaty = gestioneStudentUIMaty.getGruppi();
+
+        gridContainer.add(containerGridMaty); //aggiunge un Tabs con id = 'tabsMATY'
+        mainMaty.getStyle().set("display", "flex");
+        mainGuess.getStyle().set("display", "none");
+    }
+
     private void configurationGridDragAndDrop(){
 
         ComponentEventListener<GridDragStartEvent<Account>> dragStartListener = event -> {
             draggedItems = event.getDraggedItems();
             dragSource = event.getSource();
             gridStud.setDropMode(GridDropMode.BETWEEN); //imposta modalita' di trascinamento delle righe; GridDropMode.BETWEEN: il drop event si verifica tra righe della Grid
-            for(int i = 0; i < gridGruppi.size(); i++){
-                gridGruppi.get(i).setDropMode(GridDropMode.BETWEEN);
-            }
 
+            if(nomeGioco.equals("Guess")){
+                for(int i = 0; i < gridGruppiGuess.size(); i++){
+                    gridGruppiGuess.get(i).setDropMode(GridDropMode.BETWEEN);
+                }
+            }else if(nomeGioco.equals("Maty")){
+                for(int i = 0; i < gridGruppiMaty.size(); i++){
+                    gridGruppiMaty.get(i).setDropMode(GridDropMode.BETWEEN);
+                }
+            }
         };
 
         ComponentEventListener<GridDragEndEvent<Account>> dragEndListener = event -> {
             draggedItems = null;
             dragSource = null;
             gridStud.setDropMode(null);
-            for(int i = 0; i < gridGruppi.size(); i++){
-                gridGruppi.get(i).setDropMode(null);
+            if(nomeGioco.equals("Guess")){
+                for(int i = 0; i < gridGruppiGuess.size(); i++){
+                    gridGruppiGuess.get(i).setDropMode(null);
+                }
+            }else if(nomeGioco.equals("Maty")){
+                for(int i = 0; i < gridGruppiMaty.size(); i++){
+                    gridGruppiMaty.get(i).setDropMode(null);
+                }
             }
         };
 
@@ -271,52 +344,24 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         gridStud.addDragEndListener(dragEndListener);
         gridStud.setRowsDraggable(true); //utente può usare Drag-and-Drop delle righe
 
-        for(int i = 0; i < gridGruppi.size(); i++){
-            gridGruppi.get(i).setSelectionMode(Grid.SelectionMode.NONE);
-            gridGruppi.get(i).addDropListener(dropListener);
-            gridGruppi.get(i).addDragStartListener(dragStartListener);
-            gridGruppi.get(i).addDragEndListener(dragEndListener);
-            gridGruppi.get(i).setRowsDraggable(true);
+        if(nomeGioco.equals("Guess")) {
+            for (int i = 0; i < gridGruppiGuess.size(); i++) {
+                gridGruppiGuess.get(i).setSelectionMode(Grid.SelectionMode.NONE);
+                gridGruppiGuess.get(i).addDropListener(dropListener);
+                gridGruppiGuess.get(i).addDragStartListener(dragStartListener);
+                gridGruppiGuess.get(i).addDragEndListener(dragEndListener);
+                gridGruppiGuess.get(i).setRowsDraggable(true);
+            }
+        }else if(nomeGioco.equals("Maty")){
+            for (int i = 0; i < gridGruppiMaty.size(); i++) {
+                gridGruppiMaty.get(i).setSelectionMode(Grid.SelectionMode.NONE);
+                gridGruppiMaty.get(i).addDropListener(dropListener);
+                gridGruppiMaty.get(i).addDragStartListener(dragStartListener);
+                gridGruppiMaty.get(i).addDragEndListener(dragEndListener);
+                gridGruppiMaty.get(i).setRowsDraggable(true);
+            }
         }
 
-    }
-
-    private void createGridsAndGroups(){
-
-        Tabs tabs = new Tabs();
-        tabs.setWidth("75%");
-        tabs.getStyle().set("padding", "0");
-
-        for(int i = 0, j=i+1; i < numeroGruppi; i++, j++){
-            Grid<Account> grid = new Grid<>(Account.class);
-            grid.removeAllColumns();
-            grid.getElement().setAttribute("id", "Gruppo" + j);
-            grid.addColumn(Account::getNome).setHeader("Gruppo " + j);
-            grid.getStyle().set("width", "100%");
-            grid.getStyle().set("height", "80%");
-            gridGruppi.add(grid);
-
-            Gruppo g = new Gruppo();
-            g.setId("Gruppo "+j);
-            g.setNomeGioco(nomeGioco);
-            gruppi.add(g);
-
-            VerticalLayout vert = new VerticalLayout();
-            vert.getElement().setAttribute("id", "gridContainer"+j);
-            vert.addClassName("gridContainerVertLayout");
-            vert.setSpacing(false);
-            vert.add(gridGruppi.get(i));
-            vert.setWidth("230px"); //default: 100%
-            vert.setHeight("100%");
-
-            Tab t = new Tab(vert);
-            t.getElement().setAttribute("id","Gruppo" + j);
-            t.getStyle().set("padding", "0");
-            tabs.add(t);
-
-        }
-        gridContainer.add(tabs);
-        add(gridContainer);
     }
 
     private VerticalLayout containerListStudent(){
@@ -324,7 +369,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         vert.addClassName("gridContainerVertLayout");
         vert.setSpacing(false);
         vert.getStyle().set("margin-right", "16px");
-        vert.setWidth("650px"); //default: 250px o 100%
+        vert.setWidth("250px"); //precedente: 650px
 
         gridStud.getStyle().set("width", "100%");
         gridStud.getStyle().set("height", "80%");  //valore precedente: 70%
@@ -342,20 +387,28 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private void startGame(){
 
         //Riempi la lista dei membri di ogni gruppo
-        for(int i = 0; i < gridGruppi.size(); i++){
-            ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGruppi.get(i).getDataProvider();
-            List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-            gruppi.get(i).setMembri(sourceItems);
+        if(nomeGioco.equals("Guess")){
+            for(int i = 0; i < gridGruppiGuess.size(); i++){
+                ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGruppiGuess.get(i).getDataProvider();
+                List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                gruppiGuess.get(i).setMembri(sourceItems);
+            }
+        }else if(nomeGioco.equals("Maty")){
+            for(int i = 0; i < gridGruppiMaty.size(); i++){
+                ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGruppiMaty.get(i).getDataProvider();
+                List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                gruppiMaty.get(i).setMembri(sourceItems);
+            }
         }
 
         updateCountofGuessAndMatyUser();
         if(countGuessUser > 1 && nomeGioco.equals("Guess")){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
-            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppi, nomeGioco);
+            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiGuess, nomeGioco);
             Broadcaster.setIsGuessStart(true);
         }else if(countMatyUser > 1 && nomeGioco.equals("Maty")){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
-            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppi, nomeGioco);
+            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiMaty, nomeGioco);
             Broadcaster.setIsMatyStart(true);
         }else{
             InfoEventUtility infoEventUtility = new InfoEventUtility();
@@ -368,15 +421,15 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         countGuessUser = 0;
         countMatyUser = 0;
 
-        for(int i = 0; i < gruppi.size(); i++){
-            if(gruppi.get(i).getNomeGioco().equals("Guess")){
-                for(Account a : gruppi.get(i).getMembri()){
-                    countGuessUser++;
-                }
-            }else if(gruppi.get(i).getNomeGioco().equals("Maty")) {
-                for (Account a : gruppi.get(i).getMembri()) {
-                    countMatyUser++;
-                }
+        for(Gruppo i : gruppiGuess){
+            for(Account a : i.getMembri()){
+                countGuessUser++;
+            }
+        }
+
+        for(Gruppo i : gruppiMaty){
+            for(Account a : i.getMembri()){
+                countMatyUser++;
             }
         }
     }
@@ -397,7 +450,15 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     public void updateGridStudentCollegati(){
         Map<Account, String> actualList = Broadcaster.getAccountListReceive();
         for(Account i : actualList.keySet()){
-            for(Gruppo g : gruppi){
+            for(Gruppo g : gruppiGuess){
+                for(Account x : g.getMembri()){
+                    if(x.equals(i)){
+                        actualList.remove(i);
+                    }
+                }
+            }
+
+            for(Gruppo g : gruppiMaty){
                 for(Account x : g.getMembri()){
                     if(x.equals(i)){
                         actualList.remove(i);
@@ -425,13 +486,23 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 sourceItems.remove(a);
                 gridStud.setItems(sourceItems);
 
-                for(int i = 0; i < gridGruppi.size(); i++){
-                    sourceDataProvider = (ListDataProvider<Account>) gridGruppi.get(i).getDataProvider();
+                for(int i = 0; i < gridGruppiGuess.size(); i++){
+                    sourceDataProvider = (ListDataProvider<Account>) gridGruppiGuess.get(i).getDataProvider();
                     sourceItems = new ArrayList<>(sourceDataProvider.getItems());
                     if(sourceItems.contains(a)) {
                         sourceItems.remove(a);
-                        gridGruppi.get(i).setItems(sourceItems);
-                        gruppi.get(i).setMembri(sourceItems);
+                        gridGruppiGuess.get(i).setItems(sourceItems);
+                        gruppiGuess.get(i).setMembri(sourceItems);
+                    }
+                }
+
+                for(int i = 0; i < gridGruppiMaty.size(); i++){
+                    sourceDataProvider = (ListDataProvider<Account>) gridGruppiMaty.get(i).getDataProvider();
+                    sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+                    if(sourceItems.contains(a)) {
+                        sourceItems.remove(a);
+                        gridGruppiMaty.get(i).setItems(sourceItems);
+                        gruppiMaty.get(i).setMembri(sourceItems);
                     }
                 }
 
