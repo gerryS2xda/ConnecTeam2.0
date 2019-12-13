@@ -24,6 +24,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
@@ -194,8 +196,9 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             numeroGruppi = new Double(numberField.getValue()).intValue();
             getStyle().set("display", "flex");
 
-            title.setText("Gestione gruppi per " + nomeGioco);
-            VerticalLayout contStud = containerListStudent("250px", "70%");
+            title.setText(nomeGioco);
+
+            VerticalLayout contStud = containerListStudent();
             gridContainer.add(contStud);
 
             createGridsAndGroups();
@@ -280,41 +283,52 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     private void createGridsAndGroups(){
 
+        Tabs tabs = new Tabs();
+        tabs.setWidth("75%");
+        tabs.getStyle().set("padding", "0");
+
         for(int i = 0, j=i+1; i < numeroGruppi; i++, j++){
             Grid<Account> grid = new Grid<>(Account.class);
             grid.removeAllColumns();
-            grid.setId("Gruppo" + j);
+            grid.getElement().setAttribute("id", "Gruppo" + j);
             grid.addColumn(Account::getNome).setHeader("Gruppo " + j);
             grid.getStyle().set("width", "100%");
             grid.getStyle().set("height", "80%");
             gridGruppi.add(grid);
 
-            //Add grid to page
-            VerticalLayout vert = new VerticalLayout();
-            vert.setId("gridContainer"+j);
-            vert.addClassName("gridContainerVertLayout");
-            vert.setSpacing(false);
-            vert.setWidth("650px"); //default: 100%
-            vert.add(gridGruppi.get(i));
-            gridContainer.add(vert);
-
             Gruppo g = new Gruppo();
             g.setId("Gruppo "+j);
             g.setNomeGioco(nomeGioco);
             gruppi.add(g);
+
+            VerticalLayout vert = new VerticalLayout();
+            vert.getElement().setAttribute("id", "gridContainer"+j);
+            vert.addClassName("gridContainerVertLayout");
+            vert.setSpacing(false);
+            vert.add(gridGruppi.get(i));
+            vert.setWidth("230px"); //default: 100%
+            vert.setHeight("100%");
+
+            Tab t = new Tab(vert);
+            t.getElement().setAttribute("id","Gruppo" + j);
+            t.getStyle().set("padding", "0");
+            tabs.add(t);
+
         }
+        gridContainer.add(tabs);
         add(gridContainer);
     }
 
-    private VerticalLayout containerListStudent(String width, String height){
+    private VerticalLayout containerListStudent(){
         VerticalLayout vert = new VerticalLayout();
         vert.addClassName("gridContainerVertLayout");
         vert.setSpacing(false);
         vert.getStyle().set("margin-right", "16px");
-        vert.setWidth("650px"); //default: 100%
+        vert.setWidth("650px"); //default: 250px o 100%
 
         gridStud.getStyle().set("width", "100%");
-        gridStud.getStyle().set("height", "80%");
+        gridStud.getStyle().set("height", "80%");  //valore precedente: 70%
+        gridStud.getStyle().set("text-align", "center");
 
         gridStud.removeAllColumns(); //inserito per rimuovere tutte le colonne di Account (bug)
         gridStud.setId("AccountList");
