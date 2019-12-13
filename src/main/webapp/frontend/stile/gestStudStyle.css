@@ -41,6 +41,24 @@
     color: #FFFFFF;
 }
 
+.changeUIContainerBtn{
+    position: absolute;
+    top: 68px;  /* allineato con titleLabel */
+    left: 88%;
+}
+
+.changeUIBtnStyle{
+    background-color: #0000;
+    color: black;
+    margin: 0;
+    font-size: 24px;
+}
+
+.changeUIIcon{
+    margin-left: 0;
+    margin-top: 8px;
+}
+
 /* Dialog settings style */
 .titleDialog{
     font-size: 24px;

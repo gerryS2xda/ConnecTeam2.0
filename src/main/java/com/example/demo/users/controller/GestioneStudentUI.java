@@ -95,13 +95,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             showButtonInAppBar();
 
             //Inizializza main layout di GestioneStudentiUI per guess e maty e all'inizio imposta come invisibili
-            gestioneStudentUIGuess = new GestioneStudentUIGuess();
+            gestioneStudentUIGuess = new GestioneStudentUIGuess(this);
             mainGuess = new HorizontalLayout();
             mainGuess.getElement().setAttribute("id", "mainGuess");
             mainGuess.getStyle().set("display", "none");
             mainGuess.add(gestioneStudentUIGuess);  //non include 'gridContainer' -> usare 'nomeGioco' = Guess
 
-            gestioneStudentUIMaty = new GestioneStudentUIMaty();
+            gestioneStudentUIMaty = new GestioneStudentUIMaty(this);
             mainMaty = new HorizontalLayout();
             mainMaty.getElement().setAttribute("id", "mainMaty");
             mainMaty.getStyle().set("display", "none");
@@ -115,7 +115,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             gridContainer.setWidth("75%");
 
             updateGridStudentCollegati();
-
 
             //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
@@ -247,6 +246,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     public void setConfigurationForGuess(){
+        mainGuess.getElement().setAttribute("name", "createdGuess");
+
         gestioneStudentUIGuess.setNumeroGruppi(numeroGruppi);
         gestioneStudentUIGuess.setNomeGioco(nomeGioco);
         gestioneStudentUIGuess.setTitleLabel(nomeGioco);
@@ -259,11 +260,16 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         gruppiGuess = gestioneStudentUIGuess.getGruppi();
 
         gridContainer.add(containerGridGuess); //aggiunge un Tabs con id = 'tabsGUESS'
+
+        gestioneStudentUIGuess.showBtnForChangeUI();
+        
         mainGuess.getStyle().set("display", "flex");
         mainMaty.getStyle().set("display", "none");
     }
 
     public void setConfigurationForMaty(){
+        mainMaty.getElement().setAttribute("name", "createdMaty");
+
         gestioneStudentUIMaty.setNumeroGruppi(numeroGruppi);
         gestioneStudentUIMaty.setNomeGioco(nomeGioco);
         gestioneStudentUIMaty.setTitleLabel(nomeGioco);
@@ -276,6 +282,9 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         gruppiMaty = gestioneStudentUIMaty.getGruppi();
 
         gridContainer.add(containerGridMaty); //aggiunge un Tabs con id = 'tabsMATY'
+
+        gestioneStudentUIMaty.showBtnForChangeUI();
+
         mainMaty.getStyle().set("display", "flex");
         mainGuess.getStyle().set("display", "none");
     }
@@ -432,6 +441,22 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 countMatyUser++;
             }
         }
+    }
+
+    public HorizontalLayout getMainGuess() {
+        return mainGuess;
+    }
+
+    public HorizontalLayout getMainMaty() {
+        return mainMaty;
+    }
+
+    public Tabs getContainerGridGuess() {
+        return containerGridGuess;
+    }
+
+    public Tabs getContainerGridMaty() {
+        return containerGridMaty;
     }
 
     //Implementazione 'BroadcastListenerTeacher'

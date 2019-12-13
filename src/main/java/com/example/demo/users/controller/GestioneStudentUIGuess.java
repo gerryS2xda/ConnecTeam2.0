@@ -4,11 +4,14 @@ import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.userOperation.NavBarVertical;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -28,14 +31,17 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
     private List<Grid<Account>> gridGruppi;
     private List<Gruppo> gruppi;
     private Label title;
+    private HorizontalLayout containerChangeUI;
+    private GestioneStudentUI mainUI;
 
-    public GestioneStudentUIGuess(){
+    public GestioneStudentUIGuess(GestioneStudentUI gestioneStudentUI){
 
         try {
             //Inizializzazione
             gridGruppi = new ArrayList<Grid<Account>>();
             gruppi = new ArrayList<Gruppo>();
             getElement().setAttribute("id", "GestioneStudentUIGuess");
+            mainUI = gestioneStudentUI;
 
             VerticalLayout containerTitleGuide = new VerticalLayout();
             containerTitleGuide.setPadding(false);
@@ -52,7 +58,11 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
                     " Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
 
             containerTitleGuide.add(title, guidetxt);
+
             add(containerTitleGuide);
+
+            containerChangeUI = new HorizontalLayout();
+            containerChangeUI.addClassName("changeUIContainerBtn");
 
             //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
@@ -103,6 +113,30 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
         return tabs;
     }
 
+    public void showBtnForChangeUI() {
+
+        if (mainUI.getMainMaty().getElement().getAttribute("name") != null) {
+            if (mainUI.getMainMaty().getElement().getAttribute("name").equals("createdMaty")) { //verifica se la UI maty e' stata creata
+
+                Button b = new Button("Maty");
+                b.addClassName("changeUIBtnStyle");
+                b.addClickListener(buttonClickEvent -> {
+                    mainUI.getMainGuess().getStyle().set("display", "none");
+                    mainUI.getMainMaty().getStyle().set("display", "flex");
+
+                    mainUI.getContainerGridGuess().getStyle().set("display", "none");
+                    mainUI.getContainerGridMaty().getStyle().set("display", "flex");
+                });
+                Icon ic = new Icon(VaadinIcon.CHEVRON_RIGHT);
+                ic.setSize("24px");
+                ic.addClassName("changeUIIcon");
+                containerChangeUI.add(b, ic);
+
+                add(containerChangeUI);
+            }
+        }
+    }
+
     //Getter and setter
 
     public void setNumeroGruppi(int numeroGruppi) {
@@ -124,4 +158,6 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
     public void setTitleLabel(String txt){
         title.setText(txt);
     }
+
+
 }

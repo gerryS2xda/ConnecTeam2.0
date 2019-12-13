@@ -4,11 +4,14 @@ import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.userOperation.NavBarVertical;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -27,14 +30,18 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
     private List<Grid<Account>> gridGruppi;
     private List<Gruppo> gruppi;
     private Label title;
+    private GestioneStudentUI mainUI;
+    private HorizontalLayout containerChangeUI;
 
-    public GestioneStudentUIMaty(){
+
+    public GestioneStudentUIMaty(GestioneStudentUI gestioneStudentUI){
 
         try {
             //Inizializzazione
             gridGruppi = new ArrayList<Grid<Account>>();
             gruppi = new ArrayList<Gruppo>();
             getElement().setAttribute("id", "GestioneStudentUIMaty");
+            mainUI = gestioneStudentUI;
 
             VerticalLayout containerTitleGuide = new VerticalLayout();
             containerTitleGuide.setPadding(false);
@@ -53,6 +60,8 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
             containerTitleGuide.add(title, guidetxt);
             add(containerTitleGuide);
 
+            containerChangeUI = new HorizontalLayout();
+            containerChangeUI.addClassName("changeUIContainerBtn");
             //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
             removeAll();
@@ -100,6 +109,31 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
         }
         tabs.getElement().setAttribute("id", "tabsMATY");
         return tabs;
+    }
+
+    public void showBtnForChangeUI() {
+
+        if (mainUI.getMainGuess().getElement().getAttribute("name") != null) {
+            if (mainUI.getMainGuess().getElement().getAttribute("name").equals("createdGuess")) {//verifica se la UI guess e' stata creata
+
+                Button b = new Button("Guess");
+                b.addClassName("changeUIBtnStyle");
+                b.addClickListener(buttonClickEvent -> {
+                    mainUI.getMainMaty().getStyle().set("display", "none");
+                    mainUI.getMainGuess().getStyle().set("display", "flex");
+
+                    mainUI.getContainerGridGuess().getStyle().set("display", "flex");
+                    mainUI.getContainerGridMaty().getStyle().set("display", "none");
+                });
+                Icon ic = new Icon(VaadinIcon.CHEVRON_RIGHT);
+                ic.setSize("24px");
+                ic.addClassName("changeUIIcon");
+                containerChangeUI.add(b, ic);
+
+                add(containerChangeUI);
+            }
+        }
+
     }
 
     //Getter and setter
