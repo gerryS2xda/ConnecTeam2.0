@@ -1,6 +1,46 @@
 
 /* Style presente anche nel file 'style.css' */
+/* GuessUI - NavBar */
+.navBarHorizontal{
+    position: absolute;
+    margin: 0;
+}
+
+.buttonChatStyleNavBar{
+    background-color: transparent;
+    color: black;
+    padding: 0;
+    margin: 0;
+    font-size: 20px;
+    cursor: pointer;
+}
+
 /* GuessUI */
+.buttonUserGuess{
+    color: black;
+    background-color: transparent;
+    --lumo-button-size: null;
+    margin-right: 50px;
+    margin-left: 20px;
+}
+.buttonUserGuess span{
+    position: absolute;
+    left: 60px;
+    top: 15px;
+}
+
+.buttonSendChat{
+    height: 40px;
+    width: 50px;
+    cursor: pointer;
+    color: black;
+    background-color: #2d93ac;
+    --lumo-button-size: null;
+    margin-top: 0px; /* valore precedente: 15px*/
+    border-radius: 30px;
+    margin-left: 9px;
+}
+
 .chatlayoutmessage2{
     width: 100%;  /* valore precedente: 500px*/
     height: 250px;

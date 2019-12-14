@@ -14,6 +14,7 @@ import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSugg
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.BroadcastListener;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.ChatListener;
+import com.example.demo.userOperation.NavBar;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.*;
@@ -78,6 +79,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Div chatContainerTeacher;
     private ArrayList<MessageList> spazioMessaggiGruppi;
     private ArrayList<MessageList> spazioMessaggiTeacher;
+    private NavBar navBar;
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -148,6 +150,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 appBarUI = new AppBarUI("Guess", false, true); //nome pagina corrente
                 add(appBarUI);
                 showButtonInAppBar();
+            }else{
+                //mostra la navBar orizzontale se e' stutente
+                navBar = new NavBar(true);
+                navBar.addClassName("navBarHorizontal");
+                add(navBar);
+                addChatBtnInNavBar();
             }
 
             //Chat container
@@ -249,8 +257,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         hor1.add(nomeUser, b);
         return hor1;
     }
-
-
 
     private void showSelectsFieldGruppiForTeacher(){
         HorizontalLayout hor1 = new HorizontalLayout();
@@ -415,6 +421,25 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         horizontalLayout.add(infoBtn, terminateGame);
         appBarUI.add(horizontalLayout);
+    }
+
+    private void addChatBtnInNavBar(){
+        HorizontalLayout chatContainer = new HorizontalLayout();
+        chatContainer.getElement().setAttribute("id", "chatContainerNVGuessUI");
+        chatContainer.getStyle().set("position", "absolute");
+        chatContainer.getStyle().set("left", "80%");
+
+        Icon chatIcon = new Icon(VaadinIcon.CHAT);
+        chatIcon.setSize("30px");
+        chatIcon.setColor("#007d99");
+        chatIcon.getStyle().set("margin-top", "6px");
+        chatIcon.getStyle().set("margin-right", "8px");
+
+        Button chatBtn = new Button("Chat");
+        chatBtn.addClassName("buttonChatStyleNavBar");
+
+        chatContainer.add(chatIcon, chatBtn);
+        navBar.getChatContainer().add(chatContainer);
     }
 
     //public methods
