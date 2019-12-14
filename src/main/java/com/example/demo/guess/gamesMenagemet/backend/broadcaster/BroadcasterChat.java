@@ -1,28 +1,28 @@
 package com.example.demo.guess.gamesMenagemet.backend.broadcaster;
 
+import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.ChatListener;
-
 import java.io.Serializable;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class BroadcasterChat implements Serializable {
 
-    private static final List<ChatListener> listeners = new CopyOnWriteArrayList<ChatListener>();
+    private static final Map<Account, ChatListener> listeners = new HashMap<>();
 
-    public static void register(ChatListener listener) {
-        listeners.add(listener);
+    public static void register(Account acc, ChatListener listener) {
+        listeners.put(acc, listener);
     }
 
-    public static void broadcast(final String message) {
-        for (ChatListener listener : listeners) {
-            listener.receiveBroadcast(message);
-        }
+    public static void broadcast(Gruppo g, String message) {
+        listeners.forEach((account, chatListener) -> {
+            chatListener.receiveBroadcast(g, message);
+        });
     }
 
-    public static List<ChatListener> getListeners() {
+    public static Map<Account, ChatListener> getListeners() {
         return listeners;
     }
-
 }
