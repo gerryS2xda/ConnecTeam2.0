@@ -1,0 +1,16 @@
+
+.titleLabel{
+    font-size: 32px;
+    color: black;
+}
+
+.descrizioneLabel{
+    font-size: 16px;
+    color: black;
+}
+
+.buttonStyle{
+    background-color: #007d99;
+    cursor: pointer;
+    color: white;
+}

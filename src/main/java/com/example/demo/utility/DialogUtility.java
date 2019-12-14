@@ -31,6 +31,7 @@ import java.util.Random;
 
 @HtmlImport("style.html")
 @StyleSheet("frontend://stile/style.css")
+@StyleSheet("frontend://stile/dialogUtilityStyle.css")
 public class DialogUtility extends VerticalLayout {
 
     private String control= "";
@@ -333,16 +334,14 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label titleLab = new Label(title);
-        titleLab.getStyle().set("font-size", "32px");
+        titleLab.addClassName("titleLabel");
 
         Label descrizione = new Label();
-        descrizione.getStyle().set("font-size", "16px");
+        descrizione.addClassName("descrizioneLabel");
         descrizione.setText(motivazione);
 
         Button cancelButton = new Button("Close");
-        cancelButton.getStyle().set("background-color","#007d99");
-        cancelButton.getStyle().set("cursor","pointer");
-        cancelButton.getStyle().set("color","white");
+        cancelButton.addClassName("buttonStyle");
         cancelButton.getStyle().set("margin-top", "25px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
@@ -367,16 +366,14 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label title = new Label("Info su " + game.getNomeGioco());
-        title.getStyle().set("font-size", "32px");
+        title.addClassName("titleLabel");
 
         Label descrizione = new Label();
         descrizione.setText(game.getDescrizioneLungaGioco());
-        descrizione.getStyle().set("font-size", "16px");
+        descrizione.addClassName("descrizioneLabel");
 
         Button cancelButton = new Button("Close");
-        cancelButton.getStyle().set("background-color","#007d99");
-        cancelButton.getStyle().set("cursor","pointer");
-        cancelButton.getStyle().set("color","white");
+        cancelButton.addClassName("buttonStyle");
         cancelButton.getStyle().set("margin-top", "50px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
@@ -401,18 +398,16 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label titleLab = new Label(title);
-        titleLab.getStyle().set("font-size", "32px");
+        titleLab.addClassName("titleLabel");
         titleLab.getStyle().set("color", colorTxt);
 
         Label descrizione = new Label();
-        descrizione.getStyle().set("font-size", "16px");
-        descrizione.setText(motivazione);
+        descrizione.addClassName("descrizioneLabel");
         descrizione.getStyle().set("color", colorTxt);
+        descrizione.setText(motivazione);
 
         Button cancelButton = new Button("Vai alla Home");
-        cancelButton.getStyle().set("background-color","#007d99");
-        cancelButton.getStyle().set("cursor","pointer");
-        cancelButton.getStyle().set("color","white");
+        cancelButton.addClassName("buttonStyle");
         cancelButton.getStyle().set("margin-top", "25px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
@@ -439,12 +434,58 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label descrizione = new Label();
-        descrizione.getStyle().set("font-size", "16px");
-        descrizione.setText(text);
+        descrizione.addClassName("descrizioneLabel");
         descrizione.getStyle().set("color", colorTxt);
+        descrizione.setText(text);
 
         content.add(descrizione);
 
+        d.add(content);
+        return d;
+    }
+
+    public Dialog showConfirmDialogForGame(String title, String msg, boolean isLogout){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label titleLab = new Label(title);
+        titleLab.addClassName("titleLabel");
+
+        Label descrizione = new Label();
+        descrizione.addClassName("descrizioneLabel");
+        descrizione.setText(msg);
+
+        HorizontalLayout btnContainer = new HorizontalLayout();
+        btnContainer.getStyle().set("margin-top", "30px");
+        Button positive = new Button("OK");
+        positive.addClassName("buttonStyle");
+        positive.addClickListener(buttonClickEvent -> {
+            d.close();
+            if(isLogout){
+                VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente
+                UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
+            }else {
+                UI.getCurrent().navigate(StudentHomeView.class);  //vai alla pagina "StudentHomeView"
+            }
+        });
+
+        Button negative = new Button("Continua partita");
+        negative.addClassName("buttonStyle");
+        negative.addClickListener(buttonClickEvent -> {
+            d.close();
+        });
+
+        btnContainer.add(positive, negative);
+
+        content.add(titleLab, descrizione, btnContainer);
         d.add(content);
         return d;
     }
