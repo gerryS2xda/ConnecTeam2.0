@@ -99,4 +99,17 @@ public class Utils {
 
         return d;
     }
+
+    public static MessageList getMessageListFromListByAttributeForChat(ArrayList<MessageList> list, String attr, String value){
+        MessageList d = new MessageList("chatlayoutmessage2");
+
+        for(MessageList i : list){
+            if(i.getElement().getAttribute(attr).equals(value)){
+                d = i;
+                break;
+            }
+        }
+
+        return d;
+    }
 }
