@@ -64,12 +64,7 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
             containerChangeUI = new HorizontalLayout();
             containerChangeUI.addClassName("changeUIContainerBtn");
 
-            //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
-            removeAll();
-            getStyle().set("background-color","white");
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
             e.printStackTrace();
         }
 
@@ -115,8 +110,16 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
 
     public void showBtnForChangeUI() {
 
+        if(containerChangeUI.getElement().getAttribute("id") != null){
+            if(containerChangeUI.getElement().getAttribute("id").equals("containerChangeUIMaty")){
+                return; //containerChangeUI gia' creato e aggiunto alla UI
+            }
+        }
+
         if (mainUI.getMainMaty().getElement().getAttribute("name") != null) {
             if (mainUI.getMainMaty().getElement().getAttribute("name").equals("createdMaty")) { //verifica se la UI maty e' stata creata
+
+                containerChangeUI.getElement().setAttribute("id", "containerChangeUIMaty");
 
                 Button b = new Button("Maty");
                 b.addClassName("changeUIBtnStyle");
@@ -126,6 +129,8 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
 
                     mainUI.getContainerGridGuess().getStyle().set("display", "none");
                     mainUI.getContainerGridMaty().getStyle().set("display", "flex");
+
+                    mainUI.getGestioneStudentUIMaty().showBtnForChangeUI();
                 });
                 Icon ic = new Icon(VaadinIcon.CHEVRON_RIGHT);
                 ic.setSize("24px");
@@ -138,7 +143,6 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
     }
 
     //Getter and setter
-
     public void setNumeroGruppi(int numeroGruppi) {
         this.numeroGruppi = numeroGruppi;
     }
@@ -159,5 +163,7 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
         title.setText(txt);
     }
 
-
+    public HorizontalLayout getContainerChangeUIMaty() {
+        return containerChangeUI;
+    }
 }

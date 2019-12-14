@@ -262,7 +262,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         gridContainer.add(containerGridGuess); //aggiunge un Tabs con id = 'tabsGUESS'
 
         gestioneStudentUIGuess.showBtnForChangeUI();
-        
+
         mainGuess.getStyle().set("display", "flex");
         mainMaty.getStyle().set("display", "none");
     }
@@ -457,6 +457,14 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     public Tabs getContainerGridMaty() {
         return containerGridMaty;
+    }
+
+    public GestioneStudentUIGuess getGestioneStudentUIGuess() {
+        return gestioneStudentUIGuess;
+    }
+
+    public GestioneStudentUIMaty getGestioneStudentUIMaty() {
+        return gestioneStudentUIMaty;
     }
 
     //Implementazione 'BroadcastListenerTeacher'

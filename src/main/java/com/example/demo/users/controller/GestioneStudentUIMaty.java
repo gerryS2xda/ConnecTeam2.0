@@ -62,12 +62,8 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
 
             containerChangeUI = new HorizontalLayout();
             containerChangeUI.addClassName("changeUIContainerBtn");
-            //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
+
         }catch (Exception e){
-            removeAll();
-            getStyle().set("background-color","white");
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
             e.printStackTrace();
         }
 
@@ -113,8 +109,16 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
 
     public void showBtnForChangeUI() {
 
+        if(containerChangeUI.getElement().getAttribute("id") != null){
+            if(containerChangeUI.getElement().getAttribute("id").equals("containerChangeUIGuess")){
+                return; //containerChangeUI gia' creato e aggiunto alla UI
+            }
+        }
+
         if (mainUI.getMainGuess().getElement().getAttribute("name") != null) {
             if (mainUI.getMainGuess().getElement().getAttribute("name").equals("createdGuess")) {//verifica se la UI guess e' stata creata
+
+                containerChangeUI.getElement().setAttribute("id", "containerChangeUIGuess");
 
                 Button b = new Button("Guess");
                 b.addClassName("changeUIBtnStyle");
@@ -124,6 +128,8 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
 
                     mainUI.getContainerGridGuess().getStyle().set("display", "flex");
                     mainUI.getContainerGridMaty().getStyle().set("display", "none");
+
+                    mainUI.getGestioneStudentUIGuess().showBtnForChangeUI();
                 });
                 Icon ic = new Icon(VaadinIcon.CHEVRON_RIGHT);
                 ic.setSize("24px");
@@ -156,5 +162,9 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
 
     public void setTitleLabel(String txt){
         title.setText(txt);
+    }
+
+    public HorizontalLayout getContainerChangeUIGuess() {
+        return containerChangeUI;
     }
 }
