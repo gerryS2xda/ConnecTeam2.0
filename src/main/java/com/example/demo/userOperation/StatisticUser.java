@@ -48,7 +48,7 @@ public class StatisticUser extends VerticalLayout {
 
         try {
             getStyle().set("padding", "0px");
-            NavBar navBar = new NavBar();
+            NavBar navBar = new NavBar(false);
             add(navBar);
             HorizontalLayout superMain = new HorizontalLayout();
             superMain.getStyle().set("margin-top","100px");

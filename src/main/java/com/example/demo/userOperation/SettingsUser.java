@@ -62,7 +62,7 @@ public class SettingsUser extends VerticalLayout {
             }else if(account.getTypeAccount().equals("teacher")){  //Usa la teacherUI se account e' teacher, else usa solo NavBar orrizzontale
                 isNavBarVert = true;
             }else{
-                NavBar navBar = new NavBar();
+                NavBar navBar = new NavBar(false);
                 add(navBar);
             }
 
