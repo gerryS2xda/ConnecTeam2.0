@@ -66,6 +66,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private EndGameEventBeanPublisher endGamePublisher;
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
     private int maxNumeroStutentiConnessi = 0;
+    private AppBarUI appBarUI;
     private WrappedSession teacherSession;
     private Button start; //pulsante che sara'
     private Dialog attendiDialog;
@@ -144,8 +145,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             if(isTeacher){ //mostra la appbar
                 getStyle().set("width", "100%");
-                AppBarUI appBar = new AppBarUI("Guess", false, true); //nome pagina corrente
-                add(appBar);
+                appBarUI = new AppBarUI("Guess", false, true); //nome pagina corrente
+                add(appBarUI);
+                showButtonInAppBar();
             }
 
             //Chat container
@@ -379,6 +381,40 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         device.add(textFieldSendBtn);
         return device;
+    }
+
+    private void showButtonInAppBar(){
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.getStyle().set("position", "absolute");
+        horizontalLayout.getStyle().set("left", "80%");
+        horizontalLayout.getStyle().set("z-index", "2");
+        horizontalLayout.setHeight(AppBarUI.APPBAR_HEIGHT);
+
+        DialogUtility dialogUtility = new DialogUtility();
+
+        Icon info = new Icon(VaadinIcon.INFO_CIRCLE_O);
+        info.setSize(AppBarUI.ICON_BTN_SIZE);
+        Button infoBtn = new Button("Info", info);
+        infoBtn.setHeight(AppBarUI.APPBAR_HEIGHT);
+        infoBtn.getStyle().set("background-color", "#0000");
+        infoBtn.getStyle().set("margin", "0");
+        infoBtn.addClickListener(buttonClickEvent -> {
+            dialogUtility.descrizioneGiocoDialog(new Guess()).open();
+        });
+
+        Icon close = new Icon(VaadinIcon.CLOSE_CIRCLE_O);
+        close.setSize(AppBarUI.ICON_BTN_SIZE);
+        Button terminateGame = new Button("Termina partita", close);
+        terminateGame.setHeight(AppBarUI.APPBAR_HEIGHT);
+        terminateGame.getStyle().set("background-color", "#0000");
+        terminateGame.getStyle().set("margin", "0");
+        terminateGame.addClickListener(buttonClickEvent -> {
+            Broadcaster.terminaPartitaFromTeacher();
+            com.example.demo.users.broadcaster.Broadcaster.setCountGuessUser(0); //reset counter giocatori di Guess
+        });
+
+        horizontalLayout.add(infoBtn, terminateGame);
+        appBarUI.add(horizontalLayout);
     }
 
     //public methods
