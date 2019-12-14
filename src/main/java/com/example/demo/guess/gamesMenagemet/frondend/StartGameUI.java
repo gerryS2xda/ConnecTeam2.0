@@ -4,7 +4,7 @@ import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
-import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
+import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSuggerisci;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.SuggerisciListener;
 import com.example.demo.utility.MessageList;
@@ -152,40 +152,40 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             button.addClassName("btnPlus");
 
             button.addClickListener(buttonClickEvent -> {
-                Broadcaster.addParolaVotata(gruppo, message);
-                Map<String, Integer> stringIntegerMap = countFrequencies(Broadcaster.getParoleVotateHM().get(gruppo));
-                Broadcaster.getVotoParola(gruppo, stringIntegerMap);
+                BroadcasterGuess.addParolaVotata(gruppo, message);
+                Map<String, Integer> stringIntegerMap = countFrequencies(BroadcasterGuess.getParoleVotateHM().get(gruppo));
+                BroadcasterGuess.getVotoParola(gruppo, stringIntegerMap);
                 button.setEnabled(false);
 
                 stringIntegerMap.forEach((s, integer) -> {
-                    if (integer == Broadcaster.getListeners().size()) {
-                        for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                    if (integer == BroadcasterGuess.getListeners().size()) {
+                        for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
                             if (i == 0) {
                                 flag = false;
                             }
                             try {
-                                Broadcaster.getPartiteThread().get(i).interrupt();
-                                Broadcaster.getPartiteThread().get(i).stopTimer();
+                                BroadcasterGuess.getPartiteThread().get(i).interrupt();
+                                BroadcasterGuess.getPartiteThread().get(i).stopTimer();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
                                 int punteggio = 0;
-                                if (Broadcaster.getIndiziRicevuti() == 1) {
+                                if (BroadcasterGuess.getIndiziRicevuti() == 1) {
                                     punteggio = 100;
-                                } else if (Broadcaster.getIndiziRicevuti() == 2) {
+                                } else if (BroadcasterGuess.getIndiziRicevuti() == 2) {
                                     punteggio = 60;
-                                } else if (Broadcaster.getIndiziRicevuti() == 3) {
+                                } else if (BroadcasterGuess.getIndiziRicevuti() == 3) {
                                     punteggio = 30;
-                                } else if (Broadcaster.getIndiziRicevuti() == 4) {
+                                } else if (BroadcasterGuess.getIndiziRicevuti() == 4) {
                                     punteggio = 10;
                                 }
 
-                                vincente = guessController.partitaVincente(s, Broadcaster.getItems().get(i));
+                                vincente = guessController.partitaVincente(s, BroadcasterGuess.getItems().get(i));
 
                                 if (vincente == false && flag == false) {
-                                    Broadcaster.partitanonVincente();
+                                    BroadcasterGuess.partitanonVincente();
                                 } else if (vincente == true && flag == false) {
-                                    Broadcaster.partitaVincente(s, punteggio);
+                                    BroadcasterGuess.partitaVincente(s, punteggio);
                                 }
                             }
 
@@ -235,40 +235,40 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             button.addClassName("btnPlus");
             button.setWidth("32px");
             button.addClickListener(buttonClickEvent -> {
-                Broadcaster.addParolaVotata(gruppo, message);
-                Map<String, Integer> stringIntegerMap = countFrequencies(Broadcaster.getParoleVotateHM().get(gruppo));
-                Broadcaster.getVotoParola(gruppo, stringIntegerMap);
+                BroadcasterGuess.addParolaVotata(gruppo, message);
+                Map<String, Integer> stringIntegerMap = countFrequencies(BroadcasterGuess.getParoleVotateHM().get(gruppo));
+                BroadcasterGuess.getVotoParola(gruppo, stringIntegerMap);
                 button.setEnabled(false);
 
                 stringIntegerMap.forEach((s, integer) -> {
-                    if (integer == Broadcaster.getListeners().size()) {
-                        for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
+                    if (integer == BroadcasterGuess.getListeners().size()) {
+                        for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
                             if (i == 0) {
                                 flag = false;
                             }
                             try {
-                                Broadcaster.getPartiteThread().get(i).interrupt();
-                                Broadcaster.getPartiteThread().get(i).stopTimer();
+                                BroadcasterGuess.getPartiteThread().get(i).interrupt();
+                                BroadcasterGuess.getPartiteThread().get(i).stopTimer();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
                                 int punteggio = 0;
-                                if (Broadcaster.getIndiziRicevuti() == 1) {
+                                if (BroadcasterGuess.getIndiziRicevuti() == 1) {
                                     punteggio = 100;
-                                } else if (Broadcaster.getIndiziRicevuti() == 2) {
+                                } else if (BroadcasterGuess.getIndiziRicevuti() == 2) {
                                     punteggio = 60;
-                                } else if (Broadcaster.getIndiziRicevuti() == 3) {
+                                } else if (BroadcasterGuess.getIndiziRicevuti() == 3) {
                                     punteggio = 30;
-                                } else if (Broadcaster.getIndiziRicevuti() == 4) {
+                                } else if (BroadcasterGuess.getIndiziRicevuti() == 4) {
                                     punteggio = 10;
                                 }
 
-                                vincente = guessController.partitaVincente(s, Broadcaster.getItems().get(i));
+                                vincente = guessController.partitaVincente(s, BroadcasterGuess.getItems().get(i));
 
                                 if (vincente == false && flag == false) {
-                                    Broadcaster.partitanonVincente();
+                                    BroadcasterGuess.partitanonVincente();
                                 } else if (vincente == true && flag == false) {
-                                    Broadcaster.partitaVincente(s, punteggio);
+                                    BroadcasterGuess.partitaVincente(s, punteggio);
                                 }
                             }
 

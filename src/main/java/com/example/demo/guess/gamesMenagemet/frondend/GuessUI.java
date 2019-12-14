@@ -8,7 +8,7 @@ import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.games.Guess;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
-import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
+import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterChat;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSuggerisci;
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
@@ -128,14 +128,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
-            for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                if (Broadcaster.getPartiteThread().get(i) != null) {
+            for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
+                if (BroadcasterGuess.getPartiteThread().get(i) != null) {
                     isStarted = true;
                 }
             }
 
             if (isStarted != true) {
-                Broadcaster.register(account, this);
+                BroadcasterGuess.register(account, this);
                 BroadcasterChat.register(account, this);
             } else {
                 System.out.println("GUESSUI:TEST1 Account: " + account.getNome());
@@ -177,8 +177,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             start.getStyle().set("display", "none");
             start.addClickListener(buttonClickEvent -> {
                 System.out.println("GuessUI: Partita iniziata!");
-                for (int i = 0; i < Broadcaster.getPartiteThread().size(); i++) {
-                    if (Broadcaster.getPartiteThread().get(i) != null) {
+                for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
+                    if (BroadcasterGuess.getPartiteThread().get(i) != null) {
                         isStarted = true;
                     }
                 }
@@ -187,7 +187,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     guessController.startGame(partita);
                     partitaThread = guessController.getPartitaThread();
                     item = guessController.getItem();
-                    Broadcaster.startGame(UI.getCurrent(), partitaThread, item);
+                    BroadcasterGuess.startGame(UI.getCurrent(), partitaThread, item);
                 } else {
                     System.out.println("GUESSUI:TEST2");
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
@@ -214,7 +214,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
     private void waitAllUserForStartGame(){
         //Blocca esecuzione finche' tutti gli studenti (incluso il teacher) non sono connessi a questa pagina
-        while(Broadcaster.getListeners().size() <= maxNumeroStutentiConnessi);
+        while(BroadcasterGuess.getListeners().size() <= maxNumeroStutentiConnessi);
 
         if(account.getTypeAccount().equals("teacher")) {
             if(!isStarted){
@@ -409,7 +409,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         terminateGame.getStyle().set("background-color", "#0000");
         terminateGame.getStyle().set("margin", "0");
         terminateGame.addClickListener(buttonClickEvent -> {
-            Broadcaster.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaFromTeacher();
             com.example.demo.users.broadcaster.Broadcaster.setCountGuessUser(0); //reset counter giocatori di Guess
         });
 
@@ -420,14 +420,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     //public methods
     public static void reset(){
         try {
-            Broadcaster.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
-            Broadcaster.getVotes().clear();
-            Broadcaster.getAccountList().clear();
-            Broadcaster.getItems().clear();
-            Broadcaster.getListeners().clear();
+            BroadcasterGuess.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
+            BroadcasterGuess.getVotes().clear();
+            BroadcasterGuess.getAccountList().clear();
+            BroadcasterGuess.getItems().clear();
+            BroadcasterGuess.getListeners().clear();
             BroadcasterChat.getListeners().clear();
             BroadcasterSuggerisci.getListeners().clear();
-            Broadcaster.getParoleVotateHM().clear();
+            BroadcasterGuess.getParoleVotateHM().clear();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -571,7 +571,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             Div containerPV = Utils.getDivFromListByAttribute(containersParoleVotate, "name", gruppo.getId());
             containerPV.removeAll();
 
-            Broadcaster.getVotes().forEach((s, integer) -> {
+            BroadcasterGuess.getVotes().forEach((s, integer) -> {
                 String a = "";
                 if(integer == 1){
                     a = " voto";
@@ -599,7 +599,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             Div containerPVTeacher = Utils.getDivFromListByAttribute(containersPVTeacher, "name", gruppo.getId());
             containerPVTeacher.removeAll();
 
-            Broadcaster.getVotes().forEach((s, integer) -> {
+            BroadcasterGuess.getVotes().forEach((s, integer) -> {
                 String a = "";
                 if(integer == 1){
                     a = " voto";
@@ -687,7 +687,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         //Pre-condition
         boolean flag = false;
-        for(Account i : Broadcaster.getListeners().keySet()){
+        for(Account i : BroadcasterGuess.getListeners().keySet()){
             if(i.equals(account)){
                 flag = true;
                 break;
@@ -700,12 +700,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
-            Broadcaster.terminaPartitaFromTeacher();
-        }else if(Broadcaster.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
-            Broadcaster.unregister(account, this);
+            BroadcasterGuess.terminaPartitaFromTeacher();
+        }else if(BroadcasterGuess.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
+            BroadcasterGuess.unregister(account, this);
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            Broadcaster.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaFromTeacher();
         }
     }
 

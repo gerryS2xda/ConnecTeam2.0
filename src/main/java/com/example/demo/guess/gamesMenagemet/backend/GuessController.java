@@ -5,7 +5,7 @@ import com.example.demo.entity.Account;
 import com.example.demo.entity.Partita;
 import com.example.demo.entity.Punteggio;
 import com.example.demo.entityRepository.PartitaRepository;
-import com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster;
+import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.vaadin.flow.server.VaadinService;
@@ -75,15 +75,15 @@ public class GuessController {
             vinta = true;
             partita= new Partita(new Timestamp(new Date().getTime()), "Guess");
             partita.setVinta(true);
-            accounts = Broadcaster.getAccountList();
+            accounts = BroadcasterGuess.getAccountList();
             for (Account a: accounts) {
-                if(Broadcaster.getIndiziRicevuti() == 1){
+                if(BroadcasterGuess.getIndiziRicevuti() == 1){
                     addPunteggio(new Punteggio(a,100));
-                }else if(Broadcaster.getIndiziRicevuti() == 2){
+                }else if(BroadcasterGuess.getIndiziRicevuti() == 2){
                     addPunteggio(new Punteggio(a,60));
-                }else if(Broadcaster.getIndiziRicevuti() == 3){
+                }else if(BroadcasterGuess.getIndiziRicevuti() == 3){
                     addPunteggio(new Punteggio(a,30));
-                }else if(Broadcaster.getIndiziRicevuti() == 4){
+                }else if(BroadcasterGuess.getIndiziRicevuti() == 4){
                     addPunteggio(new Punteggio(a,10));
                 }
             }
@@ -92,14 +92,14 @@ public class GuessController {
             vinta = false;
             partita= new Partita(new Timestamp(new Date().getTime()), "Guess");
             partita.setVinta(false);
-            accounts = Broadcaster.getAccountList();
+            accounts = BroadcasterGuess.getAccountList();
             for (Account a: accounts) {
                 addPunteggio(new Punteggio(a,0));
             }
             partitaRepository.save(partita);
 
         }
-        Broadcaster.setIndiziRicevuti(0);
+        BroadcasterGuess.setIndiziRicevuti(0);
         return vinta;
     }
 
@@ -114,21 +114,21 @@ public class GuessController {
             timer = new Timer();
             i=0;
             String indizio = item.getIndizio(i);
-            Broadcaster.riceveIndizio(indizio);
+            BroadcasterGuess.riceveIndizio(indizio);
             i++;
             totTime = 30;
             timer.scheduleAtFixedRate(new TimerTask() {
                 public void run() {
                     String time = String.format("%02d", totTime % 60);
-                    Broadcaster.countDown(time);
+                    BroadcasterGuess.countDown(time);
                     if (totTime == 0 && i<3) {
                         String indizio = item.getIndizio(i);
-                        Broadcaster.riceveIndizio(indizio);
+                        BroadcasterGuess.riceveIndizio(indizio);
                         totTime=30;
                         i++;
                     }else if(i==3 && totTime==0){
                         String indizio = item.getIndizio(i);
-                        Broadcaster.riceveIndizio(indizio);
+                        BroadcasterGuess.riceveIndizio(indizio);
                         totTime=30;
                         i++;
                     }
@@ -145,8 +145,8 @@ public class GuessController {
 
         public void terminaPartita(){
             partita= new Partita(new Timestamp(new Date().getTime()), "Guess");
-            accounts = Broadcaster.getAccountList();
-            Broadcaster.setIndiziRicevuti(0);
+            accounts = BroadcasterGuess.getAccountList();
+            BroadcasterGuess.setIndiziRicevuti(0);
             for (Account a: accounts) {
                 addPunteggio(new Punteggio(a,0));
             }
@@ -154,7 +154,7 @@ public class GuessController {
             System.out.println("Fine Partita");
             partitaThread.interrupt();
             partitaThread.stopTimer();
-            Broadcaster.partitanonVincente();
+            BroadcasterGuess.partitanonVincente();
 
         }
 

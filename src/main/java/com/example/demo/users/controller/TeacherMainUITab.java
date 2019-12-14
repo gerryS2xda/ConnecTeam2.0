@@ -3,6 +3,7 @@ package com.example.demo.users.controller;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.error.ErrorPage;
+import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.mainView.MainView;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
@@ -390,7 +391,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             return; //Se viene mostrato il dialog di errore -> esci da questo metodo
 
         if(Broadcaster.isGuessStart()){  //Una partita di Guess e' in corso?
-            com.example.demo.guess.gamesMenagemet.backend.broadcaster.Broadcaster.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaFromTeacher();
         }
         if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
             com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();

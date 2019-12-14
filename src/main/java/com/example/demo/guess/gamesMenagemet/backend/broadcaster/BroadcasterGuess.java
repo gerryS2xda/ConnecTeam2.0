@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class Broadcaster implements Serializable {
+public class BroadcasterGuess implements Serializable {
 
     private static Executor executor = Executors.newSingleThreadExecutor();
     private static Map<Account, BroadcastListener> listeners = new HashMap();
@@ -32,7 +32,7 @@ public class Broadcaster implements Serializable {
         listeners.put(account,broadcastListener);
         System.out.println("BroadcasterGuess.register(): ListenersSize: "+ listeners.size()+ "  UI:"+ broadcastListener);
         return () -> {
-            synchronized (Broadcaster.class) {
+            synchronized (BroadcasterGuess.class) {
                 listeners.remove(account);
             }
         };
@@ -176,7 +176,7 @@ public class Broadcaster implements Serializable {
     }
 
     public static void setIndiziRicevuti(int indiziRicevuti) {
-        Broadcaster.indiziRicevuti = indiziRicevuti;
+        BroadcasterGuess.indiziRicevuti = indiziRicevuti;
     }
 
     public static ArrayList<Item> getItems() {
