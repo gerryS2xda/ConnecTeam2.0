@@ -78,7 +78,7 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
             main = new VerticalLayout();
             main.addClassName("main1");
-            main.getStyle().set("top", "80px"); //'spazio' tra navbar e main content
+            main.getStyle().set("top", "140px"); //'spazio' tra navbar e main content (valore precedente: 80px)
 
             VerticalLayout userInfo = new VerticalLayout();
             userInfo.setWidth(null);

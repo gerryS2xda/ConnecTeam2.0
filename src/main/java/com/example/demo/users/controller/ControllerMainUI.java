@@ -61,6 +61,7 @@ public class ControllerMainUI extends HorizontalLayout {
             main1.getStyle().set("margin-left", "252px"); //margin left for nav bar vertical
             main1.getStyle().set("left", "-10%");
             main1.getStyle().set("right", "0");
+            main1.getStyle().set("top", "140px");
             VerticalLayout main = new VerticalLayout();
             main.setWidth(null);
             main.add(homeUser());
