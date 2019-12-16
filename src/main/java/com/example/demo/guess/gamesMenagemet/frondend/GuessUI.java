@@ -354,7 +354,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             String mess = message1.getValue();
             if (!mess.equals("")) {
                 if(account.getTypeAccount().equals("teacher"))
-                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()),"Teacher" + message1.getValue()+":"+account.getId());
+                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()),"Teacher:" + message1.getValue()+":"+account.getId());
                 else
                     BroadcasterChat.broadcast(Utils.findGruppoByAccount(gruppi, account), account.getNome() + ": " + message1.getValue()+":"+account.getId());
                 message1.setValue("");
@@ -365,7 +365,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             String mess = message1.getValue();
             if (!mess.equals("")) {
                 if(isTeacher) {
-                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), "Teacher" + message1.getValue() + ":" + account.getId());
+                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), "Teacher:" + message1.getValue() + ":" + account.getId());
                 }else{
                     BroadcasterChat.broadcast(Utils.findGruppoByAccount(gruppi, account), account.getNome() + ": " + message1.getValue()+":"+account.getId());
                 }
@@ -402,7 +402,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private void showButtonInAppBar(){
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.getStyle().set("position", "absolute");
-        horizontalLayout.getStyle().set("left", "80%");
+        horizontalLayout.getStyle().set("left", "75%");
         horizontalLayout.getStyle().set("z-index", "2");
         horizontalLayout.setHeight(AppBarUI.APPBAR_HEIGHT);
 
@@ -418,6 +418,16 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             dialogUtility.descrizioneGiocoDialog(new Guess()).open();
         });
 
+        Icon chat = new Icon(VaadinIcon.CHAT);
+        chat.setSize(AppBarUI.ICON_BTN_SIZE);
+        Button chatBtn = new Button("Chat", chat);
+        chatBtn.setHeight(AppBarUI.APPBAR_HEIGHT);
+        chatBtn.getStyle().set("background-color", "#0000");
+        chatBtn.getStyle().set("margin", "0");
+        chatBtn.addClickListener(buttonClickEvent -> {
+            chatContainerDialog.open();
+        });
+
         Icon close = new Icon(VaadinIcon.CLOSE_CIRCLE_O);
         close.setSize(AppBarUI.ICON_BTN_SIZE);
         Button terminateGame = new Button("Termina partita", close);
@@ -429,7 +439,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             com.example.demo.users.broadcaster.Broadcaster.setCountGuessUser(0); //reset counter giocatori di Guess
         });
 
-        horizontalLayout.add(infoBtn, terminateGame);
+        horizontalLayout.add(infoBtn, chatBtn, terminateGame);
         appBarUI.add(horizontalLayout);
     }
 
@@ -527,6 +537,35 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             msgContenuto.addClassName("paragraphMsgContent");
             nomePMsgContainer.add(nomeU, msgContenuto);
 
+            if(nome.equals("Teacher") && isTeacher){
+                //icona dell'utente che ha inviato il messaggio
+                if (a.getProfilePicture()!=null){
+                    image333 = generateImage(a);
+                    image333.getStyle().set("order","0");
+                    container.add(image333);
+                }else {
+                    if(a.getSesso()=="1"){
+                        image333 = new Image("frontend/img/profiloGirl.png", "foto profilo");
+                        image333.getStyle().set("order","0");
+                        container.add(image333);
+                    }
+                    else {
+                        image333 = new Image("frontend/img/profiloBoy.png", "foto profilo");
+                        image333.getStyle().set("order","0");
+                        container.add(image333);
+                    }
+                }
+
+                container.getStyle().set("padding-right", "36px");
+                nomeU.addClassName("nomeUserLabelLeft");
+                nomePMsgContainer.addClassName("nomePMsgContainerVertLayout");
+                container.add(nomePMsgContainer);
+
+                messageContainer.add(container);
+                spazioMsgTeacher.add(messageContainer);
+                return;
+            }
+
             if(!nome.equals(account.getNome())){  //se l'utente che ha inviato il msg non e' 'account' (cioe' NON sono io)
                 messageContainer.getStyle().set("align-items", "flex-end");
                 container.setWidth("auto");
@@ -557,7 +596,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
 
             if(nome.equals(account.getNome())) {  //se l'utente che ha inviato il msg e' 'account' (cioe' sono io))
-                //container.getStyle().set("padding-right", "64px");
+                container.getStyle().set("padding-right", "36px");
                 nomeU.addClassName("nomeUserLabelLeft");
                 nomePMsgContainer.addClassName("nomePMsgContainerVertLayout");
                 container.add(nomePMsgContainer);
