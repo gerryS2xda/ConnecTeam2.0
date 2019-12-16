@@ -23,6 +23,9 @@ import java.nio.charset.StandardCharsets;
 @StyleSheet("frontend://stile/stile.css")
 public class NavBar extends HorizontalLayout {
 
+    //static field
+    public static final String NAVBAR_HORIZONTAL_HEIGHT = "56px";
+
     //instance field
     private HorizontalLayout main;
     private HorizontalLayout homeContainer;
@@ -41,6 +44,7 @@ public class NavBar extends HorizontalLayout {
         //Style nav bar orizzontale
         getStyle().set("background-color","#84c0c9");
         getStyle().set("padding","0px");
+        setHeight(NAVBAR_HORIZONTAL_HEIGHT);
         getElement().getStyle().set("width", "100%");
 
         main = new HorizontalLayout();

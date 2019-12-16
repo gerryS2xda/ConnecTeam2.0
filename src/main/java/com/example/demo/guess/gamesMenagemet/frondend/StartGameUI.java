@@ -7,6 +7,7 @@ import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSuggerisci;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.SuggerisciListener;
+import com.example.demo.userOperation.NavBar;
 import com.example.demo.utility.MessageList;
 import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.button.Button;
@@ -71,6 +72,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                 label.getStyle().set("top", "20%");
                 add(label);
             }else{
+                getStyle().set("margin-top", NavBar.NAVBAR_HORIZONTAL_HEIGHT);
                 add(label, logoGuess);
             }
 
