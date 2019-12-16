@@ -42,7 +42,6 @@ public class NavBar extends HorizontalLayout {
         getStyle().set("background-color","#84c0c9");
         getStyle().set("padding","0px");
         getElement().getStyle().set("width", "100%");
-        getStyle().set("border-radius","10%");
 
         main = new HorizontalLayout();
         main.getStyle().set("padding","10px");
