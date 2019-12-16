@@ -80,6 +80,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private ArrayList<MessageList> spazioMessaggiGruppi;
     private ArrayList<MessageList> spazioMessaggiTeacher;
     private NavBar navBar;
+    private Dialog chatContainerDialog;
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -159,8 +160,13 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
 
             //Chat container
+            chatContainerDialog = createDialogWithChatContent();
+
+            /*Chat container
             Div chat = createChatContainer();
             add(chat);
+
+             */
 
             for(Gruppo y : gruppi){
                 Div d = new Div();
@@ -308,13 +314,15 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }
     }
 
-    private Div createChatContainer(){
-        Div device = new Div();  //contenitore principale della chat
-        device.getStyle().set("width", "30%"); //value precedente: 500px
+    private VerticalLayout createChatContainer(){
+        VerticalLayout mainContent = new VerticalLayout();
+        mainContent.setSpacing(false);
+        mainContent.setPadding(false);
+        mainContent.addClassName("mainContentVertLayout");
+
         Label label = new Label("Chat");
-        label.getStyle().set("font-size", "30px");
-        device.add(label);
-        device.setId("device");
+        label.addClassName("chatLabelTitle");
+        mainContent.add(label);
 
         chatContainer = new Div();
         chatContainer.addClassName("chat");
@@ -322,40 +330,42 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         chatContainerTeacher.addClassName("chat");
 
         if(isTeacher){
-            device.add(chatContainerTeacher);
+            mainContent.add(chatContainerTeacher);
         }else{
-            device.add(chatContainer);
+            mainContent.add(chatContainer);
         }
 
         HorizontalLayout textFieldSendBtn = new HorizontalLayout();
         textFieldSendBtn.getElement().setAttribute("id", "containerTFBtnSendchat");
         textFieldSendBtn.setSpacing(false);
-        textFieldSendBtn.getStyle().set("margin-top", "12px");
+        textFieldSendBtn.addClassName("textFieldSendBtnHorLayout");
+
+
         TextField message1 = new TextField();
+        message1.addClassName("textFieldEnterMessage");
+        message1.setPlaceholder("Enter message...");
         Icon icon = new Icon(VaadinIcon.PAPERPLANE_O);
         icon.setSize("24px");
         icon.setColor("white");
-        if(isTeacher)
-            icon.getStyle().set("left", "100px");
+        icon.getStyle().set("left", "100px");
 
         Button send = new Button(icon);
         message1.addKeyDownListener(Key.ENTER, keyDownEvent -> {
             String mess = message1.getValue();
             if (!mess.equals("")) {
                 if(account.getTypeAccount().equals("teacher"))
-                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()),"Teacher: " + message1.getValue()+":"+account.getId());
+                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()),"Teacher" + message1.getValue()+":"+account.getId());
                 else
                     BroadcasterChat.broadcast(Utils.findGruppoByAccount(gruppi, account), account.getNome() + ": " + message1.getValue()+":"+account.getId());
                 message1.setValue("");
             }
         });
-        message1.getStyle().set("width","80%"); //valore precedente: 85%
-        message1.getStyle().set("margin-right","16px");
+
         send.addClickListener(buttonClickEvent -> {
             String mess = message1.getValue();
             if (!mess.equals("")) {
                 if(isTeacher) {
-                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), "Teacher: " + message1.getValue() + ":" + account.getId());
+                    BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), "Teacher" + message1.getValue() + ":" + account.getId());
                 }else{
                     BroadcasterChat.broadcast(Utils.findGruppoByAccount(gruppi, account), account.getNome() + ": " + message1.getValue()+":"+account.getId());
                 }
@@ -385,8 +395,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             }
         }
 
-        device.add(textFieldSendBtn);
-        return device;
+        mainContent.add(textFieldSendBtn);
+        return mainContent;
     }
 
     private void showButtonInAppBar(){
@@ -437,9 +447,23 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         Button chatBtn = new Button("Chat");
         chatBtn.addClassName("buttonChatStyleNavBar");
+        chatBtn.addClickListener(buttonClickEvent -> {
+            chatContainerDialog.open();
+        });
 
         chatContainer.add(chatIcon, chatBtn);
         navBar.getChatContainer().add(chatContainer);
+    }
+
+    private Dialog createDialogWithChatContent(){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        d.add(createChatContainer());
+
+        return d;
     }
 
     //public methods
@@ -479,47 +503,78 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             String string = message;
             String[] parts = string.split(":");
-            String nome = parts[0]+":";
+            String nome = parts[0];
             String testo = parts[1];
             String id = parts[2];
             Account a = accountRepository.findAccountById(Long.parseLong(id));
-            Div divmessage = new Div();
-            Div nomeP = new Div();
-            Label label = new Label(nome);
 
-            nomeP.add(label);
-            label.getStyle().set("margin-right","20px");
+            VerticalLayout messageContainer = new VerticalLayout(); //per includere <hr> come separatore
+            messageContainer.setSpacing(false);
+            messageContainer.setPadding(false);
+            messageContainer.setWidth("100%");
 
-            Div div = new Div();
-            Paragraph paragraph = new Paragraph(testo);
-            div.add(paragraph);
-            divmessage.addClassName("message");
+            HorizontalLayout container = new HorizontalLayout();
+            container.setWidth("100%");
+            container.addClassName("message");
+
+            VerticalLayout nomePMsgContainer = new VerticalLayout();
+            nomePMsgContainer.setPadding(false);
+            nomePMsgContainer.setSpacing(false);
+            nomePMsgContainer.setWidth("auto");
+
+            Label nomeU = new Label(nome);
+            Paragraph msgContenuto = new Paragraph(testo);
+            msgContenuto.addClassName("paragraphMsgContent");
+            nomePMsgContainer.add(nomeU, msgContenuto);
+
+            if(!nome.equals(account.getNome())){  //se l'utente che ha inviato il msg non e' 'account' (cioe' NON sono io)
+                messageContainer.getStyle().set("align-items", "flex-end");
+                container.setWidth("auto");
+                container.getStyle().set("padding-left", "24px");
+                container.getStyle().set("padding-right", "24px");
+                container.getStyle().set("margin", "10px 0 0 0");
+                nomeU.addClassName("nomeUserLabelRight");
+                nomePMsgContainer.addClassName("nomePMsgContainerVertLayoutRight");
+                container.add(nomePMsgContainer);
+            }
+
+            //icona dell'utente che ha inviato il messaggio
             if (a.getProfilePicture()!=null){
                 image333 = generateImage(a);
                 image333.getStyle().set("order","0");
-                divmessage.add(image333);
+                container.add(image333);
             }else {
                 if(a.getSesso()=="1"){
                     image333 = new Image("frontend/img/profiloGirl.png", "foto profilo");
                     image333.getStyle().set("order","0");
-                    divmessage.add(image333);
+                    container.add(image333);
                 }
                 else {
                     image333 = new Image("frontend/img/profiloBoy.png", "foto profilo");
                     image333.getStyle().set("order","0");
-                    divmessage.add(image333);
+                    container.add(image333);
                 }
             }
-            divmessage.add(label,div);
+
+            if(nome.equals(account.getNome())) {  //se l'utente che ha inviato il msg e' 'account' (cioe' sono io))
+                //container.getStyle().set("padding-right", "64px");
+                nomeU.addClassName("nomeUserLabelLeft");
+                nomePMsgContainer.addClassName("nomePMsgContainerVertLayout");
+                container.add(nomePMsgContainer);
+            }else{
+                image333.getStyle().set("margin", "0px 0px 0px 10px");
+            }
+
+            messageContainer.add(container);
 
             if(isTeacher){
-                spazioMsgTeacher.add(divmessage);
+                spazioMsgTeacher.add(messageContainer);
                 return;
             }
 
             //Solo ai membri del gruppo di cui fa parte 'account' viene mostrato il messaggio
             if(Utils.isAccountInThisGruppo(g, account)){
-                spazioMsg.add(divmessage);
+                spazioMsg.add(messageContainer);
                 spazioMsg.getStyle().set("display", "block");
             }else{ //per gli account che non fanno parte del gruppo, containerPV rimane invisibile
                 spazioMsg.getStyle().set("display", "none");
@@ -646,6 +701,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void partititaVincente(String parola,int punteggio) {
         getUI().get().access(() -> {
             reset();
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
                 FireWorks fireWorks = new FireWorks();
@@ -664,6 +721,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     public void partititanonVincente(){
         getUI().get().access(() -> {
             reset();
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
                 DialogUtility dialogUtility = new DialogUtility();
@@ -681,6 +740,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(getUI().isPresent()) {   //inserito per evitare exception (No value Present) dovuta al teacher quando effettua il logout e viene invocato questo metodo
                 getUI().get().access(() -> {
                     reset();
+                    if(chatContainerDialog.isOpened())
+                        chatContainerDialog.close();
                     removeAll();
                     if (account.getTypeAccount().equals("student")) {
                         DialogUtility dialogUtility = new DialogUtility();
@@ -721,6 +782,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         if(!flag){  //se il listener non contiene questo 'account' -> non fare nulla
             return;
         }
+
+        if(chatContainerDialog.isOpened())
+            chatContainerDialog.close();
 
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 

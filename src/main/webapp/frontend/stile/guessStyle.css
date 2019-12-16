@@ -30,22 +30,20 @@
 }
 
 .buttonSendChat{
-    height: 40px;
-    width: 50px;
+    height: 36px;
+    width: 48px;
     cursor: pointer;
     color: black;
     background-color: #2d93ac;
-    --lumo-button-size: null;
-    margin-top: 0px; /* valore precedente: 15px*/
-    border-radius: 30px;
-    margin-left: 9px;
+    margin-top: 4px;
+    border-radius: 0.2rem;
+    margin-left: 0;
 }
 
 .chatlayoutmessage2{
     width: 100%;  /* valore precedente: 500px*/
-    height: 250px;
+    height: 340px; /* valore precedente: 250px */
     overflow-y: scroll;
-    overflow-x: scroll;
 }
 
 .containerParoleVotate{

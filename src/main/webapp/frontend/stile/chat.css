@@ -1,14 +1,90 @@
 
+/* chat new style for dialog */
+.mainContentVertLayout{
+    width: 100%;
+    height: 450px;
+    min-width: 500px;
+    background-color: white;
+    margin-left: -24px;   /* margin negativo per rimuovere il padding: 24px di Dialog.content */
+    margin-right: -24px;
+    /*margin-bottom: -24px;*/
+}
+
+.textFieldSendBtnHorLayout{
+    width: 100%;
+    background-color: #e0e7e8;
+    padding: 16px;
+    padding-bottom: 26px;
+}
+
+.chatLabelTitle{
+    font-size: 30px;
+    width: 100%;
+    text-align: center;
+}
+
+.nomeUserLabelLeft{
+    font-size: 20px;
+    width: 100%;
+    text-align: left;
+}
+
+.nomeUserLabelRight{
+    font-size: 20px;
+    width: 100%;
+    text-align: right;
+}
+
+.paragraphMsgContent{
+    width: 100%;
+    font-size: 16px;
+}
+
+.nomePMsgContainerVertLayout{
+    width: auto;
+    max-width: 400px;
+    border-radius: 0.5rem;
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: #86BB71;
+    color: white;
+    word-wrap: break-word;
+}
+
+.nomePMsgContainerVertLayoutRight{
+    width: auto;
+    max-width: 400px;
+    border-radius: 0.5rem;
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: #94C2ED; /* valore precedente: rgb(41, 144, 255) */
+    color: white;
+    word-wrap: break-word;
+}
+
+.textFieldEnterMessage{
+    width: 80%;
+    margin-left: 16px;
+    margin-right: 16px;
+    z-index: 2; /* risolve problema con 'icon' di btn che non viene spostata a left di 100px */
+}
+
+.hrSeparator{
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+/* Altro style dedicato alla chat */
 ::-webkit-scrollbar {
     display: none;
 }
 
 .chat .message {
     display: flex;
-    margin: 10px 0 0 10px;
+    margin: 10px 0 0 32px;
     min-height: 30px;
     height: auto;
-    text-align: left;
+    /*text-align: left; */
 }
 .chat .message.me img {
     order: 2;
@@ -76,6 +152,7 @@
 html,
 .chat {
     border-radius: 5px;
+    width: 100%;
 }
 #device {
     position: absolute;
