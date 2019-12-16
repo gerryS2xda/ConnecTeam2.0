@@ -31,7 +31,6 @@ import java.util.Random;
 
 @HtmlImport("style.html")
 @StyleSheet("frontend://stile/style.css")
-@StyleSheet("frontend://stile/dialogUtilityStyle.css")
 public class DialogUtility extends VerticalLayout {
 
     private String control= "";
@@ -334,14 +333,18 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label titleLab = new Label(title);
-        titleLab.addClassName("titleLabel");
+        titleLab.getStyle().set("font-size", "32px");
+        titleLab.getStyle().set("color", "black");
 
         Label descrizione = new Label();
-        descrizione.addClassName("descrizioneLabel");
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.getStyle().set("color", "black");
         descrizione.setText(motivazione);
 
         Button cancelButton = new Button("Close");
-        cancelButton.addClassName("buttonStyle");
+        cancelButton.getStyle().set("background-color", "#007d99");
+        cancelButton.getStyle().set("cursor", "pointer");
+        cancelButton.getStyle().set("color", "white");
         cancelButton.getStyle().set("margin-top", "25px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
@@ -366,14 +369,18 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label title = new Label("Info su " + game.getNomeGioco());
-        title.addClassName("titleLabel");
+        title.getStyle().set("font-size", "32px");
+        title.getStyle().set("color", "black");
 
         Label descrizione = new Label();
         descrizione.setText(game.getDescrizioneLungaGioco());
-        descrizione.addClassName("descrizioneLabel");
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.getStyle().set("color", "black");
 
         Button cancelButton = new Button("Close");
-        cancelButton.addClassName("buttonStyle");
+        cancelButton.getStyle().set("background-color", "#007d99");
+        cancelButton.getStyle().set("cursor", "pointer");
+        cancelButton.getStyle().set("color", "white");
         cancelButton.getStyle().set("margin-top", "50px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
@@ -398,16 +405,18 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label titleLab = new Label(title);
-        titleLab.addClassName("titleLabel");
+        titleLab.getStyle().set("font-size", "32px");
         titleLab.getStyle().set("color", colorTxt);
 
         Label descrizione = new Label();
-        descrizione.addClassName("descrizioneLabel");
+        descrizione.getStyle().set("font-size", "16px");
         descrizione.getStyle().set("color", colorTxt);
         descrizione.setText(motivazione);
 
         Button cancelButton = new Button("Vai alla Home");
-        cancelButton.addClassName("buttonStyle");
+        cancelButton.getStyle().set("background-color", "#007d99");
+        cancelButton.getStyle().set("cursor", "pointer");
+        cancelButton.getStyle().set("color", "white");
         cancelButton.getStyle().set("margin-top", "25px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
@@ -434,7 +443,7 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label descrizione = new Label();
-        descrizione.addClassName("descrizioneLabel");
+        descrizione.getStyle().set("font-size", "16px");
         descrizione.getStyle().set("color", colorTxt);
         descrizione.setText(text);
 
@@ -457,16 +466,20 @@ public class DialogUtility extends VerticalLayout {
         content.getStyle().set("height", "100%");
 
         Label titleLab = new Label(title);
-        titleLab.addClassName("titleLabel");
+        titleLab.getStyle().set("font-size", "32px");
+        titleLab.getStyle().set("color", "black");
 
         Label descrizione = new Label();
-        descrizione.addClassName("descrizioneLabel");
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.getStyle().set("color", "black");
         descrizione.setText(msg);
 
         HorizontalLayout btnContainer = new HorizontalLayout();
         btnContainer.getStyle().set("margin-top", "30px");
         Button positive = new Button("OK");
-        positive.addClassName("buttonStyle");
+        positive.getStyle().set("background-color", "#007d99");
+        positive.getStyle().set("cursor", "pointer");
+        positive.getStyle().set("color", "white");
         positive.addClickListener(buttonClickEvent -> {
             d.close();
             if(isLogout){
@@ -478,7 +491,9 @@ public class DialogUtility extends VerticalLayout {
         });
 
         Button negative = new Button("Continua partita");
-        negative.addClassName("buttonStyle");
+        negative.getStyle().set("background-color", "#007d99");
+        negative.getStyle().set("cursor", "pointer");
+        negative.getStyle().set("color", "white");
         negative.addClickListener(buttonClickEvent -> {
             d.close();
         });
