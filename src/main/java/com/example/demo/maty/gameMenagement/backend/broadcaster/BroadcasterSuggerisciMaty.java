@@ -1,5 +1,6 @@
 package com.example.demo.maty.gameMenagement.backend.broadcaster;
 
+import com.example.demo.entity.Gruppo;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.SuggerisciListenerMaty;
 
@@ -25,9 +26,9 @@ public class BroadcasterSuggerisciMaty implements Serializable {
         listeners.add(listener);
     }
 
-    public static void broadcast(final String message,String operazione,String nome,boolean operation) {
+    public static void broadcast(final String message, String operazione, String nome, boolean operation, Gruppo g) {
         for (SuggerisciListenerMaty listener : listeners) {
-            listener.operazione(message,operazione,nome,operation);
+            listener.operazione(message, operazione, nome, operation, g);
         }
     }
 
