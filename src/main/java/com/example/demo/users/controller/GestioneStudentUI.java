@@ -9,6 +9,7 @@ import com.example.demo.error.ErrorPage;
 import com.example.demo.users.event.StartGameEventBeanPublisher;
 import com.example.demo.utility.AppBarUI;
 import com.example.demo.utility.InfoEventUtility;
+import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
@@ -508,8 +509,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     @Override
     //Aggiorna 'Grid' Studenti collegati (rimuove dalla lista gli account gia' presenti nelle altre grid)
     public void updateGridStudentCollegati(){
-        Map<Account, String> actualList = Broadcaster.getAccountListReceive();
-        for(Account i : actualList.keySet()){
+        List<Account> actualList = Utils.cloneListAccounts(Broadcaster.getAccountListReceive()); //clonare la lista per risolvere problemi di accessi concorrenti ad AccountListEvent
+        for(Account i : actualList){
             for(Gruppo g : gruppiGuess){
                 for(Account x : g.getMembri()){
                     if(x.equals(i)){
@@ -529,10 +530,10 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
         if(getUI().isPresent()) {  //se e' presente una UI attached a questo component
             getUI().get().access(() -> {
-                gridStud.setItems(actualList.keySet());
+                gridStud.setItems(actualList);
             });
         }else{
-            gridStud.setItems(actualList.keySet());
+            gridStud.setItems(actualList);
         }
     }
 

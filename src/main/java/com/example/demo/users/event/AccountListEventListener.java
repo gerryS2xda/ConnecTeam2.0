@@ -19,9 +19,8 @@ public class AccountListEventListener {
         if(event.getOperationName().equals("add")){
             Broadcaster.updateListaUtentiConnessi();
         }else if(event.getOperationName().equals("remove")){
-            for(Account i : event.getAccountList().keySet()){
-                if(event.getAccountList().get(i).equals("remove"))
-                    Broadcaster.removeAccountFromAllGrid(i);
+            for(Account i : event.getAccountList()){
+                Broadcaster.removeAccountFromAllGrid(i);
             }
         }
 

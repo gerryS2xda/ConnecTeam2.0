@@ -255,8 +255,8 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
         if(isShowErrorDialog)
             return; //Se viene mostrato il dialog di errore -> esci da questo metodo
 
-        Map<Account, String> tempList = new HashMap<>();    //invia solo account da cancellare tramite HashMap
-        tempList.put(account, "remove");
+        List<Account> tempList = new ArrayList<Account>();    //invia solo account da cancellare tramite List
+        tempList.add(account);
         accountEventListpublisher.doStuffAndPublishAnEvent(tempList, "remove"); //invia event per rimozione account da accountList event inviato in precedenza
 
         Broadcaster.unregister(account, this);

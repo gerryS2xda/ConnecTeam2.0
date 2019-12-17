@@ -25,8 +25,8 @@ public class Broadcaster  {
     private static Map<Account, BroadcastListener> listeners = new HashMap();  //mappa un account ad ogni listener (per gli studenti)
     private static Map<Account, BroadcastListenerTeacher> gestStudlisteners = new HashMap();  //per GestioneStudentUI (usato per ricevere eventi su accountlist)
     private static Map<Account, BroadcastListenerTeacher> teacherlisteners = new HashMap(); //mappa un teacher account ad TeacherMainUITab
-    private static Map<Account, String> accountList = new HashMap<>(); //mappa un account ad un determinato gioco scelto dal teacher
-    private static Map<Account, String> accountListReceive = new HashMap<>(); //lista di account ricevuti dall'event
+    private static List<Account> accountList = new ArrayList<Account>();
+    private static List<Account> accountListReceive = new ArrayList<Account>(); //lista di account ricevuti dall'event
     private static WrappedSession teacherSession; //memorizza la sessione del teacher per GuessUI e MatyUI (no memorizzazione stato partita)
     private static int in = 0;
     private static int countGuessUser = 0;
@@ -44,7 +44,7 @@ public class Broadcaster  {
 
     //static methods for discusser (student)
     public static synchronized Registration register(Account account, BroadcastListener broadcastListener) {
-        accountList.put(account, "");
+        accountList.add(account);
         listeners.put(account, broadcastListener);
         System.out.println("Broadcaster User: chiamato register "+ listeners.size()+ "  Account:"+ account.getNome());
         return () -> {
@@ -159,7 +159,7 @@ public class Broadcaster  {
         accountListReceive = event.getAccountList();
     }
 
-    public static Map<Account, String> getAccountListReceive() {
+    public static List<Account> getAccountListReceive() {
         return accountListReceive;
     }
 
@@ -184,7 +184,7 @@ public class Broadcaster  {
         return listeners;
     }
 
-    public static Map<Account, String> getAccountList() {
+    public static List<Account> getAccountList() {
         return accountList;
     }
 
