@@ -89,4 +89,12 @@ public class Utils {
         return d;
     }
 
+    //Altri metodi
+    public static List<Account> cloneListAccounts(List<Account> list){
+        List<Account> accounts = new ArrayList<Account>();
+        for(Account i : list){
+            accounts.add(i);
+        }
+        return accounts;
+    }
 }
