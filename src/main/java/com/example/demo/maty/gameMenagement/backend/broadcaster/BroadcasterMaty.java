@@ -93,30 +93,6 @@ public class BroadcasterMaty implements Serializable {
         });
     }
 
-    public static synchronized void aggiornaUtentiConnessi(UI ui){
-        try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.countUser(ui,account.getNome());
-                });
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static synchronized void addUsers(UI ui){
-        try {
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.addUsers(ui,in);
-                });
-            });
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static synchronized void addContClick(){
         contClick.add(new Integer(1));
     }
