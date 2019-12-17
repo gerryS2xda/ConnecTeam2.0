@@ -1,17 +1,20 @@
 package com.example.demo.maty.gameMenagement.backend.broadcaster;
 
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.SuggerisciListenerMaty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BroadcasterSuggerisciMaty implements Serializable {
 
-    private static final List<SuggerisciListenerMaty> listeners = new CopyOnWriteArrayList<SuggerisciListenerMaty>();
+    private static final Map<Account, SuggerisciListenerMaty> listeners = new HashMap<>();
     private static final ArrayList<ItemMaty> items = new ArrayList<>();
 
     public static synchronized void addItems(ItemMaty itemMaty){
@@ -22,28 +25,19 @@ public class BroadcasterSuggerisciMaty implements Serializable {
         return items;
     }
 
-    public static synchronized void register(SuggerisciListenerMaty listener) {
-        listeners.add(listener);
+    public static synchronized void register(Account account, SuggerisciListenerMaty listener) {
+        listeners.put(account, listener);
     }
 
     public static void broadcast(final String message, String operazione, String nome, boolean operation, Gruppo g) {
-        for (SuggerisciListenerMaty listener : listeners) {
-            listener.operazione(message, operazione, nome, operation, g);
-        }
+        listeners.forEach((account, listenerMaty) -> {
+            listenerMaty.operazione(message, operazione, nome, operation, g);
+        });
+
     }
 
-
-    public static List<SuggerisciListenerMaty> getListeners() {
+    public static Map<Account, SuggerisciListenerMaty> getListeners() {
         return listeners;
     }
-
-    public static synchronized void setOperazione(){
-        for (SuggerisciListenerMaty listener : listeners) {
-            //listener.receiveBroadcast(message);
-            listener.setOperazione();
-        }
-    }
-
-
 
 }
