@@ -6,15 +6,6 @@
     margin: 0;
 }
 
-.buttonChatStyleNavBar{
-    background-color: transparent;
-    color: black;
-    padding: 0;
-    margin: 0;
-    font-size: 20px;
-    cursor: pointer;
-}
-
 /* GuessUI */
 .buttonUserGuess{
     color: black;
@@ -27,23 +18,6 @@
     position: absolute;
     left: 60px;
     top: 15px;
-}
-
-.buttonSendChat{
-    height: 36px;
-    width: 48px;
-    cursor: pointer;
-    color: black;
-    background-color: #2d93ac;
-    margin-top: 4px;
-    border-radius: 0.2rem;
-    margin-left: 0;
-}
-
-.chatlayoutmessage2{
-    width: 100%;  /* valore precedente: 500px*/
-    height: 340px; /* valore precedente: 250px */
-    overflow-y: scroll;
 }
 
 .containerParoleVotate{
