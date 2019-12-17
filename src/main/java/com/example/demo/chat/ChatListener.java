@@ -1,4 +1,4 @@
-package com.example.demo.guess.gamesMenagemet.backend.listeners;
+package com.example.demo.chat;
 
 import com.example.demo.entity.Gruppo;
 

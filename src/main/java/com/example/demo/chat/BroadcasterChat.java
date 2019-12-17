@@ -1,8 +1,8 @@
-package com.example.demo.guess.gamesMenagemet.backend.broadcaster;
+package com.example.demo.chat;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
-import com.example.demo.guess.gamesMenagemet.backend.listeners.ChatListener;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
