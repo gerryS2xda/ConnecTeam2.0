@@ -41,6 +41,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     //costanti
     private static final int MAX_NUM_GRUPPI = 10;
+    private static final String[] SELECTS_ITEM = {"Guess", "Maty", "Nuovo gioco"};
 
     //instance field
     private AccountRepository accRep;
@@ -65,7 +66,11 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private GestioneStudentUIMaty gestioneStudentUIMaty;
     private Tabs containerGridGuess;
     private Tabs containerGridMaty;
+    private ArrayList<String> selectsItem;
     private boolean isGridContainerAddToUI;
+    private boolean isGridStudConfigurated; //gridstud e' stato configurato almeno una volta
+    private boolean isGridsGuessConfigurated; //grids per Guess sono state configurate almeno una volta
+    private boolean isGridsMatyConfigurated; //grids per Maty sono state configurate almeno una volta
 
     public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
 
@@ -82,6 +87,15 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             containerGridGuess = new Tabs();
             containerGridMaty = new Tabs();
             isGridContainerAddToUI = false;
+            isGridStudConfigurated = false;
+            isGridsGuessConfigurated = false;
+            isGridsMatyConfigurated = false;
+
+            //Inizializza list string items for Selects
+            selectsItem = new ArrayList<String>();
+            for(String str : SELECTS_ITEM){
+                selectsItem.add(str);
+            }
 
             //Registra un teacher listener
             Broadcaster.registerTeacherForGestStud(account, this);
@@ -181,9 +195,12 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         hor1.getStyle().set("margin-top", "16px");
         Label lab1 = new Label("Seleziona gioco: ");
         lab1.addClassName("dialogLabel1");
+
         Select<String> selects = new Select<>();
-        selects.setItems("Guess", "Maty", "NuovoGioco");
-        selects.setValue("Guess");
+        selects.setItems(selectsItem);
+        if(selectsItem.size() > 0){
+            selects.setValue(selectsItem.get(0));
+        }
 
         hor1.add(lab1, selects);
 
@@ -205,13 +222,22 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         b.setDisableOnClick(true); //un solo click alla volta e' ammesso, viene riattivato quando si chiude il dialog
         b.addClickListener(buttonClickEvent -> {
             nomeGioco = selects.getValue();
+
+            if(nomeGioco.equals("Nuovo gioco")){
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
+                return;
+            }
+
+            //Una volta settate le impostazioni per un item della selects, tale item viene rimosso
+            selectsItem.remove(nomeGioco);
+            selects.setItems(selectsItem);
+
             numeroGruppi = new Double(numberField.getValue()).intValue();
             if(numeroGruppi < 1 || numeroGruppi > MAX_NUM_GRUPPI){
                 buttonClickEvent.getSource().setEnabled(true);
                 return;
             }
-
-            getStyle().set("display", "flex");
 
             if(!isGridContainerAddToUI){
                 VerticalLayout contStud = containerListStudent();
@@ -235,7 +261,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
         Button close = new Button("Chiudi");
         close.addClickListener(buttonClickEvent -> {
-            //getStyle().set("display", "none");
             d.close();
         });
         btnContainer.add(b, close);
@@ -296,14 +321,12 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             dragSource = event.getSource();
             gridStud.setDropMode(GridDropMode.BETWEEN); //imposta modalita' di trascinamento delle righe; GridDropMode.BETWEEN: il drop event si verifica tra righe della Grid
 
-            if(nomeGioco.equals("Guess")){
-                for(int i = 0; i < gridGruppiGuess.size(); i++){
-                    gridGruppiGuess.get(i).setDropMode(GridDropMode.BETWEEN);
-                }
-            }else if(nomeGioco.equals("Maty")){
-                for(int i = 0; i < gridGruppiMaty.size(); i++){
-                    gridGruppiMaty.get(i).setDropMode(GridDropMode.BETWEEN);
-                }
+            for(int i = 0; i < gridGruppiGuess.size(); i++){
+                gridGruppiGuess.get(i).setDropMode(GridDropMode.BETWEEN);
+            }
+
+            for(int i = 0; i < gridGruppiMaty.size(); i++){
+                gridGruppiMaty.get(i).setDropMode(GridDropMode.BETWEEN);
             }
         };
 
@@ -311,14 +334,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             draggedItems = null;
             dragSource = null;
             gridStud.setDropMode(null);
-            if(nomeGioco.equals("Guess")){
-                for(int i = 0; i < gridGruppiGuess.size(); i++){
+
+            for(int i = 0; i < gridGruppiGuess.size(); i++){
                     gridGruppiGuess.get(i).setDropMode(null);
-                }
-            }else if(nomeGioco.equals("Maty")){
-                for(int i = 0; i < gridGruppiMaty.size(); i++){
-                    gridGruppiMaty.get(i).setDropMode(null);
-                }
+            }
+
+            for(int i = 0; i < gridGruppiMaty.size(); i++){
+                gridGruppiMaty.get(i).setDropMode(null);
             }
         };
 
@@ -347,13 +369,16 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             targetGrid.setItems(targetItems);
         };
 
-        gridStud.setSelectionMode(Grid.SelectionMode.NONE); //non mostra checkbox per selezionare la riga
-        gridStud.addDropListener(dropListener);
-        gridStud.addDragStartListener(dragStartListener);
-        gridStud.addDragEndListener(dragEndListener);
-        gridStud.setRowsDraggable(true); //utente può usare Drag-and-Drop delle righe
+        if(!isGridStudConfigurated){
+            gridStud.setSelectionMode(Grid.SelectionMode.NONE); //non mostra checkbox per selezionare la riga
+            gridStud.addDropListener(dropListener);
+            gridStud.addDragStartListener(dragStartListener);
+            gridStud.addDragEndListener(dragEndListener);
+            gridStud.setRowsDraggable(true); //utente può usare Drag-and-Drop delle righe
+            isGridStudConfigurated = true;
+        }
 
-        if(nomeGioco.equals("Guess")) {
+        if(!isGridsGuessConfigurated && gridGruppiGuess.size() > 0) {
             for (int i = 0; i < gridGruppiGuess.size(); i++) {
                 gridGruppiGuess.get(i).setSelectionMode(Grid.SelectionMode.NONE);
                 gridGruppiGuess.get(i).addDropListener(dropListener);
@@ -361,7 +386,10 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 gridGruppiGuess.get(i).addDragEndListener(dragEndListener);
                 gridGruppiGuess.get(i).setRowsDraggable(true);
             }
-        }else if(nomeGioco.equals("Maty")){
+            isGridStudConfigurated = true;
+        }
+
+        if(!isGridsMatyConfigurated && gridGruppiMaty.size() > 0) {
             for (int i = 0; i < gridGruppiMaty.size(); i++) {
                 gridGruppiMaty.get(i).setSelectionMode(Grid.SelectionMode.NONE);
                 gridGruppiMaty.get(i).addDropListener(dropListener);
@@ -369,8 +397,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 gridGruppiMaty.get(i).addDragEndListener(dragEndListener);
                 gridGruppiMaty.get(i).setRowsDraggable(true);
             }
+            isGridsMatyConfigurated = true;
         }
-
     }
 
     private VerticalLayout containerListStudent(){
