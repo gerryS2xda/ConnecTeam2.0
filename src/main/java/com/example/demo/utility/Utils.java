@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class Utils {
 
+    //Utils per 'Gruppo'
     public static Gruppo findGruppoByAccount(List<Gruppo> gruppi, Account account){
         Gruppo x = new Gruppo();
 
@@ -47,31 +48,6 @@ public class Utils {
             }
         }
         return x;
-    }
-
-    public static Component getComponentByElementId(Map<Account, Component> azioni, String valueId){
-        Component c = null;
-
-        for(Account i : azioni.keySet()){
-            String str = azioni.get(i).getElement().getAttribute("id");
-            if(str.equals(valueId)){
-                c = azioni.get(i);
-                break;
-            }
-        }
-        return c;
-    }
-
-    public static ArrayList<Component> getComponentsByElementId(Map<Account, Component> azioni, String valueId){
-        ArrayList<Component> list = new ArrayList<Component>();
-
-        for(Account i: azioni.keySet()){
-            String str = azioni.get(i).getElement().getAttribute("id");
-            if(str.equals(valueId)){
-                list.add(azioni.get(i));
-            }
-        }
-        return list;
     }
 
     public static Div getDivFromListByAttribute(ArrayList<Div> list, String attr, String value){
@@ -112,4 +88,5 @@ public class Utils {
 
         return d;
     }
+
 }
