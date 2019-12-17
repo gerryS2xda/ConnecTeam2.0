@@ -109,6 +109,8 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
 
     public void showBtnForChangeUI() {
 
+        mainUI.setCurrentGameShow("Maty");
+
         if(containerChangeUI.getElement().getAttribute("id") != null){
             if(containerChangeUI.getElement().getAttribute("id").equals("containerChangeUIGuess")){
                 return; //containerChangeUI gia' creato e aggiunto alla UI

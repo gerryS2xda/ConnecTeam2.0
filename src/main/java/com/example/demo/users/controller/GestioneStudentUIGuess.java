@@ -110,6 +110,8 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
 
     public void showBtnForChangeUI() {
 
+        mainUI.setCurrentGameShow("Guess");
+
         if(containerChangeUI.getElement().getAttribute("id") != null){
             if(containerChangeUI.getElement().getAttribute("id").equals("containerChangeUIMaty")){
                 return; //containerChangeUI gia' creato e aggiunto alla UI

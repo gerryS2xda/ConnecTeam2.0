@@ -69,8 +69,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private ArrayList<String> selectsItem;
     private boolean isGridContainerAddToUI;
     private boolean isGridStudConfigurated; //gridstud e' stato configurato almeno una volta
-    private boolean isGridsGuessConfigurated; //grids per Guess sono state configurate almeno una volta
-    private boolean isGridsMatyConfigurated; //grids per Maty sono state configurate almeno una volta
+    private String currentGameShow = ""; //UI che in questo momento sta visualizzando il teacher
 
     public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
 
@@ -88,8 +87,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             containerGridMaty = new Tabs();
             isGridContainerAddToUI = false;
             isGridStudConfigurated = false;
-            isGridsGuessConfigurated = false;
-            isGridsMatyConfigurated = false;
 
             //Inizializza list string items for Selects
             selectsItem = new ArrayList<String>();
@@ -155,12 +152,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         startBtn.getStyle().set("background-color", "#0000");
         startBtn.getStyle().set("margin", "0");
         startBtn.addClickListener(buttonClickEvent -> {
-            if(nomeGioco.equals("NuovoGioco")){
-                InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
-            }else{
-                startGame();
-            }
+            startGame();
         });
 
         Icon settings = new Icon(VaadinIcon.COG_O);
@@ -226,8 +218,11 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             if(nomeGioco.equals("Nuovo gioco")){
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
+                buttonClickEvent.getSource().setEnabled(true);
                 return;
             }
+
+            currentGameShow = nomeGioco;
 
             //Una volta settate le impostazioni per un item della selects, tale item viene rimosso
             selectsItem.remove(nomeGioco);
@@ -247,9 +242,9 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 isGridContainerAddToUI = true;
             }
 
-            if(nomeGioco.equals("Guess")){
+            if(currentGameShow.equals("Guess")){
                 setConfigurationForGuess();
-            }else if(nomeGioco.equals("Maty")){
+            }else if(currentGameShow.equals("Maty")){
                 setConfigurationForMaty();
             }
 
@@ -378,7 +373,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             isGridStudConfigurated = true;
         }
 
-        if(!isGridsGuessConfigurated && gridGruppiGuess.size() > 0) {
+        if(currentGameShow.equals("Guess")) {
             for (int i = 0; i < gridGruppiGuess.size(); i++) {
                 gridGruppiGuess.get(i).setSelectionMode(Grid.SelectionMode.NONE);
                 gridGruppiGuess.get(i).addDropListener(dropListener);
@@ -386,10 +381,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 gridGruppiGuess.get(i).addDragEndListener(dragEndListener);
                 gridGruppiGuess.get(i).setRowsDraggable(true);
             }
-            isGridStudConfigurated = true;
-        }
-
-        if(!isGridsMatyConfigurated && gridGruppiMaty.size() > 0) {
+        }else if(currentGameShow.equals("Maty")){
             for (int i = 0; i < gridGruppiMaty.size(); i++) {
                 gridGruppiMaty.get(i).setSelectionMode(Grid.SelectionMode.NONE);
                 gridGruppiMaty.get(i).addDropListener(dropListener);
@@ -397,7 +389,6 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 gridGruppiMaty.get(i).addDragEndListener(dragEndListener);
                 gridGruppiMaty.get(i).setRowsDraggable(true);
             }
-            isGridsMatyConfigurated = true;
         }
     }
 
@@ -424,13 +415,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private void startGame(){
 
         //Riempi la lista dei membri di ogni gruppo
-        if(nomeGioco.equals("Guess")){
+        if(currentGameShow.equals("Guess")){
             for(int i = 0; i < gridGruppiGuess.size(); i++){
                 ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGruppiGuess.get(i).getDataProvider();
                 List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
                 gruppiGuess.get(i).setMembri(sourceItems);
             }
-        }else if(nomeGioco.equals("Maty")){
+        }else if(currentGameShow.equals("Maty")){
             for(int i = 0; i < gridGruppiMaty.size(); i++){
                 ListDataProvider<Account> sourceDataProvider = (ListDataProvider<Account>) gridGruppiMaty.get(i).getDataProvider();
                 List<Account> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
@@ -439,13 +430,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         }
 
         updateCountofGuessAndMatyUser();
-        if(countGuessUser > 1 && nomeGioco.equals("Guess")){ //vincolo di almeno due utenti inseriti nella grid
+        if(countGuessUser > 1 && currentGameShow.equals("Guess")){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
-            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiGuess, nomeGioco);
+            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiGuess, currentGameShow);
             Broadcaster.setIsGuessStart(true);
-        }else if(countMatyUser > 1 && nomeGioco.equals("Maty")){ //vincolo di almeno due utenti inseriti nella grid
+        }else if(countMatyUser > 1 && currentGameShow.equals("Maty")){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
-            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiMaty, nomeGioco);
+            startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiMaty, currentGameShow);
             Broadcaster.setIsMatyStart(true);
         }else{
             InfoEventUtility infoEventUtility = new InfoEventUtility();
@@ -493,6 +484,14 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
     public GestioneStudentUIMaty getGestioneStudentUIMaty() {
         return gestioneStudentUIMaty;
+    }
+
+    public String getCurrentGameShow() {
+        return currentGameShow;
+    }
+
+    public void setCurrentGameShow(String currentGameShow) {
+        this.currentGameShow = currentGameShow;
     }
 
     //Implementazione 'BroadcastListenerTeacher'
