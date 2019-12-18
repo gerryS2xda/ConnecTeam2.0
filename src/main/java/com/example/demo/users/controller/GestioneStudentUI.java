@@ -153,6 +153,13 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         startBtn.getStyle().set("background-color", "#0000");
         startBtn.getStyle().set("margin", "0");
         startBtn.addClickListener(buttonClickEvent -> {
+            if(currentGameShow.equals("Guess") && Broadcaster.isGuessStart()){
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("Partita gia' iniziata!! Attendere la fine della partita o terminarla", "red", "450px");
+            }else if(currentGameShow.equals("Maty") && Broadcaster.isGuessStart()){
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("Partita gia' iniziata!! Attendere la fine della partita o terminarla", "red", "450px");
+            }
             startGame();
         });
 
@@ -435,10 +442,12 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiGuess, currentGameShow);
             Broadcaster.setIsGuessStart(true);
+            containerGridGuess.setEnabled(false);   //Disabilita tutti i tab
         }else if(countMatyUser > 1 && currentGameShow.equals("Maty")){ //vincolo di almeno due utenti inseriti nella grid
             //invia un event contenente la lista di studenti collegati che devono giocare con Guess
             startGameEventBeanPublisher.doStuffAndPublishAnEvent(gruppiMaty, currentGameShow);
             Broadcaster.setIsMatyStart(true);
+            containerGridMaty.setEnabled(false);    //Disabilita tutti i tab
         }else{
             InfoEventUtility infoEventUtility = new InfoEventUtility();
             infoEventUtility.infoEventForTeacher("Almeno due utenti per poter iniziare la partita", "black", "330px");
