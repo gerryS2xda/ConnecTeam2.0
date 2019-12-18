@@ -43,7 +43,7 @@ import java.util.*;
 @StyleSheet("frontend://stile/guessStyle.css")
 @StyleSheet("frontend://stile/chat.css")
 @PageTitle("ConnecTeam-Guess")
-public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator {
+public class GuessUI extends HorizontalLayout implements BroadcastListener, ChatListener, PageConfigurator, BeforeLeaveObserver {
 
     //static field
     public static Gruppo currentGroupSelect;
@@ -607,10 +607,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             return;
         }
 
+        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
+
         if(chatContainerDialog.isOpened())
             chatContainerDialog.close();
-
-        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
             BroadcasterGuess.terminaPartitaFromTeacher();
@@ -622,4 +622,31 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }
     }
 
+    //Implements methods of BeforeLeaveObserver
+    @Override
+    public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) { //Necessario poiche' viene invocato UI.navigate() dal server e NON dal client
+        System.out.println("GuessUI.beforeLeave() e' stato invocato; Account:" + account.getNome());
+
+        //Pre-condition
+        boolean flag = false;
+        for(Account i : BroadcasterGuess.getListeners().keySet()){
+            if(i.equals(account)){
+                flag = true;
+                break;
+            }
+        }
+        if(!flag){  //se il listener non contiene questo 'account' -> non fare nulla
+            return;
+        }
+
+        if(chatContainerDialog.isOpened())
+            chatContainerDialog.close();
+
+        BroadcasterGuess.unregister(account, this);
+        if(!isTeacher && BroadcasterGuess.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+        }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
+            BroadcasterGuess.terminaPartitaFromTeacher();
+        }
+    }
 }
