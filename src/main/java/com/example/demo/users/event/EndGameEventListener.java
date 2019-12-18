@@ -25,15 +25,15 @@ public class EndGameEventListener {
             } else if (nameGame.equals("Maty")) {
                 Broadcaster.setIsMatyStart(false);
             }
-            Broadcaster.showDialogFinePartitaTeacher(nameGame, g, "");
+            Broadcaster.configFinePartitaTeacher(nameGame, g, "");
         }
 
         if(acc.getTypeAccount().equals("student")){
             Broadcaster.removeAccountFromAllGrid(acc);
         }else if(statusPartita.equals("vincente")){
-            Broadcaster.showDialogFinePartitaTeacher(nameGame, g, statusPartita);
+            Broadcaster.configFinePartitaTeacher(nameGame, g, statusPartita);
         }else if(statusPartita.equals("non-vincente")){
-            Broadcaster.showDialogFinePartitaTeacher(nameGame, g, statusPartita);
+            Broadcaster.configFinePartitaTeacher(nameGame, g, statusPartita);
         }
 
     }
