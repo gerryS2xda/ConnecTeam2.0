@@ -2,13 +2,10 @@ package com.example.demo.utility;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Utils {
 
@@ -90,11 +87,11 @@ public class Utils {
     }
 
     //Altri metodi
-    public static List<Account> cloneListAccounts(List<Account> list){
+    public static Set<Account> cloneListAccountsWithoutDuplicate(List<Account> list){
         List<Account> accounts = new ArrayList<Account>();
         for(Account i : list){
             accounts.add(i);
         }
-        return accounts;
+        return new LinkedHashSet<Account>(accounts); //rimuove i duplicati poiche' e' un insieme (Set)
     }
 }
