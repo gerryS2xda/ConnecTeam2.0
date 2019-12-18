@@ -10,5 +10,7 @@ public interface BroadcastListener {
     void parolaVotata(Gruppo g);
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();
-    void terminaPartitaFromTeacher();
+    void terminaPartitaForAll(String msgDialog);
+    void partitaVincenteForTeacher(Gruppo gruppo);
+    void partitaNonVincenteForTeacher(Gruppo gruppo);
 }
