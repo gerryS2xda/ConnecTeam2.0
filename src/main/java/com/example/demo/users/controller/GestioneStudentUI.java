@@ -502,8 +502,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
-    public void showDialogFinePartitaTeacher(String nameGame){
-        //No implemeny
+    public void showDialogFinePartitaTeacher(String nameGame, Gruppo g, String statusPartita){
+        //No implement
     }
 
     @Override

@@ -124,10 +124,10 @@ public class Broadcaster  {
         });
     }
 
-    public static synchronized void showDialogFinePartitaTeacher(String game){
+    public static synchronized void showDialogFinePartitaTeacher(String game, Gruppo g, String statusPartita){
         teacherlisteners.forEach((account, broadcastListener) ->{
             executor.execute(()->{
-                broadcastListener.showDialogFinePartitaTeacher(game);
+                broadcastListener.showDialogFinePartitaTeacher(game, g, statusPartita);
             });
         });
     }
