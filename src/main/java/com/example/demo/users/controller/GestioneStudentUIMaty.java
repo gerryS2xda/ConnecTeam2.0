@@ -54,8 +54,8 @@ public class GestioneStudentUIMaty extends HorizontalLayout {
             title.addClassName("titleStyle");
             title.getElement().setAttribute("id", "titleMaty");
 
-            Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gioco che desiderate." +
-                    " Premere il pulsante 'Gioca' per iniziare una nuova partita con il gruppo di studenti che è stato impostato.");
+            Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gruppo che desiderate." +
+                    " Premere il pulsante 'Inizia partita' per iniziare una nuova partita");
 
             containerTitleGuide.add(title, guidetxt);
             add(containerTitleGuide);
