@@ -154,7 +154,7 @@ public class GuessController {
             System.out.println("Fine Partita");
             partitaThread.interrupt();
             partitaThread.stopTimer();
-            BroadcasterGuess.partitanonVincente();
+            BroadcasterGuess.terminaPartitaForAll("Partita terminata!!"); //usato per indicare che la partita deve terminare per tutti
 
         }
 
