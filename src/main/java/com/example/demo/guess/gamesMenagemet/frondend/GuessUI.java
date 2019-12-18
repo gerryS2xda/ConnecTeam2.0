@@ -112,12 +112,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
-                //UI.getCurrent().setPollInterval(1000); Per il teacher: da usare solo le pagina viene caricata con UI.navigate(...)
-            }else{
-                DialogUtility dialogUtility = new DialogUtility();
-                attendiDialog = dialogUtility.showDialog("Attendere...", "black");
-                attendiDialog.open();
+                //UI.getCurrent().setPollInterval(1000); Per il teacher: da usare solo se la pagina viene caricata con UI.navigate(...)
             }
+
             //Inizializzazione per StartGameUI
             guessController = new GuessController(partitaRepository);
             startGameUI = new StartGameUI(guessController, isTeacher, account);
@@ -135,8 +132,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 BroadcasterChat.register(account, this);
             } else {
                 System.out.println("GUESSUI:TEST1 Account: " + account.getNome());
-                InfoEventUtility infoEventUtility = new InfoEventUtility();
-                infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
+                if(account.getTypeAccount().equals("student")){
+                    DialogUtility dialogUtility = new DialogUtility();
+                    dialogUtility.showDialogPartitaInCorso(guess.getNomeGioco(), "C'è una partita in corso... Attendere la fine della partita").open();
+                }
+                //NOTA: per il teacher, quando esce dalla pagina, viene invocato TeacherMainUITab.beforeLeave() e la partita termina per tutti
+                return;
             }
 
             if(isTeacher){ //mostra la appbar
@@ -150,6 +151,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 navBar.addClassName("navBarHorizontal");
                 add(navBar);
                 addChatBtnInNavBar();
+
+                //mostra un dialog 'Attendere' per indicare il caricamento della pagina
+                DialogUtility dialogUtility = new DialogUtility();
+                attendiDialog = dialogUtility.showDialog("Attendere...", "black");
+                attendiDialog.open();
             }
 
             //Chat container
@@ -192,8 +198,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     BroadcasterGuess.startGame(UI.getCurrent(), partitaThread, item);
                 } else {
                     System.out.println("GUESSUI:TEST2");
-                    InfoEventUtility infoEventUtility = new InfoEventUtility();
-                    infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
+                    if(account.getTypeAccount().equals("student")){
+                        DialogUtility dialogUtility = new DialogUtility();
+                        dialogUtility.showDialogPartitaInCorso(guess.getNomeGioco(), "C'è una partita in corso... Attendere la fine della partita").open();
+                    }
+                    //NOTA: per il teacher, quando esce dalla pagina, viene invocato TeacherMainUITab.beforeLeave() e partita termina per tutti
+                    return;
                 }
             });
             add(start);
