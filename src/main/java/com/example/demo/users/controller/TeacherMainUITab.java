@@ -1,6 +1,7 @@
 package com.example.demo.users.controller;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
@@ -391,7 +392,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             return; //Se viene mostrato il dialog di errore -> esci da questo metodo
 
         if(Broadcaster.isGuessStart()){  //Una partita di Guess e' in corso?
-            BroadcasterGuess.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaForAll("Partita terminata!! Teacher si e' disconnesso");
         }
         if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
             com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
@@ -444,14 +445,22 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     }
 
     @Override
-    public void showDialogFinePartitaTeacher(String nameGame){
+    public void showDialogFinePartitaTeacher(String nameGame, Gruppo g, String statusPartita){
 
         while(!getUI().isPresent()){
             System.out.println("TeacherMainUITab.showDialogFinePartitaTeacher(): getUI() is Not present ");
         } //attendi la UI
         getUI().get().access(() -> {
+            if(statusPartita.equals("")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaTerminataDialogTeacher(nameGame, "Partita Terminata! Non risultano altri utenti connessi");
+            }else if(statusPartita.equals("vincente")){
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("Il " + g.getId() + " ha vinto la partita!!", "green", "");
+            }else if(statusPartita.equals("non-vincente")){
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("Il " + g.getId() + " non ha vinto la partita!!", "red", "");
+            }
         });
 
     }
