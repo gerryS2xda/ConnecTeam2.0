@@ -114,7 +114,9 @@ public class BroadcasterGuess implements Serializable {
                         });
                     }
                 }
-
+                if(account.getTypeAccount().equals("teacher")){
+                    broadcastListener.partitaVincenteForTeacher(gruppo);
+                }
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,6 +133,9 @@ public class BroadcasterGuess implements Serializable {
                             broadcastListener.partititanonVincente();
                         });
                     }
+                }
+                if(account.getTypeAccount().equals("teacher")){
+                    broadcastListener.partitaNonVincenteForTeacher(gruppo);
                 }
             });
         } catch (Exception e) {
@@ -154,11 +159,11 @@ public class BroadcasterGuess implements Serializable {
         }
     }
 
-    public static synchronized void terminaPartitaFromTeacher(){
+    public static synchronized void terminaPartitaForAll(String msgDialog){
         try {
             listeners.forEach((account, broadcastListener) -> {
                 executor.execute(() -> {
-                    broadcastListener.terminaPartitaFromTeacher();
+                    broadcastListener.terminaPartitaForAll(msgDialog);
                 });
             });
         }catch (Exception e){
