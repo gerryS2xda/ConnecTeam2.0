@@ -72,12 +72,12 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private boolean isGridStudConfigurated; //gridstud e' stato configurato almeno una volta
     private String currentGameShow = ""; //UI che in questo momento sta visualizzando il teacher
 
-    public GestioneStudentUI(/*@Autowired*/ StartGameEventBeanPublisher startGameEventPublisher){
+    public GestioneStudentUI(StartGameEventBeanPublisher startGameEventPublisher, AccountRepository accRep, Account account){
 
         try {
             //Inizializzazione
-            accRep = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-            account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
+            this.accRep = accRep;
+            this.account = account;
             startGameEventBeanPublisher = startGameEventPublisher;
             setId("GestioneStudentUI"); //setta id del root element di questo component
             gridGruppiGuess = new ArrayList<Grid<Account>>();
@@ -463,6 +463,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
         }
     }
 
+    //Getter and setter
     public HorizontalLayout getMainGuess() {
         return mainGuess;
     }
@@ -502,7 +503,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     }
 
     @Override
-    public void showDialogFinePartitaTeacher(String nameGame, Gruppo g, String statusPartita){
+    public void configFinePartitaTeacher(String nameGame, Gruppo g, String statusPartita){
         //No implement
     }
 
