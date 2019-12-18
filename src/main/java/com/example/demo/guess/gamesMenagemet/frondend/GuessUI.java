@@ -47,6 +47,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
     //static field
     public static Gruppo currentGroupSelect;
+    private static List<Gruppo> gruppi = new ArrayList<Gruppo>();
 
     //instance field
     private Account account;
@@ -69,7 +70,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private WrappedSession teacherSession;
     private Button start; //pulsante che sara'
     private Dialog attendiDialog;
-    private List<Gruppo> gruppi = new ArrayList<Gruppo>();
     private ArrayList<Div> containersPVTeacher; //container parole votate per teacher
     private ArrayList<Div> containersParoleVotate; //container parole votate per student
     private StartGameUI startGameUI;
@@ -87,7 +87,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             endGamePublisher = endGameEventBeanPublisher;
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
             teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
-            gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
             currentGroupSelect = new Gruppo();
             currentGroupSelect.setId("Gruppo 1"); //per default viene selezionato il 'Gruppo 1'
             containersPVTeacher = new ArrayList<Div>();
@@ -113,6 +112,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
                 //UI.getCurrent().setPollInterval(1000); Per il teacher: da usare solo se la pagina viene caricata con UI.navigate(...)
+            }
+
+            if(gruppi.size() == 0){ //la lista dei gruppi e' stata settata una sola volta?
+                gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
+                BroadcasterGuess.setGruppiList(gruppi);
             }
 
             //Inizializzazione per StartGameUI
@@ -384,7 +388,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     //public methods
-    public static void reset(){
+    public static List<Gruppo> getListGruppi() {
+        return gruppi;
+    }
+
+    public static void reset(){  //eseguito solo quando la partita termina da parte del teacher o quando non ci sono piu' utenti connessi
         try {
             BroadcasterGuess.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
             BroadcasterGuess.getVotes().clear();
@@ -394,6 +402,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             BroadcasterChat.getListeners().clear();
             BroadcasterSuggerisci.getListeners().clear();
             BroadcasterGuess.getParoleVotateHM().clear();
+            gruppi.clear();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -524,7 +533,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     @Override
     public void partititaVincente(String parola,int punteggio) {
         getUI().get().access(() -> {
-            reset();
+            //reset();
             if(chatContainerDialog.isOpened())
                 chatContainerDialog.close();
             removeAll();
@@ -544,7 +553,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     @Override
     public void partititanonVincente(){
         getUI().get().access(() -> {
-            reset();
+            //reset();
             if(chatContainerDialog.isOpened())
                 chatContainerDialog.close();
             removeAll();
@@ -559,7 +568,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void terminaPartitaFromTeacher() {
+    public void terminaPartitaFromTeacher() {  //usato anche per indicare se non ci sono piu' utenti connessi
         try {
             if(getUI().isPresent()) {   //inserito per evitare exception (No value Present) dovuta al teacher quando effettua il logout e viene invocato questo metodo
                 getUI().get().access(() -> {
@@ -612,10 +621,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         if(chatContainerDialog.isOpened())
             chatContainerDialog.close();
 
+        BroadcasterGuess.unregister(account, this);
+
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
             BroadcasterGuess.terminaPartitaFromTeacher();
-        }else if(BroadcasterGuess.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
-            BroadcasterGuess.unregister(account, this);
+            return;
+        }
+
+        if(BroadcasterGuess.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
             BroadcasterGuess.terminaPartitaFromTeacher();

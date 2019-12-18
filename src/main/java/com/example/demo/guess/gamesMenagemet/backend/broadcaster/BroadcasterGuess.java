@@ -19,6 +19,7 @@ public class BroadcasterGuess implements Serializable {
 
     private static Executor executor = Executors.newSingleThreadExecutor();
     private static Map<Account, BroadcastListener> listeners = new HashMap();
+    private static List<Gruppo> gruppiList = new ArrayList<>();
     private static List<Account> accountList = new ArrayList<>();
     private static Map<String,Integer> votes = new HashMap();
     private static Map<Gruppo, List<String>> paroleVotate = new HashMap<>();   //contiene le parole 'Suggerite'
@@ -102,24 +103,35 @@ public class BroadcasterGuess implements Serializable {
 
     }
 
-    public static synchronized void partitaVincente(String s, Integer integer) {
+    public static synchronized void partitaVincente(Gruppo gruppo, String s, Integer integer) {
         try {
             listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.partititaVincente(s,integer);
-                });
+                for(Account i : gruppo.getMembri()){
+                    if(i.equals(account)){
+                        //Esegui solo per gli account che sono membri del gruppo in cui e' stata trovata la parola vincente
+                        executor.execute(() -> {
+                            broadcastListener.partititaVincente(s,integer);
+                        });
+                    }
+                }
+
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static synchronized void partitanonVincente() {
+    public static synchronized void partitanonVincente(Gruppo gruppo) {
         try {
             listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.partititanonVincente();
-                });
+                for(Account i : gruppo.getMembri()){
+                    if(i.equals(account)){
+                        //Esegui solo per gli account che sono membri del gruppo in cui non e' stata trovata la parola vincente
+                        executor.execute(() -> {
+                            broadcastListener.partititanonVincente();
+                        });
+                    }
+                }
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,6 +167,10 @@ public class BroadcasterGuess implements Serializable {
     }
 
     //getter and setter methods
+    public static void setGruppiList(List<Gruppo> gruppiList) {
+        BroadcasterGuess.gruppiList = gruppiList;
+    }
+
     public static Map<Gruppo, List<String>> getParoleVotateHM() {
         return paroleVotate;
     }

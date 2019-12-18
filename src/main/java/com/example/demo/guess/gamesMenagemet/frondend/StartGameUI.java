@@ -43,7 +43,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     public StartGameUI(GuessController guessController, boolean isTeacher, Account account) {
 
         try {
-            gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
+            gruppi = GuessUI.getListGruppi();
             setId("StartGameUI");
             this.guessController = guessController;
             this.isTeacher = isTeacher;
@@ -185,9 +185,9 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                                 vincente = guessController.partitaVincente(s, BroadcasterGuess.getItems().get(i));
 
                                 if (vincente == false && flag == false) {
-                                    BroadcasterGuess.partitanonVincente();
+                                    BroadcasterGuess.partitanonVincente(gruppo);
                                 } else if (vincente == true && flag == false) {
-                                    BroadcasterGuess.partitaVincente(s, punteggio);
+                                    BroadcasterGuess.partitaVincente(gruppo, s, punteggio);
                                 }
                             }
 
@@ -243,6 +243,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                 button.setEnabled(false);
 
                 stringIntegerMap.forEach((s, integer) -> {
+                    //Tra tutte le parole votate dai membri di 'gruppo', verifica se e' presente quella vincente
                     if (integer == BroadcasterGuess.getListeners().size()) {
                         for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
                             if (i == 0) {
@@ -268,9 +269,9 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
                                 vincente = guessController.partitaVincente(s, BroadcasterGuess.getItems().get(i));
 
                                 if (vincente == false && flag == false) {
-                                    BroadcasterGuess.partitanonVincente();
+                                    BroadcasterGuess.partitanonVincente(gruppo);
                                 } else if (vincente == true && flag == false) {
-                                    BroadcasterGuess.partitaVincente(s, punteggio);
+                                    BroadcasterGuess.partitaVincente(gruppo, s, punteggio);
                                 }
                             }
 
