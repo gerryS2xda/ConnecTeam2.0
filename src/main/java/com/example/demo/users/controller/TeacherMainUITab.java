@@ -160,6 +160,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         homeIcon.setSize(icon_Size);
         homeIcon.setColor(icon_color);
         home = addDivContainerItem("Home", homeIcon);
+        home.getElement().setAttribute("id", "homeNV");
         home.addClickListener(event -> {
             home.addClassName("highlight");
             mainView.getStyle().set("display", "flex"); //rendi nuovamente visibile
@@ -185,6 +186,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         settingIcon.setSize(icon_Size);
         settingIcon.setColor(icon_color);
         settings = addDivContainerItem("Settings", settingIcon);
+        settings.getElement().setAttribute("id", "settingsNV");
         settings.addClickListener(event -> {
             settings.addClassName("highlight");
             mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
@@ -213,6 +215,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         gestStudIcon.setSize(icon_Size);
         gestStudIcon.setColor(icon_color);
         gestStud = addDivContainerItem("Gestione Studenti", gestStudIcon);
+        gestStud.getElement().setAttribute("id", "gestStudNV");
         gestStud.addClickListener(event -> {
             gestStud.addClassName("highlight");
             mainView.getStyle().set("display", "none"); //rendi nuovamente visibile
@@ -226,7 +229,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 matyView.getStyle().set("display", "none");
             }
             if(gestStudentiView == null){
-                gestStudentiView = new GestioneStudentUI(startGameEventBeanPublisher);
+                gestStudentiView = new GestioneStudentUI(startGameEventBeanPublisher, accountRepository, account);
                 add(gestStudentiView);
             }else{
                 gestStudentiView.getStyle().set("display", "flex");
@@ -242,6 +245,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         gamesIcon.setColor(icon_color);
         gamesIcon.getStyle().set("margin-left", "0px"); //valore precedente: 32px (no accordion)
         Div gamesStud = addGamesListWithAccordion(gamesIcon);
+        gamesStud.getElement().setAttribute("id", "gamesStudNV");
 
         items.add(home, settings, gestStud, gamesStud);
         navScrollArea.add(items);
@@ -272,6 +276,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         panel1.setSpacing(false);
         panel1.setPadding(false);
         guess = addDivInAccordionPanelContent("Guess", null, "64px");
+        guess.getElement().setAttribute("id", "guessNV");
         guess.addClickListener(event -> {
             if(Broadcaster.isGuessStart()) {
                 guess.addClassName("highlight");
@@ -301,6 +306,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             }
         });
         maty = addDivInAccordionPanelContent("Maty", null, "64px");
+        maty.getElement().setAttribute("id", "matyNV");
         maty.addClickListener(event -> {
             if(Broadcaster.isMatyStart()) {
                 maty.addClassName("highlight");
@@ -330,6 +336,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             }
         });
         newGame = addDivInAccordionPanelContent("NuovoGioco", null, "64px");
+        newGame.getElement().setAttribute("id", "newGameNV");
         newGame.addClickListener(event ->{
             InfoEventUtility infoEventUtility = new InfoEventUtility();
             infoEventUtility.infoEventForTeacher("Coming soon...", "green", "");
@@ -445,15 +452,20 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
     }
 
     @Override
-    public void showDialogFinePartitaTeacher(String nameGame, Gruppo g, String statusPartita){
+    public void configFinePartitaTeacher(String nameGame, Gruppo g, String statusPartita){
 
         while(!getUI().isPresent()){
-            System.out.println("TeacherMainUITab.showDialogFinePartitaTeacher(): getUI() is Not present ");
+            System.out.println("TeacherMainUITab.configFinePartitaTeacher(): getUI() is Not present ");
         } //attendi la UI
         getUI().get().access(() -> {
             if(statusPartita.equals("")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaTerminataDialogTeacher(nameGame, "Partita Terminata! Non risultano altri utenti connessi");
+                UI.getCurrent().getPage().executeJs("document.getElementById(\"homeNV\").click();");
+                if(gestStudentiView != null){
+                    remove(gestStudentiView);
+                    gestStudentiView = null;
+                }
             }else if(statusPartita.equals("vincente")){
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEventForTeacher("Il " + g.getId() + " ha vinto la partita!!", "green", "");
