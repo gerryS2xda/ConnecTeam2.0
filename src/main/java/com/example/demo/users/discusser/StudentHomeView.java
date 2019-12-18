@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Push
-@Route("StudentHomeView")
+@Route("studentHomeView")
 @HtmlImport("style.html")
 @StyleSheet("frontend://stile/stile.css")
 @StyleSheet("frontend://stile/style.css")

@@ -509,9 +509,9 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     @Override
     //Aggiorna 'Grid' Studenti collegati (rimuove dalla lista gli account gia' presenti nelle altre grid)
     public void updateGridStudentCollegati(){
-        List<Account> actualList = Utils.cloneListAccounts(Broadcaster.getAccountListReceive()); //clonare la lista per risolvere problemi di accessi concorrenti ad AccountListEvent
+        Set<Account> actualList = Utils.cloneListAccountsWithoutDuplicate(Broadcaster.getAccountListReceive()); //clonare la lista per risolvere problemi di accessi concorrenti ad AccountListEvent
         for(Account i : actualList){
-            for(Gruppo g : gruppiGuess){
+            for(Gruppo g : gruppiGuess){    //verifica se un account e' stato assegnato ad un gruppo
                 for(Account x : g.getMembri()){
                     if(x.equals(i)){
                         actualList.remove(i);
@@ -519,7 +519,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 }
             }
 
-            for(Gruppo g : gruppiMaty){
+            for(Gruppo g : gruppiMaty){ //verifica se un account e' stato assegnato ad un gruppo
                 for(Account x : g.getMembri()){
                     if(x.equals(i)){
                         actualList.remove(i);
