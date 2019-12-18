@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Utils {
 
@@ -92,6 +93,7 @@ public class Utils {
         for(Account i : list){
             accounts.add(i);
         }
-        return new LinkedHashSet<Account>(accounts); //rimuove i duplicati poiche' e' un insieme (Set)
+        //NOTA: CopyOnWriteArraySet permette di evitare 'ConcurrentModificationException' poiche' e' thread-safe
+        return new CopyOnWriteArraySet<Account>(accounts); //rimuove i duplicati poiche' e' un insieme (Set)
     }
 }
