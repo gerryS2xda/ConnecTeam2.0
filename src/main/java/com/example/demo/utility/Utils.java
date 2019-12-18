@@ -87,6 +87,17 @@ public class Utils {
         return d;
     }
 
+    public static boolean removeAccountFromGroupAndCheckIfGroupIsEmpty(List<Gruppo> gruppi, Account account){
+        boolean flag = false; //true se un gruppo, in base ad account, non ha piu' membri.
+
+        Gruppo g = findGruppoByAccount(gruppi, account);
+        g.getMembri().remove(account);
+        if(g.getMembri().size() == 0){
+            flag = true;
+        }
+        return flag;
+    }
+
     //Altri metodi
     public static Set<Account> cloneListAccountsWithoutDuplicate(List<Account> list){
         List<Account> accounts = new ArrayList<Account>();
