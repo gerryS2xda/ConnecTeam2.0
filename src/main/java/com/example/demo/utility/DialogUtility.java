@@ -168,7 +168,7 @@ public class DialogUtility extends VerticalLayout {
 
         Label punti = new Label("Hai ottenuto: " + punteggio + " punti");
         punti.getStyle().set("font-size", "30px");
-        Button listGiochi = new Button("Vai alla lista giochi");
+        Button listGiochi = new Button("Vai alla sala di attesa");
         listGiochi.addClassName("my-style2");
         content.addClassName("my-style");
         content.setAlignItems(Alignment.CENTER);
@@ -194,7 +194,7 @@ public class DialogUtility extends VerticalLayout {
                 MatyUI.reset();
             }
             dialog.close();
-            UI.getCurrent().navigate(ControllerMainUI.class);
+            UI.getCurrent().navigate(StudentHomeView.class);
             UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
         content.add(image,label,punti,listGiochi);
@@ -281,32 +281,13 @@ public class DialogUtility extends VerticalLayout {
         dialog.open();
     }
 
-    public void partitaTerminata(Account account){
+    public void partitaTerminataForAll(String msg){
 
         Dialog dialog = new Dialog();
         dialog.setCloseOnOutsideClick(false);
         dialog.setCloseOnEsc(false);
 
-        Label label = new Label("Partita terminata da: "+account.getNome());
-        Button button = new Button("Vai alla home");
-        button.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().navigate(StudentHomeView.class);
-            dialog.close();
-            UI.getCurrent().getPage().reload();
-        });
-        button.getStyle().set("margin-left","20px");
-        dialog.add(label,button);
-        dialog.open();
-
-    }
-
-    public void partitaTerminataFromTeacher(){
-
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnOutsideClick(false);
-        dialog.setCloseOnEsc(false);
-
-        Label label = new Label("Partita terminata dal teacher");
+        Label label = new Label(msg);
         Button button = new Button("Vai alla home");
         button.addClickListener(buttonClickEvent -> {
             dialog.close();
