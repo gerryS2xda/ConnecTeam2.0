@@ -346,7 +346,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         terminateGame.getStyle().set("background-color", "#0000");
         terminateGame.getStyle().set("margin", "0");
         terminateGame.addClickListener(buttonClickEvent -> {
-            BroadcasterGuess.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaForAll("Partita terminata dal teacher");
             com.example.demo.users.broadcaster.Broadcaster.setCountGuessUser(0); //reset counter giocatori di Guess
         });
 
@@ -542,12 +542,18 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 add(fireWorks);
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaVincente(parola, punteggio, guess);
-                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
-            }else if(account.getTypeAccount().equals("teacher")){
-                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, new Gruppo(), "");
             }
         });
+    }
 
+    @Override
+    public void partitaVincenteForTeacher(Gruppo gruppo){
+        getUI().get().access(() -> {
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, gruppo, "vincente");
+        });
     }
 
     @Override
@@ -560,15 +566,22 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             if(account.getTypeAccount().equals("student")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitanonVincente(guess);
-                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
-            }else if(account.getTypeAccount().equals("teacher")){
-                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+                endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, new Gruppo(), "");
             }
         });
     }
 
     @Override
-    public void terminaPartitaFromTeacher() {  //usato anche per indicare se non ci sono piu' utenti connessi
+    public void partitaNonVincenteForTeacher(Gruppo gruppo){
+        getUI().get().access(() -> {
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, gruppo, "non-vincente");
+        });
+    }
+
+    @Override
+    public void terminaPartitaForAll(String msgDialog) {  //usato anche per indicare se non ci sono piu' utenti connessi
         try {
             if(getUI().isPresent()) {   //inserito per evitare exception (No value Present) dovuta al teacher quando effettua il logout e viene invocato questo metodo
                 getUI().get().access(() -> {
@@ -578,10 +591,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     removeAll();
                     if (account.getTypeAccount().equals("student")) {
                         DialogUtility dialogUtility = new DialogUtility();
-                        dialogUtility.partitaTerminataFromTeacher();
-                        endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
-                    } else {
-                        endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true);
+                        dialogUtility.partitaTerminataForAll(msgDialog);
+                        endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, new Gruppo(), "");
+                    } else{
+                        endGamePublisher.doStuffAndPublishAnEvent("Guess", account, true, new Gruppo(), "");
                     }
                 });
             }else{
@@ -590,8 +603,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
+
+
 
     //Implements methods of PageConfigurator
     @Override
@@ -624,14 +638,14 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         BroadcasterGuess.unregister(account, this);
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
-            BroadcasterGuess.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaForAll("Partita terminata!! Teacher si e' disconnesso");
             return;
         }
 
         if(BroadcasterGuess.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
-            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, new Gruppo(), "");
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            BroadcasterGuess.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaForAll("Partita terminata!! Nessun utente e' connesso al gioco");
         }
     }
 
@@ -657,9 +671,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         BroadcasterGuess.unregister(account, this);
         if(!isTeacher && BroadcasterGuess.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
-            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, new Gruppo(), "");
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            BroadcasterGuess.terminaPartitaFromTeacher();
+            BroadcasterGuess.terminaPartitaForAll("Partita terminata!! Nessun utente e' connesso al gioco");
         }
     }
 }
