@@ -504,4 +504,45 @@ public class DialogUtility extends VerticalLayout {
         d.add(content);
         return d;
     }
+
+    public Dialog showDialogPartitaInCorso(String title, String msg){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label titleLab = new Label(title);
+        titleLab.getStyle().set("font-size", "32px");
+        titleLab.getStyle().set("color", "black");
+
+        Label descrizione = new Label();
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.getStyle().set("color", "black");
+        descrizione.setText(msg);
+
+        HorizontalLayout btnContainer = new HorizontalLayout();
+        btnContainer.getStyle().set("margin-top", "30px");
+        Button positive = new Button("OK");
+        positive.getStyle().set("background-color", "#007d99");
+        positive.getStyle().set("cursor", "pointer");
+        positive.getStyle().set("color", "white");
+        positive.addClickListener(buttonClickEvent -> {
+            d.close();
+            UI.getCurrent().navigate(StudentHomeView.class);  //vai alla pagina "StudentHomeView"
+        });
+
+        btnContainer.add(positive);
+
+        content.add(titleLab, descrizione, btnContainer);
+        d.add(content);
+
+        return d;
+    }
 }
