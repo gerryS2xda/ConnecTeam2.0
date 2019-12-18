@@ -55,7 +55,9 @@ public class GestioneStudentUIGuess extends HorizontalLayout {
             title.getElement().setAttribute("id", "titleGuess");
 
             Paragraph guidetxt = new Paragraph("Selezionate uno studente dalla lista e trascinatelo nel gruppo che desiderate." +
-                    " Premere il pulsante 'Inizia partita' per iniziare una nuova partita");
+                    " Premere il pulsante 'Inizia partita' per iniziare una nuova partita. " +
+                    " Quando inizia una partita, non è più possibile modificare i gruppi di studenti. ");
+            guidetxt.addClassName("guideTxtStyle");
 
             containerTitleGuide.add(title, guidetxt);
 

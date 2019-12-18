@@ -80,3 +80,10 @@
     align-self: center;
     margin-top: 16px;
 }
+
+.guideTxtStyle{
+    width: 100%;
+    font-size: 18px;
+    word-wrap: break-word;
+    text-align: left;
+}
