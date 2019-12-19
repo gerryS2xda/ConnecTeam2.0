@@ -22,8 +22,10 @@ public class EndGameEventListener {
         if(event.isEndendForAll()) {
             if (nameGame.equals("Guess")) {
                 Broadcaster.setIsGuessStart(false);
+                Broadcaster.setCountGuessUser(0);
             } else if (nameGame.equals("Maty")) {
                 Broadcaster.setIsMatyStart(false);
+                Broadcaster.setCountMatyUser(0);
             }
             Broadcaster.configFinePartitaTeacher(nameGame, g, "");
         }
