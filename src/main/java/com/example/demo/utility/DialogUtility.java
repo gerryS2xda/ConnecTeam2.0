@@ -468,6 +468,7 @@ public class DialogUtility extends VerticalLayout {
                 UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
             }else {
                 UI.getCurrent().navigate(StudentHomeView.class);  //vai alla pagina "StudentHomeView"
+                UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
             }
         });
 
@@ -517,6 +518,7 @@ public class DialogUtility extends VerticalLayout {
         positive.addClickListener(buttonClickEvent -> {
             d.close();
             UI.getCurrent().navigate(StudentHomeView.class);  //vai alla pagina "StudentHomeView"
+            UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
 
         btnContainer.add(positive);
