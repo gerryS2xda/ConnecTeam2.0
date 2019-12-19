@@ -563,7 +563,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                     if(sourceItems.contains(a)) {
                         sourceItems.remove(a);
                         gridGruppiGuess.get(i).setItems(sourceItems);
-                        gruppiGuess.get(i).setMembri(sourceItems);
+                        if(gruppiGuess.size() > 0)
+                            gruppiGuess.get(i).setMembri(sourceItems);  //Quando termina partita per tutti: Exception: java.lang.IndexOutOfBoundsException: Index: 1, Size: 0
                     }
                 }
 
@@ -573,7 +574,8 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                     if(sourceItems.contains(a)) {
                         sourceItems.remove(a);
                         gridGruppiMaty.get(i).setItems(sourceItems);
-                        gruppiMaty.get(i).setMembri(sourceItems);
+                        if(gruppiMaty.size() > 0)
+                            gruppiMaty.get(i).setMembri(sourceItems);
                     }
                 }
 
