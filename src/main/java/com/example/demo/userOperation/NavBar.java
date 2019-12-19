@@ -180,15 +180,40 @@ public class NavBar extends HorizontalLayout {
     //Responsive methods
     private void loadResponsiveConfiguration(int widthBrowser, int heightBrowser){
 
+        if(widthBrowser <= 1400){
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "75%");
+        }else{
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "80%");
+        }
+
         if(widthBrowser <= 1000){
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "65%");
             logOutContainer.getStyle().set("left", "80%");
         }else{
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "75%");
             logOutContainer.getStyle().set("position","absolute");
             logOutContainer.getStyle().set("left","88%");
             return;
         }
 
-        if(widthBrowser <= 650){
+        if(widthBrowser <= 800){
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "60%");
+        }else{
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "65%");
+        }
+
+        if(isGamePage && widthBrowser <= 650){
+            chatContainer.getStyle().set("position", "absolute");
+            chatContainer.getStyle().set("left", "100px");
+            logOutContainer.getStyle().set("left", "250px");
+            return;
+        }else if(widthBrowser <= 650){
             logOutContainer.getStyle().set("position", "initial");
         }else{
             logOutContainer.getStyle().set("position","absolute");
