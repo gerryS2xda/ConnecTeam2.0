@@ -148,6 +148,17 @@
             <artifactId>flow-server-compatibility-mode</artifactId>
             <version>2.1.0.beta2</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.erik</groupId>
+            <artifactId>timer_bar</artifactId>
+            <version>1.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
 
