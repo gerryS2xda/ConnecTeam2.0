@@ -20,12 +20,16 @@ import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
@@ -80,7 +84,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private ChatUI chatUI;
     private TimerBar timerBar;
     private Div containerParoleVotateMain = new Div(); //presente in StartGameUI
+    private Label titleGruppi;
 
+    //Constructor
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
         try {
@@ -190,6 +196,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 Label nameGameTitle = new Label("Guess");
                 nameGameTitle.addClassName("nameGameTitle");
                 add(nameGameTitle);
+            }else{
+                titleGruppi = new Label("");
+                titleGruppi.addClassName("titleGruppi");
+                add(titleGruppi);
+                setMenuItemClickEventForGruppiMenuItem("Gruppo 1"); //gruppo 1 e' di default
             }
 
             start = new Button();
@@ -219,10 +230,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             });
             add(start);
 
-            if(isTeacher){
-                showSelectsFieldGruppiForTeacher();
-            }
-
             waitAllUserForStartGame();
 
         }catch (Exception e) {
@@ -246,44 +253,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }
     }
 
-    private void showSelectsFieldGruppiForTeacher(){
-        HorizontalLayout hor1 = new HorizontalLayout();
-        hor1.addClassName("showSelectsFieldGruppiForTeacherContainer");
-
-        Label lab1 = new Label("Seleziona gruppo: ");
-        lab1.getStyle().set("font-size", "16px");
-        lab1.getStyle().set("margin-top", "8px");
-
-        Select<String> selects = new Select<>();
-        List<String> items = new ArrayList<String>();
-
-        for(Gruppo g : gruppi){
-            items.add(g.getId());
-        }
-
-        selects.setItems(items);
-        if(items.size() > 0)
-            selects.setValue(items.get(0));
-
-        selects.addValueChangeListener(event ->{
-           String value = event.getValue();
-           currentGroupSelect = Utils.findGruppoByName(gruppi, value);
-
-           hideAllContainerPVTeacher();
-           Div containerPVteacher = Utils.getDivFromListByAttribute(containersPVTeacher, "name", currentGroupSelect.getId());
-           containerPVteacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
-
-           startGameUI.showParolaSuggeritaAndBtnTeacher(currentGroupSelect.getId());
-
-           chatUI.hideAllSpazioMessaggiTeacher();
-           MessageList spaziomsgTeacher = Utils.getMessageListFromListByAttributeForChat(chatUI.getSpazioMessaggiTeacher(), "name", currentGroupSelect.getId());
-           spaziomsgTeacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
-        });
-
-        hor1.add(lab1, selects);
-        add(hor1);
-    }
-
     private void hideAllContainerPVTeacher(){
         for(Div i : containersPVTeacher){
             i.getStyle().set("display", "none");
@@ -293,7 +262,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private void showButtonInAppBar(){
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.getStyle().set("position", "absolute");
-        horizontalLayout.getStyle().set("left", "75%");
+        horizontalLayout.getStyle().set("left", "70%");
         horizontalLayout.getStyle().set("z-index", "2");
         horizontalLayout.setHeight(AppBarUI.APPBAR_HEIGHT);
 
@@ -331,7 +300,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             com.example.demo.users.broadcaster.Broadcaster.setCountGuessUser(0); //reset counter giocatori di Guess
         });
 
-        horizontalLayout.add(infoBtn, chatBtn, terminateGame);
+        horizontalLayout.add(createMenuBarForGruppi(), infoBtn, chatBtn, terminateGame);
         appBarUI.add(horizontalLayout);
     }
 
@@ -385,6 +354,45 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         d.add(chatUI);
 
         return d;
+    }
+
+    private MenuBar createMenuBarForGruppi(){
+        MenuBar menuBar = new MenuBar();
+        menuBar.setOpenOnHover(true);
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+        menuBar.getStyle().set("background-color", "#0000");
+        menuBar.getStyle().set("margin", "0");
+
+        Icon gruppiIcon = new Icon(VaadinIcon.GROUP);
+        gruppiIcon.setSize(AppBarUI.ICON_BTN_SIZE);
+
+        MenuItem gruppiItem = menuBar.addItem("Gruppi");
+        gruppiItem.addComponentAsFirst(gruppiIcon);
+        SubMenu gruppiSubMenu = gruppiItem.getSubMenu();
+
+        for(Gruppo g : gruppi){
+            gruppiSubMenu.addItem(g.getId(), menuItemClickEvent -> {
+                String value = g.getId();
+                setMenuItemClickEventForGruppiMenuItem(value);
+            });
+        }
+
+        return menuBar;
+    }
+
+    private void setMenuItemClickEventForGruppiMenuItem(String value){
+        titleGruppi.setText(value);
+        currentGroupSelect = Utils.findGruppoByName(gruppi, value);
+
+        hideAllContainerPVTeacher();
+        Div containerPVteacher = Utils.getDivFromListByAttribute(containersPVTeacher, "name", currentGroupSelect.getId());
+        containerPVteacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
+
+        startGameUI.showParolaSuggeritaAndBtnTeacher(currentGroupSelect.getId());
+
+        chatUI.hideAllSpazioMessaggiTeacher();
+        MessageList spaziomsgTeacher = Utils.getMessageListFromListByAttributeForChat(chatUI.getSpazioMessaggiTeacher(), "name", currentGroupSelect.getId());
+        spaziomsgTeacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
     }
 
     //public methods
@@ -567,6 +575,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 Label label = new Label(s + " ha " + integer + a);
                 label.getElement().setAttribute("id", "parolaVotata");
                 MessageList msgList = new MessageList("message-list");
+                msgList.addClassName("divMessageListParolaVotata");
                 msgList.getElement().setAttribute("id", "PV" + gruppo.getId());
                 msgList.add(label);
                 containerPVTeacher.add(msgList);

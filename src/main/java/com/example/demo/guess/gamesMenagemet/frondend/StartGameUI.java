@@ -252,7 +252,7 @@ public class StartGameUI extends HorizontalLayout implements SuggerisciListener{
 
             MessageList messageListTeacher = new MessageList("message-list");
             HorizontalLayout horizontalLayoutTeacher = new HorizontalLayout();
-            horizontalLayoutTeacher.getStyle().set("width", "350px");
+            //horizontalLayoutTeacher.getStyle().set("width", "350px");
 
             Label label = new Label();  //parola suggerita
             label.addClassName("labelParolaSuggerita");
