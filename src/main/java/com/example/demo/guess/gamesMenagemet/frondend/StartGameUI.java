@@ -12,6 +12,7 @@ import com.example.demo.utility.MessageList;
 import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 @StyleSheet("frontend://stile/stile.css")
 @StyleSheet("frontend://stile/guessStyle.css")
-public class StartGameUI extends VerticalLayout implements SuggerisciListener{
+public class StartGameUI extends HorizontalLayout implements SuggerisciListener{  //Prima era VerticalLayout
 
     //instance field
     private GuessController guessController;
@@ -38,6 +39,10 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
     private List<Gruppo> gruppi = new ArrayList<Gruppo>();
     private ArrayList<VerticalLayout> parolaLayoutList;
     private ArrayList<VerticalLayout> parolaLayoutTeacherList;
+    private VerticalLayout paroleVotateContainer;
+    private Div containerParoleVotateMain;
+    private VerticalLayout containerSuggerisciParolaMain;
+    private VerticalLayout paroleSuggeriteContainer;
 
 
     public StartGameUI(GuessController guessController, boolean isTeacher, Account account) {
@@ -51,73 +56,20 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             parolaLayoutList = new ArrayList<VerticalLayout>();
             parolaLayoutTeacherList = new ArrayList<VerticalLayout>();
 
+            setWidth("100%");
+            setHeight("100%");
+
             BroadcasterSuggerisci.register(account, this);
 
             logoGuess = new Image("frontend/img/Guess.jpeg", "guess");
             logoGuess.setWidth("200px");
             logoGuess.setHeight("200px");
 
-            HorizontalLayout horizontalLayout = new HorizontalLayout();
-            horizontalLayout.addClassName("horizontalLayoutStartGameUI");
-            if(isTeacher){
-                horizontalLayout.getStyle().set("top", "28%"); //valore precedente: 230px
-            }
+            paroleVotateContainer = createParoleVotateContainer();
+            add(paroleVotateContainer);
 
-            TextField suggertisci = new TextField();
-            Label label = new Label("Suggerisci una soluzione");
-            label.addClassName("labelSuggerisci");
-            if(isTeacher){
-                getStyle().set("width", "60%");
-                getStyle().set("height", "260px");
-                label.getStyle().set("top", "20%");
-                add(label);
-            }else{
-                getStyle().set("margin-top", NavBar.NAVBAR_HORIZONTAL_HEIGHT);
-                add(label, logoGuess);
-            }
-
-            Button sendParola = new Button("Suggerisci");
-            sendParola.addClickListener(buttonClickEvent -> {
-                String mess = suggertisci.getValue();
-                if (!mess.equals("")) {
-                    if(isTeacher){
-                        BroadcasterSuggerisci.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), suggertisci.getValue());
-                    }else {
-                        BroadcasterSuggerisci.broadcast(Utils.findGruppoByAccount(gruppi, account), suggertisci.getValue());
-                    }
-                    suggertisci.setValue("");
-                }
-            });
-
-            Label paroleVotate = new Label("Parole votate: ");
-            paroleVotate.addClassName("parolevotatelabel");
-            if(isTeacher){
-                paroleVotate.getStyle().set("top", "20%");
-            }
-            add(paroleVotate);
-
-            sendParola.getStyle().set("cursor", "pointer");
-            sendParola.setWidth(null);
-
-            horizontalLayout.add(suggertisci, sendParola);
-
-            for(Gruppo x : gruppi){
-                VerticalLayout vert = new VerticalLayout();
-                vert.getElement().setAttribute("name", x.getId());
-                vert.addClassName("suggerisciParolaLayout");
-                vert.getStyle().set("display", "none");
-                parolaLayoutList.add(vert);
-
-                VerticalLayout vert2 = new VerticalLayout();
-                vert2.getElement().setAttribute("name", x.getId());
-                vert2.addClassName("suggerisciParolaLayoutTeacher");
-                vert2.getStyle().set("display", "none");
-                parolaLayoutTeacherList.add(vert2);
-
-                horizontalLayout.add(vert, vert2);
-            }
-
-            add(horizontalLayout);
+            containerSuggerisciParolaMain = createContainerSuggerisciParola();
+            add(containerSuggerisciParolaMain);
         }
 
         catch (Exception e){
@@ -127,6 +79,82 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
             e.printStackTrace();
         }
 
+    }
+
+    private VerticalLayout createParoleVotateContainer(){
+        VerticalLayout mainVert = new VerticalLayout();
+        mainVert.setPadding(false);
+        mainVert.setWidth("400px");
+        if(isTeacher){
+            mainVert.addClassName("paroleVotateMainContainerVertTeacher");
+        }else{
+            mainVert.addClassName("paroleVotateMainContainerVert");
+        }
+
+        Label paroleVotate = new Label("Parole votate");
+        paroleVotate.addClassName("parolevotatelabel");
+        if(isTeacher){
+            paroleVotate.getStyle().set("top", "20%");
+        }
+        containerParoleVotateMain = new Div();
+        containerParoleVotateMain.getElement().setAttribute("id", "containerParoleVotateMain");
+        containerParoleVotateMain.setWidth("100%");
+        mainVert.add(paroleVotate, containerParoleVotateMain);
+        return mainVert;
+    }
+
+    private VerticalLayout createContainerSuggerisciParola(){
+        VerticalLayout mainVert = new VerticalLayout();
+        mainVert.setPadding(false);
+        if(isTeacher){
+            mainVert.addClassName("suggerisciParolaMainContainerVertTeacher");
+        }else{
+            mainVert.addClassName("suggerisciParolaMainContainerVert");
+        }
+        mainVert.setWidth("400px");
+
+        HorizontalLayout textFieldBtnContainer = new HorizontalLayout();
+        TextField suggertisci = new TextField();
+        Label label = new Label("Suggerisci una soluzione");
+        label.addClassName("labelSuggerisci");
+        Button sendParola = new Button("Suggerisci");
+        sendParola.addClickListener(buttonClickEvent -> {
+            String mess = suggertisci.getValue();
+            if (!mess.equals("")) {
+                if(isTeacher){
+                    BroadcasterSuggerisci.broadcast(Utils.findGruppoByName(gruppi, GuessUI.currentGroupSelect.getId()), suggertisci.getValue());
+                }else {
+                    BroadcasterSuggerisci.broadcast(Utils.findGruppoByAccount(gruppi, account), suggertisci.getValue());
+                }
+                suggertisci.setValue("");
+            }
+        });
+        sendParola.getStyle().set("cursor", "pointer");
+        sendParola.setWidth(null);
+
+        textFieldBtnContainer.add(suggertisci, sendParola);
+
+        paroleSuggeriteContainer = new VerticalLayout();
+        paroleSuggeriteContainer.setPadding(false);
+        paroleSuggeriteContainer.setSpacing(false);
+        for(Gruppo x : gruppi){
+            VerticalLayout vert = new VerticalLayout();
+            vert.getElement().setAttribute("name", x.getId());
+            vert.addClassName("suggerisciParolaLayout");
+            vert.getStyle().set("display", "none");
+            parolaLayoutList.add(vert);
+
+            VerticalLayout vert2 = new VerticalLayout();
+            vert2.getElement().setAttribute("name", x.getId());
+            vert2.addClassName("suggerisciParolaLayoutTeacher");
+            vert2.getStyle().set("display", "none");
+            parolaLayoutTeacherList.add(vert2);
+
+            paroleSuggeriteContainer.add(vert, vert2);
+        }
+
+        mainVert.add(label, textFieldBtnContainer, paroleSuggeriteContainer);
+        return mainVert;
     }
 
 
@@ -150,6 +178,7 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
             Icon icon = new Icon(VaadinIcon.PLUS);
             icon.setSize("24px");
+            icon.getStyle().set("left", "100px");
             Button button = new Button(icon);
             button.addClassName("btnPlus");
 
@@ -310,5 +339,11 @@ public class StartGameUI extends VerticalLayout implements SuggerisciListener{
 
         VerticalLayout vert = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", currentGroupId);
         vert.getStyle().set("display", "flex");
+    }
+
+    //getter and setter
+
+    public Div getContainerParoleVotateMain() {
+        return containerParoleVotateMain;
     }
 }

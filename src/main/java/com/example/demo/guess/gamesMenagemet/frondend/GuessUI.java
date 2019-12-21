@@ -33,6 +33,8 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.erik.TimerBar;
+
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -58,9 +60,9 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private Item item;
     private Guess guess;
     private GuessController guessController;
-    private Label secondi = new Label();
-    private Label indizio = new Label("Indizi: ");
-    private VerticalLayout verticalLayout = new VerticalLayout();
+    private HorizontalLayout secondiContainer;
+    private VerticalLayout indiziContainer;
+    private HorizontalLayout startGameUIContainer = new HorizontalLayout();
     private boolean isStarted = false;
     private boolean isTeacher = false;
     private EndGameEventBeanPublisher endGamePublisher;
@@ -76,13 +78,16 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private NavBar navBar;
     private Dialog chatContainerDialog;
     private ChatUI chatUI;
+    private TimerBar timerBar;
+    private Div containerParoleVotateMain = new Div(); //presente in StartGameUI
 
     public GuessUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
         try {
             //Inizializzazione
             setId("GuessUI");
-            getStyle().set("height", "100%");
+            setWidth("100%");
+            setHeight("100%");
             guess = new Guess();
             endGamePublisher = endGameEventBeanPublisher;
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfGuessUser();
@@ -154,6 +159,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 navBar = new NavBar(true);
                 navBar.addClassName("navBarHorizontal");
                 add(navBar);
+                addInfoBtnInNavBar();
                 addChatBtnInNavBar();
 
                 //mostra un dialog 'Attendere' per indicare il caricamento della pagina
@@ -180,9 +186,10 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 containersParoleVotate.add(d2);
             }
 
-            //Container nome utente e pulsante 'Info' su Guess
             if(!isTeacher) {
-                add(nameUserAndInfoBtnContainer());
+                Label nameGameTitle = new Label("Guess");
+                nameGameTitle.addClassName("nameGameTitle");
+                add(nameGameTitle);
             }
 
             start = new Button();
@@ -237,33 +244,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 start.click();
             }
         }
-    }
-
-    private HorizontalLayout nameUserAndInfoBtnContainer(){
-        HorizontalLayout hor1 = new HorizontalLayout();
-        hor1.setSpacing(false);
-        hor1.setPadding(false);
-        hor1.addClassName("nameUserAndInfoBtnContainer");
-
-        String str = "Benvenuta ";
-        if(account.getSesso().equals("0")){
-            str = "Benvenuto ";
-        }
-
-        Label nomeUser = new Label(str + account.getNome());
-        nomeUser.getStyle().set("font-size","40px");
-
-        Button b = new Button("Info su Guess");
-        b.addClassName("btnInfoGuess");
-
-        DialogUtility dialogUtility = new DialogUtility();
-        Dialog d = dialogUtility.descrizioneGiocoDialog(guess);
-        b.addClickListener(buttonClickEvent -> {
-            d.open();
-        });
-
-        hor1.add(nomeUser, b);
-        return hor1;
     }
 
     private void showSelectsFieldGruppiForTeacher(){
@@ -326,7 +306,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         infoBtn.getStyle().set("background-color", "#0000");
         infoBtn.getStyle().set("margin", "0");
         infoBtn.addClickListener(buttonClickEvent -> {
-            dialogUtility.descrizioneGiocoDialog(new Guess()).open();
+            Image logoGuess = new Image("frontend/img/Guess.jpeg", "guess");
+            dialogUtility.descrizioneGiocoDialog(new Guess(), logoGuess).open();
         });
 
         Icon chat = new Icon(VaadinIcon.CHAT);
@@ -357,14 +338,11 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     private void addChatBtnInNavBar(){
         HorizontalLayout chatContainer = new HorizontalLayout();
         chatContainer.getElement().setAttribute("id", "chatContainerNVGuessUI");
-        chatContainer.getStyle().set("position", "absolute");
-        chatContainer.getStyle().set("left", "80%");
 
         Icon chatIcon = new Icon(VaadinIcon.CHAT);
         chatIcon.setSize("30px");
         chatIcon.setColor("#007d99");
-        chatIcon.getStyle().set("margin-top", "6px");
-        chatIcon.getStyle().set("margin-right", "8px");
+        chatIcon.getStyle().set("margin-top", "3px");
 
         Button chatBtn = new Button("Chat");
         chatBtn.addClassName("buttonChatStyleNavBar");
@@ -374,6 +352,28 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
         chatContainer.add(chatIcon, chatBtn);
         navBar.getChatContainer().add(chatContainer);
+    }
+
+    private void addInfoBtnInNavBar(){
+        HorizontalLayout infoContainer = new HorizontalLayout();
+        infoContainer.getElement().setAttribute("id", "infoContainerNVGuessUI");
+
+        Icon infoIcon = new Icon(VaadinIcon.INFO_CIRCLE_O);
+        infoIcon.setSize("28px");
+        infoIcon.setColor("#007d99");
+        infoIcon.getStyle().set("margin-top", "3px");
+
+        Image logoGuess = new Image("frontend/img/Guess.jpeg", "guess");
+        DialogUtility dialogUtility = new DialogUtility();
+        Dialog d = dialogUtility.descrizioneGiocoDialog(guess, logoGuess);
+        Button infoBtn = new Button("Info");
+        infoBtn.addClassName("buttonInfoStyleNavBar");
+        infoBtn.addClickListener(buttonClickEvent -> {
+            d.open();
+        });
+
+        infoContainer.add(infoIcon, infoBtn);
+        navBar.getInfoGameContainer().add(infoContainer);
     }
 
     private Dialog createDialogWithChatContent(){
@@ -428,12 +428,43 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                         if(account.getTypeAccount().equals("student")){
                             attendiDialog.close();
                         }
+
+                        secondiContainer = new HorizontalLayout();
+                        secondiContainer.setWidth("100%");
+                        if(isTeacher){
+                            secondiContainer.addClassName("secondiContainerTeacher");
+                        }else{
+                            secondiContainer.addClassName("secondiContainer");
+                        }
+                        Label lab = new Label("Prossimo indizio tra: ");
+                        lab.getStyle().set("font-size","30px");
+                        lab.getStyle().set("margin-left","15px");
+                        timerBar = new TimerBar(30000);
+                        timerBar.getElement().getStyle().set("width", "200px");
+                        timerBar.getElement().getStyle().set("margin-top", "14px");
+                        secondiContainer.add(lab, timerBar);
+                        add(secondiContainer);
+
+                        indiziContainer = new VerticalLayout();
+                        indiziContainer.setPadding(false);
+                        indiziContainer.setWidth("100%");
+                        if(isTeacher){
+                            indiziContainer.addClassName("indiziContainerTeacher");
+                        }else{
+                            indiziContainer.addClassName("indiziContainer");
+                        }
+                        Label lab1 = new Label("Indizi");
+                        lab1.getStyle().set("font-size", "30px");
+                        lab1.getStyle().set("margin-left", "15px");
+                        indiziContainer.add(lab1);
+
+                        startGameUIContainer.add(indiziContainer);
+
                         //StartGameUI startGameUI = new StartGameUI(guessController, isTeacher, account);
-                        verticalLayout.add(startGameUI);
-                        indizio.getStyle().set("font-size", "30px");
-                        indizio.getStyle().set("margin-left", "15px");
-                        verticalLayout.add(secondi, indizio);
-                        add(verticalLayout);
+                        startGameUIContainer.add(startGameUI);
+                        add(startGameUIContainer);
+
+                        containerParoleVotateMain = startGameUI.getContainerParoleVotateMain();
                     });
                     flag = true;
                 }
@@ -452,23 +483,35 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void receiveIndizio(String message) {
+    public void receiveIndizio(int indexIndizio, String message) {
         getUI().get().access(() -> {
+            Div d = new Div();
+            d.addClassName("divContainerIndizio");
+            switch (indexIndizio){
+                case 0: d.getStyle().set("background-color", "#0C8BE8"); break;
+                case 1: d.getStyle().set("background-color", "#0CE859"); break;  //oppure #23BAFF
+                case 2: d.getStyle().set("background-color", "#4EEB00"); break;
+                case 3: d.getStyle().set("background-color", "#FF7E1A"); break;
+            }
+
             Paragraph paragraph = new Paragraph(message);
-            paragraph.getStyle().set("font-size","18px");
-            paragraph.getStyle().set("margin","5px 0px 0px 15px");
-            verticalLayout.add(paragraph);
+            paragraph.addClassName("pIndizio");
+            d.add(paragraph);
+
+            indiziContainer.add(d);
         });
     }
 
     @Override
-    public void countDown(String n) {
+    public void countDown(int time) {
         getUI().get().access(() -> {
-            secondi.setEnabled(false);
-            secondi.setText("Time: "+ n+" secondi");
-            secondi.getStyle().set("font-size","30px");
-            secondi.getStyle().set("margin-left","15px");
-            secondi.setEnabled(true);
+            if(time == 30){
+                timerBar.start();
+            }else if(time == 0){
+                timerBar.reset();
+                timerBar.start();
+            }
+
         });
     }
 
@@ -496,10 +539,12 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     Label label = new Label(s + " ha " + integer + a);
                     label.getElement().setAttribute("id", "parolaVotata");
                     MessageList messageList = new MessageList("message-list");
+                    messageList.addClassName("divMessageListParolaVotata");
                     messageList.add(label);
                     containerPV.add(messageList);
                     containerPV.getStyle().set("display", "block");
-                    add(containerPV);
+                    containerParoleVotateMain.add(containerPV);
+                    //add(containerPV);
                 }else{  //per gli account che non fanno parte del gruppo, containerPV rimane invisibile
                     containerPV.getStyle().set("display", "none");
                 }
@@ -525,7 +570,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 msgList.getElement().setAttribute("id", "PV" + gruppo.getId());
                 msgList.add(label);
                 containerPVTeacher.add(msgList);
-                add(containerPVTeacher);
+                containerParoleVotateMain.add(containerPVTeacher);
+                //add(containerPVTeacher);
             });
         });
     }

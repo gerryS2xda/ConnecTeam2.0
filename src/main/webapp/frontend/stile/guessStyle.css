@@ -6,6 +6,14 @@
     margin: 0;
 }
 
+.nameGameTitle{
+    font-size: 48px;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 60px;
+}
+
 /* GuessUI */
 .buttonUserGuess{
     color: black;
@@ -21,20 +29,16 @@
 }
 
 .containerParoleVotate{
-    position: absolute;
-    left: 300px;
-    top: 230px;
-    width: 300px;
-    height: 200px;
+    width: 400px;
+    height: 400px;
+    min-height: 250px;
     overflow-y: scroll;
 }
 
 .containerParoleVotateTeacher{
-    position: absolute;
-    left: 300px;
-    top: 30%;
-    width: 15%;
-    height: 150px;
+    width: 400px;
+    height: 400px;
+    min-height: 250px;
     overflow-y: scroll;
 }
 
@@ -78,55 +82,143 @@
     margin: 10px 0;
 }
 
+.indiziContainer{
+    align-items: center;
+    width: 100%;
+    min-width: 400px;
+    margin-top: 205px; /*valore precedente con timerbar: 160px */
+    margin-left: 60px;
+}
+
+.indiziContainerTeacher{
+    align-items: center;
+    width: 100%;
+    min-width: 300px;
+    margin-top: 205px; /*valore precedente con timerbar: 160px */
+    margin-left: 60px;
+}
+
+.divContainerIndizio{
+    padding: 10px;
+    width: 250px;
+    border-radius: 1rem;
+}
+
+.pIndizio{
+    width: 100%;
+    text-align: center;
+    color: white;
+    padding-left: 6px;
+    font-size: 16px;
+    padding-right: 6px;
+    word-break: break-word;
+}
+
 /* StartGameUI*/
-.horizontalLayoutStartGameUI{
-    position: absolute;
-    left: 550px;
-    top: 230px;   /*  valore precedente: 230px */
+.paroleVotateMainContainerVert{
+    width: 400px;
+    min-width: 400px;
+    margin-top: 205px;
+}
+
+.paroleVotateMainContainerVertTeacher{
+    width: 300px;
+    min-width: 300px;
+    margin-top: 205px;
+    margin-left: 30px;
+}
+
+.suggerisciParolaMainContainerVert{
+    width: 400px;
+    min-width: 400px;
+    margin-top: 205px;
+    align-items: center;
+}
+
+.suggerisciParolaMainContainerVertTeacher{
+    width: 350px;
+    min-width: 350px;
+    margin-top: 205px;
+    align-items: center;
+    margin-left: 30px;
 }
 
 .labelSuggerisci{
-    position: absolute;
-    left: 550px;
-    top: 180px; /* valore precedente: 150px */
-    font-size: 20px;
+    font-size: 30px; /*valore precedente: 20px */
+    width: 100%;
+    text-align: center;
 }
 
 .suggerisciParolaLayout{
-    width: 250px;
-    overflow-y: scroll;
-    position: absolute;
-    top: 60px;
-    left: 40px;
     background-color:transparent;
+    width: 100%;
+    align-items: center;
 }
 
 .suggerisciParolaLayoutTeacher{
-    width: 350px;
-    position: absolute;
-    top: 30px;
-    left: 40px;
     background-color:transparent;
     margin-left: 0;
     padding-left: 0;
-    overflow-y: scroll;
+    width: 100%;
+    align-items: center;
+}
+.divMessageListParolaVotata{
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
 }
 
 .parolevotatelabel{
-    font-size: 20px;
-    position: absolute;
-    left: 315px;
-    top: 180px;  /*  valore precedente: 150px */
+    width: 100%;
+    font-size: 30px;
+    text-align: center;
 }
 
 .labelParolaSuggerita{
     margin-top: 8px;
+    font-size: 18px;
 }
 
 .btnPlus{
+    width: 32px;
     background-color: #007d99;
-    border-radius: 30px 10px 30px 40px;
+    border-radius: 0.5rem;
     margin-left: 30px;
     cursor: pointer;
     color: white;
+}
+
+.paroleSuggeriteContainer{
+    width: 100%;
+    height: 350px;
+    min-height: 200px;
+    overflow-y: scroll;
+}
+
+.secondiContainer{
+    width: 100%;
+    position: absolute;
+    top: 140px;
+    left: 80px;
+}
+
+.secondiContainerTeacher{
+    width: 100%;
+    position: absolute;
+    top: 140px;
+    left: 300px;
+}
+
+.buttonInfoStyleNavBar{
+    background-color: transparent;
+    color: black;
+    padding: 0;
+    margin: 0;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.timeBarStyle{
+    width: 200px;
+    margin-top: 14px;
 }
