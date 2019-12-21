@@ -33,6 +33,11 @@ import java.util.Random;
 @StyleSheet("frontend://stile/style.css")
 public class DialogUtility extends VerticalLayout {
 
+    //static field
+    private static final String LOGO_GAME_SIZE = "100px";
+
+
+    //instance field
     private String control= "";
 
     public DialogUtility(){
@@ -336,12 +341,12 @@ public class DialogUtility extends VerticalLayout {
         d.open();
     }
 
-    public Dialog descrizioneGiocoDialog(Game game){
+    public Dialog descrizioneGiocoDialog(Game game, Image logoGame){
         Dialog d = new Dialog();
         d.setCloseOnEsc(false);
         d.setCloseOnOutsideClick(false);
         d.setWidth("640px");
-        d.setHeight("320px");
+        d.setHeight("100%"); //valore precedente: 320px
 
         VerticalLayout content = new VerticalLayout();
         content.setSpacing(false);
@@ -353,6 +358,11 @@ public class DialogUtility extends VerticalLayout {
         title.getStyle().set("font-size", "32px");
         title.getStyle().set("color", "black");
 
+        logoGame.setWidth(LOGO_GAME_SIZE);
+        logoGame.setHeight(LOGO_GAME_SIZE);
+        logoGame.getStyle().set("margin-top", "8px");
+        logoGame.getStyle().set("margin-left", "8px");
+
         Label descrizione = new Label();
         descrizione.setText(game.getDescrizioneLungaGioco());
         descrizione.getStyle().set("font-size", "16px");
@@ -362,11 +372,10 @@ public class DialogUtility extends VerticalLayout {
         cancelButton.getStyle().set("background-color", "#007d99");
         cancelButton.getStyle().set("cursor", "pointer");
         cancelButton.getStyle().set("color", "white");
-        cancelButton.getStyle().set("margin-top", "50px");
         cancelButton.addClickListener(buttonClickEvent -> {
             d.close();
         });
-        content.add(title, descrizione, cancelButton);
+        content.add(title, logoGame, descrizione, cancelButton);
 
         d.add(content);
         return d;
