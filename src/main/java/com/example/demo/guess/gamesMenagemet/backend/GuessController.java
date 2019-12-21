@@ -114,21 +114,20 @@ public class GuessController {
             timer = new Timer();
             i=0;
             String indizio = item.getIndizio(i);
-            BroadcasterGuess.riceveIndizio(indizio);
+            BroadcasterGuess.riceveIndizio(i, indizio);
             i++;
             totTime = 30;
             timer.scheduleAtFixedRate(new TimerTask() {
                 public void run() {
-                    String time = String.format("%02d", totTime % 60);
-                    BroadcasterGuess.countDown(time);
+                    BroadcasterGuess.countDown(totTime);
                     if (totTime == 0 && i<3) {
                         String indizio = item.getIndizio(i);
-                        BroadcasterGuess.riceveIndizio(indizio);
+                        BroadcasterGuess.riceveIndizio(i, indizio);
                         totTime=30;
                         i++;
                     }else if(i==3 && totTime==0){
                         String indizio = item.getIndizio(i);
-                        BroadcasterGuess.riceveIndizio(indizio);
+                        BroadcasterGuess.riceveIndizio(i, indizio);
                         totTime=30;
                         i++;
                     }
