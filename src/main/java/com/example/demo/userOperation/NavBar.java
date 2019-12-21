@@ -32,6 +32,7 @@ public class NavBar extends HorizontalLayout {
     private HorizontalLayout homeContainerWithBtn;
     private HorizontalLayout settingsContainer;
     private HorizontalLayout statisticsContainer;
+    private HorizontalLayout infoGameContainer;
     private HorizontalLayout chatContainer; //verra' settato in GuessUI/MatyUI
     private HorizontalLayout logOutContainer;
     private boolean isGamePage;
@@ -64,9 +65,11 @@ public class NavBar extends HorizontalLayout {
         UI.getCurrent().getPage().addStyleSheet(
                 "base://" + resource.getResourceUri().toString());
 
+        chatContainer = new HorizontalLayout();
+        infoGameContainer = new HorizontalLayout();
+
         if(isGamePage){
-            chatContainer = new HorizontalLayout();
-            main.add(homeContainerWithBtn(), chatContainer, logOutContainer());
+            main.add(homeContainerWithBtn(), infoGameContainer, chatContainer, logOutContainer());
         }else{
             main.add(homeContainer(), settingsContainer(), statisticsContainer(), logOutContainer());  //aggingi i div alla nav bar
         }
@@ -173,47 +176,22 @@ public class NavBar extends HorizontalLayout {
         return chatContainer;
     }
 
-    public void setChatContainer(HorizontalLayout chatContainer) {
-        this.chatContainer = chatContainer;
+    public HorizontalLayout getInfoGameContainer() {
+        return infoGameContainer;
     }
 
     //Responsive methods
     private void loadResponsiveConfiguration(int widthBrowser, int heightBrowser){
 
-        if(widthBrowser <= 1400){
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "75%");
-        }else{
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "80%");
-        }
-
         if(widthBrowser <= 1000){
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "65%");
             logOutContainer.getStyle().set("left", "80%");
         }else{
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "75%");
             logOutContainer.getStyle().set("position","absolute");
             logOutContainer.getStyle().set("left","88%");
             return;
         }
 
-        if(widthBrowser <= 800){
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "60%");
-        }else{
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "65%");
-        }
-
-        if(isGamePage && widthBrowser <= 650){
-            chatContainer.getStyle().set("position", "absolute");
-            chatContainer.getStyle().set("left", "100px");
-            logOutContainer.getStyle().set("left", "250px");
-            return;
-        }else if(widthBrowser <= 650){
+        if(widthBrowser <= 650){
             logOutContainer.getStyle().set("position", "initial");
         }else{
             logOutContainer.getStyle().set("position","absolute");
