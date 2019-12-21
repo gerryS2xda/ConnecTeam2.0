@@ -55,20 +55,20 @@ public class BroadcasterGuess implements Serializable {
         });
     }
 
-    public static synchronized void riceveIndizio( final String message) {
+    public static synchronized void riceveIndizio(int indexIndizio, String message) {
         System.out.println("Indizio nel broadcaster: "+ message);
         indiziRicevuti++;
         listeners.forEach((aLong, broadcastListener) -> {
             executor.execute(()-> {
-                broadcastListener.receiveIndizio(message);
+                broadcastListener.receiveIndizio(indexIndizio, message);
             });
         });
     }
 
-    public static synchronized void countDown(String n){
+    public static synchronized void countDown(int time){
         listeners.forEach((aLong, broadcastListener) -> {
             executor.execute(()-> {
-                broadcastListener.countDown(n);
+                broadcastListener.countDown(time);
             });
         });
     }

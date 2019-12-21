@@ -5,8 +5,8 @@ import com.vaadin.flow.component.UI;
 
 public interface BroadcastListener {
     void startGame1(UI ui);
-    void receiveIndizio(String message);
-    void countDown(String n);
+    void receiveIndizio(int indexIndizio, String message);
+    void countDown(int time);
     void parolaVotata(Gruppo g);
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();
