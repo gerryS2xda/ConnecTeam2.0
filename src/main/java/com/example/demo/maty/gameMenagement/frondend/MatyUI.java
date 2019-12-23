@@ -39,8 +39,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.erik.TimerBar;
-
-import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,7 +70,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private ItemMaty item;
     private boolean isStarted = false;
     private boolean isTeacher = false;
-    private Label labelQuesito = new Label();
+    private Label labelQuesito;
     private EndGameEventBeanPublisher endGamePublisher;
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
     private int maxNumeroStutentiConnessi = 0;
@@ -164,6 +162,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 //mostra la navBar orizzontale se e' stutente
                 navBar = new NavBar(true);
                 navBar.addClassName("navBarHorizontal");
+                navBar.getElement().getStyle().set("height", "70px");
                 add(navBar);
                 addChatBtnInNavBar();
             }
@@ -177,6 +176,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             //Init main container
             mainUIGame = new VerticalLayout();
             mainUIGame.setPadding(false);
+            mainUIGame.addClassName("mainUIGameVL");
             add(mainUIGame);
 
             //Chat container
@@ -375,8 +375,8 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             Div containerBox = Utils.getDivFromListByAttribute(startGameMatyUI.getContainersBoxTeacher(), "name", groupId);
             containerBox.getStyle().set("display", "block");
 
-            VerticalLayout parolaLayout = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getnumeroInseritoVLTeacherList(), "name", groupId);
-            parolaLayout.getStyle().set("display", "flex");
+            VerticalLayout numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getNumeroInseritoVLTeacherList(), "name", groupId);
+            numeroInseritoVL.getStyle().set("display", "flex");
 
             VerticalLayout cronologiaNumeri = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getCronologiaNUmeriTeacherList(), "name", groupId);
             cronologiaNumeri.getStyle().set("display", "flex");
@@ -421,6 +421,8 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                             attendiDialog.close();
                         }
                         //Quesito da mostrare
+                        labelQuesito = new Label();
+                        labelQuesito.addClassName("labelQuesito");
                         mainUIGame.add(labelQuesito);
 
                         //Tempo
@@ -520,20 +522,14 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     @Override
     public void numeroDaSotrarre(String numero,String numOriginzle) {
         getUI().get().access(() -> {
-            //remove(labelQuesito);
             labelQuesito.setText("Raggiungi "+numOriginzle+" sottraendo " +BroadcasterMaty.getListeners().size()+" sottraendi a "+numero +"!");
-            labelQuesito.addClassName("labelQuesitoSottrazione");
-            //add(labelQuesito);
         });
     }
 
     @Override
     public void numeroDaSommare(String numOriginzle) {
         getUI().get().access(() -> {
-            //remove(labelNum);
             labelQuesito.setText("Raggiungi "+numOriginzle+" sommando " +BroadcasterMaty.getListeners().size()+" addendi!");
-            labelQuesito.addClassName("labelQuesitoAddizione");
-            //add(labelQuesito);
         });
     }
 
