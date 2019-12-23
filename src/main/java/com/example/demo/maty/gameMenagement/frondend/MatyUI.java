@@ -38,6 +38,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.erik.TimerBar;
+
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -64,19 +66,14 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private AccountRepository accountRepository;
     private Account account;
     private MatyController matyController;
-    private Label secondi = new Label();
-    private VerticalLayout verticalLayout = new VerticalLayout();
-    private Div box = new Div();
-    private Div wrapper = new Div();
     private Maty maty;
     private PartitaRepository partitaRepository;
     private Partita partita;
     private MatyController.PartitaThread partitaThread;
     private ItemMaty item;
     private boolean isStarted = false;
-    private HorizontalLayout containerAddendi= new HorizontalLayout();
     private boolean isTeacher = false;
-    private Label labelNum = new Label();
+    private Label labelQuesito = new Label();
     private EndGameEventBeanPublisher endGamePublisher;
     //Numero di utenti connessi al momento in cui il teacher da' il via alla partita
     private int maxNumeroStutentiConnessi = 0;
@@ -89,6 +86,11 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private NavBar navBar;
     private Dialog chatContainerDialog;
     private ChatUI chatUI;
+    //Nuove variabili
+    private VerticalLayout mainUIGame;
+    private HorizontalLayout secondiContainer;
+    private TimerBar timerBar;
+    private VerticalLayout aiutoContainer;
 
 
     public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
@@ -106,9 +108,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             currentGroupSelect.setId("Gruppo 1"); //per default viene selezionato il 'Gruppo 1'
 
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //accedi al <body> element
-
-            containerAddendi.addClassName("containerAddendi");
-
+            
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
                 account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
@@ -165,18 +165,20 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 addChatBtnInNavBar();
             }
 
+            if(!isTeacher) {
+                Label nameGameTitle = new Label("Maty");
+                nameGameTitle.addClassName("nameGameTitle");
+                add(nameGameTitle);
+            }
+
+            //Init main container
+            mainUIGame = new VerticalLayout();
+            mainUIGame.setPadding(false);
+            add(mainUIGame);
+
             //Chat container
             chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
             chatContainerDialog = createDialogWithChatContent();
-
-            box.addClassName("box");
-
-            //Container nome utente e pulsante 'Info' su Maty
-            if(!isTeacher) {
-                add(nameUserAndInfoBtnContainer());
-            }else{
-                showSelectsFieldGruppiForTeacher();
-            }
 
             //Implementazione di un pulsante invisibile 'start' che verra' 'cliccato' dal teacher
             start = new Button();
@@ -415,10 +417,30 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                         if(account.getTypeAccount().equals("student")){
                             attendiDialog.close();
                         }
+                        //Quesito da mostrare
+                        mainUIGame.add(labelQuesito);
+
+                        //Tempo
+                        secondiContainer = new HorizontalLayout();
+                        secondiContainer.setWidth("100%");
+                        Label lab = new Label("Tempo: ");
+                        lab.getStyle().set("font-size","30px");
+                        lab.getStyle().set("margin-left","15px");
+                        timerBar = new TimerBar(300000); //5 minuti
+                        timerBar.getElement().getStyle().set("width", "200px");
+                        timerBar.getElement().getStyle().set("margin-top", "14px");
+                        secondiContainer.add(lab, timerBar);
+                        mainUIGame.add(secondiContainer);
+
+                        //Aiuto container
+                        aiutoContainer = new VerticalLayout();
+                        aiutoContainer.getStyle().set("display", "none"); //all'inizio non viene reso visibile
+                        mainUIGame.add(aiutoContainer);
+
+                        //StartGameMatyUI: HorizontalLayout container
                         startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
-                        verticalLayout.add(startGameMatyUI);
-                        verticalLayout.add(secondi);
-                        add(verticalLayout);
+                        mainUIGame.add(startGameMatyUI);
+
                     });
                     flag = true;
                 }
@@ -434,70 +456,25 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     public void receiveIndizio(String message) {
         getUI().get().access(() -> {
             if(BroadcasterMaty.getContClick().size() == 5){
-                Label label = new Label("Aiuti:");
-                verticalLayout.add(label);
-                label.getStyle().set("font-size","40px");
-                label.getStyle().set("margin-left","15px");
+                Label aiutolabel = new Label("Suggerimento:");
+                aiutolabel.addClassName("aiutiLabelStyle");
+                aiutoContainer.getStyle().set("display", "flex");
+                aiutoContainer.add(aiutolabel);
             }
-            Paragraph paragraph = new Paragraph(message);
-            paragraph.getStyle().set("font-size","18px");
-            paragraph.getStyle().set("margin","5px 0px 0px 15px");
-            verticalLayout.add(paragraph);
+            Paragraph aiutop = new Paragraph(message);
+            aiutop.addClassName("aiutoParagraph");
+            aiutoContainer.add(aiutop);
         });
     }
 
     @Override
-    public void countDown(String n) {
+    public void countDown(int time) {
         getUI().get().access(() -> {
-            secondi.setEnabled(false);
-            secondi.setText("Tempo: "+ n+" minuti");
-            secondi.getStyle().set("font-size","30px");
-            secondi.getStyle().set("margin-left","15px");
-            secondi.setEnabled(true);
+            if(time == 300){
+                timerBar.start();
+            }
         });
     }
-
-    @Override
-    public void numeroInserito(String operazione) {
-        getUI().get().access(() -> {
-            int j;
-            if (operazione.equals("somma")){
-                j=0;
-            }else {
-                j =1;
-            }
-            for (int  i=j; i<BroadcasterMaty.getIntegers().size(); i++) {
-
-                box.removeAll();
-                wrapper.removeAll();
-
-                Div circle = new Div();
-                circle.addClassName("circle");
-                circle.setId("colorpad1");
-                Paragraph paragraph = new Paragraph();
-                paragraph.addClassName("parag1");
-                Span span = new Span(""+BroadcasterMaty.getIntegers().get(i));
-                paragraph.add(span);
-                circle.add(paragraph);
-                box.add(circle);
-                add(box);
-
-                Div d = new Div();
-                d.setWidth(null);
-                Paragraph p = new Paragraph(""+BroadcasterMaty.getIntegers().get(i));
-                p.addClassName("parag2");
-                d.addClassName("paer");
-                d.setId("colorpad");
-                d.add(p);
-
-                wrapper.add(d);
-                wrapper.addClassName("box1");
-                add(wrapper);
-                getElement().executeJs("setRandomColor()");
-            }
-
-        });
-    }//non usato
 
     @Override
     public void partititaVincente(String parola, int punteggio) {
@@ -538,20 +515,20 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     @Override
     public void numeroDaSotrarre(String numero,String numOriginzle) {
         getUI().get().access(() -> {
-            remove(labelNum);
-            labelNum.setText("Raggiungi "+numOriginzle+" sottraendo " +BroadcasterMaty.getListeners().size()+" sottraendi a "+numero +"!.");
-            labelNum.addClassName("labelNumSottrarre");
-            add(labelNum);
+            //remove(labelQuesito);
+            labelQuesito.setText("Raggiungi "+numOriginzle+" sottraendo " +BroadcasterMaty.getListeners().size()+" sottraendi a "+numero +"!");
+            labelQuesito.addClassName("labelQuesitoSottrazione");
+            //add(labelQuesito);
         });
     }
 
     @Override
     public void numeroDaSommare(String numOriginzle) {
         getUI().get().access(() -> {
-            remove(labelNum);
-            labelNum.setText("Raggiungi "+numOriginzle+" sommando " +BroadcasterMaty.getListeners().size()+" addendi!.");
-            labelNum.addClassName("labelNumSottrarre");
-            add(labelNum);
+            //remove(labelNum);
+            labelQuesito.setText("Raggiungi "+numOriginzle+" sommando " +BroadcasterMaty.getListeners().size()+" addendi!");
+            labelQuesito.addClassName("labelQuesitoAddizione");
+            //add(labelQuesito);
         });
     }
 
