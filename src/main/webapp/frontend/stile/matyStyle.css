@@ -1,7 +1,8 @@
 /* Style presente anche nel file 'style.css' */
 /* MatyUI */
 .navBarHorizontal{
-    position: absolute;
+    width: 100%;
+    height: 70px;
     margin: 0;
 }
 
@@ -13,47 +14,24 @@
 
 
 /* StartGameMatyUI Style */
-.labelSuggerisci{
-    position: absolute;
-    left: 550px;
-    top: 180px; /* valore precedente: 150px */
-    font-size: 20px;
+.labelOperazione{
+    font-size: 24px; /* valore precedente: 30px */
 }
 
-.suggerisciParolaLayout{
-    overflow-y: scroll;
-    position: absolute;
-    top: 60px;
-    left: 40px;
+.numeroInseritoVL{
     background-color:transparent;
 }
 
-.suggerisciParolaLayoutTeacher{
-    overflow-y: scroll;
-    position: absolute;
-    top: 60px;
-    left: 40px;
+.numeroInseritoVLTeacher{
     background-color:transparent;
 }
 
-.horizontalLayoutStartGameUI{
-    position: absolute;
-    left: 550px;
-    top: 230px;   /*  valore precedente: 230px */
-}
-
-.parolevotatelabel{
-    font-size: 20px;
-    position: absolute;
-    left: 315px;
-    top: 180px;  /*  valore precedente: 150px */
-}
-
-.labelNumSottrarre{
-    position: absolute;
-    top: 120px;   /*  valore precedente: 120px */
-    left: 315px;
+.numeroInseritolabel{
     font-size: 24px;
+}
+
+.labelQuesito{
+    font-size: 26px;
 }
 
 .containerAddendi{
@@ -84,33 +62,18 @@
 
 .cronologiaNumeri{
     width: 100%;
-    height: 180px; /* valore precedente: 300px */
-    overflow-y: scroll;
-    overflow-x: scroll;
-    position: absolute;
-    top: 190px;
-    left: -55px;
     background-color: transparent;
     margin-top: 10px;
 }
 
 .cronologiaNumeriTeacher{
     width: 100%;
-    height: 180px; /* valore precedente: 300px */
-    overflow-y: scroll;
-    overflow-x: scroll;
-    position: absolute;
-    top: 190px;
-    left: -55px;
     background-color: transparent;
     margin-top: 10px;
 }
 
 .cronologiaMosse{
-    font-size: 25px;
-    position: absolute;
-    top: 150px;
-    left: -70px;
+    font-size: 24px;
 }
 
 .labelCronologia{
@@ -123,4 +86,40 @@
     font-size: 16px;
     text-align: center;
     outline: none;
+}
+
+/* New style for Maty */
+.mainUIGameVL{
+    margin-left: 64px;
+}
+
+.mainUIGameVLTeacher{
+    margin-left: 64px;
+    margin-top: 70px;
+}
+
+.nameGameTitle{
+    font-size: 48px;
+    width: 100%;
+    text-align: center;
+    margin-top: 0;
+}
+
+.aiutiLabelStyle{
+    font-size: 24px;
+}
+
+.aiutoParagraph{
+    font-size: 18px;
+    margin: 5px 0 0 15px;
+}
+
+.interactionContainerStyle{
+    width: 400px;
+    min-width: 400px;
+    align-items: center;
+}
+
+.eliminaBtnStyle{
+    align-self: center;
 }
