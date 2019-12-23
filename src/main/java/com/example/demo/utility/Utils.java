@@ -1,7 +1,9 @@
 package com.example.demo.utility;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.CronologiaNumeri;
 import com.example.demo.entity.Gruppo;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -110,6 +112,19 @@ public class Utils {
         }
 
         return d;
+    }
+
+    public static Grid<CronologiaNumeri> getGridCronologiaNumeriFromListByAttribute(List<Grid<CronologiaNumeri>> gridList, String attr, String value){
+        Grid<CronologiaNumeri> grid = new Grid<>(CronologiaNumeri.class);
+
+        for(Grid<CronologiaNumeri> x : gridList){
+            if(x.getElement().getAttribute(attr).equals(value)){
+                grid = x;
+                break;
+            }
+        }
+
+        return grid;
     }
 
     //Altri metodi
