@@ -123,28 +123,10 @@ public class MatyController {
         @Override
         public void run() {
             timer = new Timer();
-            i=0;
-            String indizio = item.getIndizio(i);
-            //BroadcasterMaty.riceveIndizio(indizio);
-            i++;
             totTime = 300;
-
             timer.scheduleAtFixedRate(new TimerTask() {
                 public void run() {
-                    String time = String.format("%02d:%02d", totTime / 60, totTime % 60);
-                    System.out.println(time);
-                    BroadcasterMaty.countDown(time);
-                    /*if (totTime == 0 && i<3) {
-                        String indizio = item.getIndizio(i);
-                        //BroadcasterMaty.riceveIndizio(indizio);
-                        totTime=10;
-                        i++;
-                    }else if(i==3 && totTime==0){
-                        String indizio = item.getIndizio(i);
-                        //BroadcasterMaty.riceveIndizio(indizio);
-                        totTime=10;
-                        i++;
-                    }*/
+                    BroadcasterMaty.countDown(totTime);
                     totTime--;
                     if (totTime < 0) {
                         timer.cancel();
