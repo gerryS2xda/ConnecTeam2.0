@@ -50,7 +50,6 @@ import java.util.List;
 @Route("maty")
 @HtmlImport("chat.html")
 @StyleSheet("frontend://stile/stile.css")
-//@StyleSheet("frontend://stile/style.css")
 @StyleSheet("frontend://stile/chat.css")
 @StyleSheet("frontend://stile/divbox.css")
 @StyleSheet("frontend://stile/animation.css")
@@ -96,9 +95,13 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
         try {
-            //Inizializzazione
+            //Inizializzazione UI
             setId("MatyUI");
-            getStyle().set("height", "100%");
+            setWidth("100%");
+            setHeight("100%");
+            setPadding(false);
+
+            //Inizializzazione field
             maty = new Maty();
             endGamePublisher = endGameEventBeanPublisher;
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfMatyUser();
@@ -108,7 +111,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             currentGroupSelect.setId("Gruppo 1"); //per default viene selezionato il 'Gruppo 1'
 
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //accedi al <body> element
-            
+
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
                 account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
@@ -427,7 +430,8 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                         lab.getStyle().set("font-size","30px");
                         lab.getStyle().set("margin-left","15px");
                         timerBar = new TimerBar(300000); //5 minuti
-                        timerBar.getElement().getStyle().set("width", "200px");
+                        timerBar.getElement().getStyle().set("width", "100%");
+                        timerBar.getElement().getStyle().set("min-width", "50%");   //valore minimo precedente: 500px
                         timerBar.getElement().getStyle().set("margin-top", "14px");
                         secondiContainer.add(lab, timerBar);
                         mainUIGame.add(secondiContainer);
@@ -435,6 +439,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                         //Aiuto container
                         aiutoContainer = new VerticalLayout();
                         aiutoContainer.getStyle().set("display", "none"); //all'inizio non viene reso visibile
+                        aiutoContainer.setPadding(false);
                         mainUIGame.add(aiutoContainer);
 
                         //StartGameMatyUI: HorizontalLayout container
