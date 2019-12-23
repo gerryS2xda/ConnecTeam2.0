@@ -85,7 +85,7 @@ public class BroadcasterMaty implements Serializable {
         });
     }
 
-    public static synchronized void countDown(String time){
+    public static synchronized void countDown(int time){
         listeners.forEach((aLong, broadcastListener) -> {
             executor.execute(()-> {
                 broadcastListener.countDown(time);

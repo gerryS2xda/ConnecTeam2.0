@@ -7,7 +7,7 @@ import com.vaadin.flow.component.UI;
 public interface BroadcastListenerMaty{
     void startGame1();
     void receiveIndizio(String message);
-    void countDown(String n);
+    void countDown(int time);
     void numeroInserito(String operazione);
     void partititaVincente(String parola,int punteggio);
     void partititanonVincente();
