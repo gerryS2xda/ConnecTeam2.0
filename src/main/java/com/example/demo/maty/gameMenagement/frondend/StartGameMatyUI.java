@@ -36,30 +36,26 @@ import java.util.List;
 @JavaScript("frontend://js/script.js")
 public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListenerMaty {
 
-    //private VerticalLayout parolaLayout;
-    //private VerticalLayout cronologiaNUmeri;
-    private Button button;
     private MatyController matyController;
     private boolean vincente;
     private boolean flag = false;
     private Label operazioneLabel = new Label();
-    private Label paroleVotateLabel;
-    private Button sendParola = new Button();
+    private Label numeroInseritoLabel;
+    private Button sendNumeroBtn = new Button();
     private Account account;
-    private Div containerNumeriSS = new Div(); //-> RIMUOVERE PER NON UTILIZZO
     //private Div box = new Div();    //container per il numero inserito (biglia con numero all'interno e si trova sotto "Il tuo numero e':")
     //private Div wrapper = new Div();    //<div class='box1'> contiene html dedicato per la pallina che si muove sullo schermo
     private Label cronologiaMosse;
     private TextField suggerisci;
     private boolean isTeacher;
-    private VerticalLayout paroleLayoutContainer;
+    private VerticalLayout numeroInseritoWithEliminaBtnContainer;
     private VerticalLayout cronologiaNumeriContainer;
     private List<Gruppo> gruppi = new ArrayList<Gruppo>();
-    private ArrayList<Div> containersBox;
+    private ArrayList<Div> containersBox; //container per il numero inserito (biglia con numero all'interno e si trova sotto "Il tuo numero e':")
     private ArrayList<Div> containersBoxTeacher;
-    private ArrayList<Div> containersWrapper;
-    private ArrayList<VerticalLayout> parolaLayoutList;
-    private ArrayList<VerticalLayout> parolaLayoutTeacherList;
+    private ArrayList<Div> containersWrapper; //<div class='box1'> contiene html dedicato per la pallina che si muove sullo schermo
+    private ArrayList<VerticalLayout> numeroInseritoVLList;  //corrisponde a 'parolaLayout' visto in Guess
+    private ArrayList<VerticalLayout> numeroInseritoVLTeacherList;
     private ArrayList<VerticalLayout> cronologiaNUmeriList;
     private ArrayList<VerticalLayout> cronologiaNUmeriTeacherList;
 
@@ -75,8 +71,8 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             containersBox = new ArrayList<Div>();
             containersBoxTeacher = new ArrayList<Div>();
             containersWrapper = new ArrayList<Div>();
-            parolaLayoutList = new ArrayList<VerticalLayout>();
-            parolaLayoutTeacherList = new ArrayList<VerticalLayout>();
+            numeroInseritoVLList = new ArrayList<VerticalLayout>();
+            numeroInseritoVLTeacherList = new ArrayList<VerticalLayout>();
             cronologiaNUmeriList = new ArrayList<VerticalLayout>();
             cronologiaNUmeriTeacherList = new ArrayList<VerticalLayout>();
 
@@ -86,7 +82,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                 getStyle().set("height", "280px"); //necessario per visualizzare la label 'Tempo' nella posizione corretta
             }
 
-            containerNumeriSS.addClassName("containerNumeriSS");
             //box.addClassName("box");
 
             Image image = new Image("frontend/img/Maty.jpeg", "maty");
@@ -129,28 +124,25 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             Div divC = new Div();
             divC.addClassName("container11");
-            sendParola.setId("btn");
-            sendParola.addClassName("button12");
-            divC.add(sendParola);
-            sendNumeroInserito(); //business logic of sendParola click listener
+            sendNumeroBtn.setId("btn");
+            sendNumeroBtn.addClassName("button12");
+            divC.add(sendNumeroBtn);
+            sendNumeroInserito(); //business logic of sendNumeroBtn click listener
 
-            paroleVotateLabel = new Label();
-            paroleVotateLabel.addClassName("parolevotatelabel");
-            add(paroleVotateLabel);
-            sendParola.getStyle().set("cursor", "pointer");
-            sendParola.setWidth(null);
-            //parolaLayout.addClassName("suggerisciParolaLayout");
-
-            //parolaLayout.setWidth("250px");
+            numeroInseritoLabel = new Label();
+            numeroInseritoLabel.addClassName("numeroInseritolabel");
+            add(numeroInseritoLabel);
+            sendNumeroBtn.getStyle().set("cursor", "pointer");
+            sendNumeroBtn.setWidth(null);
 
             horizontalLayout.add(suggerisci, divC);
 
             setOperazione();
 
 
-            paroleLayoutContainer = new VerticalLayout();
-            paroleLayoutContainer.setSpacing(false);
-            paroleLayoutContainer.setPadding(false);
+            numeroInseritoWithEliminaBtnContainer = new VerticalLayout();
+            numeroInseritoWithEliminaBtnContainer.setSpacing(false);
+            numeroInseritoWithEliminaBtnContainer.setPadding(false);
 
             VerticalLayout cronologiaContainer = new VerticalLayout();
             cronologiaContainer.setSpacing(false);
@@ -164,7 +156,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             cronologiaContainer.add(cronologiaMosse, cronologiaNumeriContainer);
 
-            horizontalLayout.add(paroleLayoutContainer, cronologiaContainer);
+            horizontalLayout.add(numeroInseritoWithEliminaBtnContainer, cronologiaContainer);
 
             initArrayListsAndAddToMainContent(); //ArrayList usati per implementare la gestione dei gruppi, un container per ogni gruppo
 
@@ -202,17 +194,19 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             //VerticalLayout ParolaLayout
             VerticalLayout vert = new VerticalLayout();
             vert.getElement().setAttribute("name", x.getId());
-            vert.addClassName("suggerisciParolaLayout");
+            vert.addClassName("numeroInseritoVL");
             vert.setWidth("250px");
             vert.getStyle().set("display", "none");
-            parolaLayoutList.add(vert);
+            numeroInseritoVLList.add(vert);
+            numeroInseritoWithEliminaBtnContainer.add(vert);
 
             VerticalLayout vert2 = new VerticalLayout();
             vert2.getElement().setAttribute("id", "teacher");
             vert2.getElement().setAttribute("name", x.getId());
-            vert2.addClassName("suggerisciParolaLayoutTeacher");
+            vert2.addClassName("numeroInseritoVLTeacher");
             vert2.getStyle().set("display", "none");
-            parolaLayoutTeacherList.add(vert2);
+            numeroInseritoVLTeacherList.add(vert2);
+            numeroInseritoWithEliminaBtnContainer.add(vert2);
 
             //VerticalLayout 'cronologiaNumeri
             VerticalLayout vert3 = new VerticalLayout();
@@ -282,12 +276,12 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                 String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
                 if (operazione.equalsIgnoreCase("somma")) {
                     operazioneLabel.setText("Somma un numero");
-                    paroleVotateLabel.setText("Il tuo numero è: ");
-                    sendParola.setText("Somma");
+                    numeroInseritoLabel.setText("Il tuo numero è: ");
+                    sendNumeroBtn.setText("Somma");
                 } else {
                     operazioneLabel.setText("Sottrai un numero");
-                    paroleVotateLabel.setText("Il tuo numero è: ");
-                    sendParola.setText("Sottrai");
+                    numeroInseritoLabel.setText("Il tuo numero è: ");
+                    sendNumeroBtn.setText("Sottrai");
                 }
             } catch (Exception e) {
                 //e.printStackTrace();  -> NullPointerException con ItemMaty
@@ -330,26 +324,20 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         }
     }
 
-    private void deleteButtonStyle() {
-        button.getStyle().set("margin-left", "30px");
-        button.getStyle().set("cursor", "pointer");
-        button.getStyle().set("color", "white");
-    }
-
     //Send button: funzionamento di tutto il gioco quando viene premuto il pulsante 'Somma / Sottrai'
     private void sendNumeroInserito(){
-        sendParola.addClickListener(buttonClickEvent -> {
+        sendNumeroBtn.addClickListener(buttonClickEvent -> {
             Gruppo gruppo; //gruppo da cui parte l'azione
-            VerticalLayout parolaLayout;
+            VerticalLayout numeroInseritoVL;
             if(isTeacher){
                 gruppo = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
-                parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
             }else{
                 gruppo = Utils.findGruppoByAccount(gruppi, account);
-                parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutList, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
             }
 
-            parolaLayout.removeAll();
+            numeroInseritoVL.removeAll();
             getElement().executeJs("sends()");
             String mess = suggerisci.getValue();
             if (!mess.equals(BroadcasterMaty.getItems().get(0).getParola())) {
@@ -396,7 +384,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
         /*----INIZIO------------------------------------------------------------------------------------------------------------------------------------*/
         int j;
-        containerNumeriSS.removeAll();
         if (operazione.equals("somma")) {
             j = 0;
         } else {
@@ -452,24 +439,24 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         Div div = new Div();
         Label label = new Label(mess);
         label.getStyle().set("margin-right", "15px");
-        button = new Button("Elimina ", VaadinIcon.MINUS.create());
-        button.setId("button");
-        button.addClickListener(buttonClickEvent1 -> {
+        Button eliminaBtn = new Button("Elimina ", VaadinIcon.MINUS.create());
+        eliminaBtn.setId("eliminaBtn");
+        eliminaBtn.addClickListener(buttonClickEvent1 -> {
             //Inizializzazione container da usare in base al gruppo
             Div box1;
             Div wrapper1;
-            VerticalLayout parolaLayout;
+            VerticalLayout numeroInseritoVL;
             if(!isTeacher){
                 box1 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
                 wrapper1 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
-                parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutList, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
             }else{
                 box1 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
                 wrapper1 = new Div();
-                parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
             }
 
-            parolaLayout.removeAll();
+            numeroInseritoVL.removeAll();
             if(isTeacher) {
                 BroadcasterSuggerisciMaty.broadcast(mess, operazione, "Teacher", false, gruppo);
             }else{
@@ -478,8 +465,8 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             box1.removeAll();
             wrapper1.removeAll();
-            button.setEnabled(false);
-            sendParola.setEnabled(true);
+            eliminaBtn.setEnabled(false);
+            sendNumeroBtn.setEnabled(true);
             int num = Integer.parseInt(mess);
             if (operazione.equals("somma")) {
                 BroadcasterMaty.addIntegers(
@@ -517,25 +504,25 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
         });
         //deleteButtonStyle();
-        div.add(label, button);
+        div.add(label, eliminaBtn);
         messageList.add(div);
 
-        VerticalLayout parolaLayout;
+        VerticalLayout numeroInseritoVL;
         if(isTeacher){
-            parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", gruppo.getId());
+            numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
         }else{
-            parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutList, "name", gruppo.getId());
+            numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
         }
-        parolaLayout.add(messageList);
+        numeroInseritoVL.add(messageList);
         if(Utils.isAccountInThisGruppo(gruppo, account)){
-            parolaLayout.getStyle().set("display", "flex");
+            numeroInseritoVL.getStyle().set("display", "flex");
         }else{
-            parolaLayout.getStyle().set("display", "none");
+            numeroInseritoVL.getStyle().set("display", "none");
         }
 
         /*--FINE--------------------------------------------------------------------------------------------------------------------------------------*/
         suggerisci.setValue("");
-        sendParola.setEnabled(false);
+        sendNumeroBtn.setEnabled(false);
         if (BroadcasterMaty.getContClick().size() == 5) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(0);
             BroadcasterMaty.riceveIndizio(indizio);
@@ -572,7 +559,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         }
         /*------INIZIO----------------------------------------------------------------------------------------------------------------------------------*/
         int j;
-        containerNumeriSS.removeAll();
         if (operazione.equals("somma")) {
             j = 0;
         } else {
@@ -623,24 +609,24 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         Div div = new Div();
         Label label = new Label(mess);
         label.getStyle().set("margin-right", "15px");
-        button = new Button("Elimina ", VaadinIcon.MINUS.create());
-        button.setId("button");
-        button.addClickListener(buttonClickEvent1 -> {
+        Button eliminaBtn = new Button("Elimina ", VaadinIcon.MINUS.create());
+        eliminaBtn.setId("eliminaBtn");
+        eliminaBtn.addClickListener(buttonClickEvent1 -> {
             //Inizializzazione container da usare in base al gruppo
             Div box4;
             Div wrapper4;
-            VerticalLayout parolaLayout;
+            VerticalLayout numeroInseritoVL;
             if(!isTeacher){
                 box4 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
                 wrapper4 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
-                parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutList, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
             }else{
                 box4 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
                 wrapper4 = new Div();
-                parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
             }
 
-            parolaLayout.removeAll();
+            numeroInseritoVL.removeAll();
             if(isTeacher) {
                 BroadcasterSuggerisciMaty.broadcast(mess, operazione, "Teacher", false, gruppo);
             }else{
@@ -649,8 +635,8 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             box4.removeAll();
             wrapper4.removeAll();
-            button.setEnabled(false);
-            sendParola.setEnabled(true);
+            eliminaBtn.setEnabled(false);
+            sendNumeroBtn.setEnabled(true);
             int num = Integer.parseInt(mess);
             BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + num);
 
@@ -685,27 +671,27 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             checkIfWin();
         });
         //deleteButtonStyle();
-        div.add(label, button);
+        div.add(label, eliminaBtn);
         messageList.add(div);
 
-        VerticalLayout parolaLayout;
+        VerticalLayout numeroInseritoVL;
         if(isTeacher){
-            parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutTeacherList, "name", gruppo.getId());
+            numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
         }else{
-            parolaLayout = Utils.getVerticalLayoutFromListByAttribute(parolaLayoutList, "name", gruppo.getId());
+            numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
         }
-        parolaLayout.add(messageList);
+        numeroInseritoVL.add(messageList);
         if(Utils.isAccountInThisGruppo(gruppo, account)){
-            parolaLayout.getStyle().set("display", "flex");
+            numeroInseritoVL.getStyle().set("display", "flex");
         }else{
-            parolaLayout.getStyle().set("display", "none");
+            numeroInseritoVL.getStyle().set("display", "none");
         }
 
         /*------FINE----------------------------------------------------------------------------------------------------------------------------------*/
 
 
         suggerisci.setValue("");
-        sendParola.setEnabled(false);
+        sendNumeroBtn.setEnabled(false);
         if (BroadcasterMaty.getContClick().size() == 5) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(0);
             BroadcasterMaty.riceveIndizio(indizio);
@@ -750,7 +736,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             i.getStyle().set("display", "none");
         }
 
-        for(VerticalLayout i : parolaLayoutTeacherList){
+        for(VerticalLayout i : numeroInseritoVLTeacherList){
             i.getStyle().set("display", "none");
         }
 
@@ -764,8 +750,8 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         return containersBoxTeacher;
     }
 
-    public ArrayList<VerticalLayout> getParolaLayoutTeacherList() {
-        return parolaLayoutTeacherList;
+    public ArrayList<VerticalLayout> getnumeroInseritoVLTeacherList() {
+        return numeroInseritoVLTeacherList;
     }
 
     public ArrayList<VerticalLayout> getCronologiaNUmeriTeacherList() {
