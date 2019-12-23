@@ -3,6 +3,7 @@ package com.example.demo.utility;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import java.util.*;
@@ -96,6 +97,19 @@ public class Utils {
             flag = true;
         }
         return flag;
+    }
+
+    public static HorizontalLayout getHorizontalLayoutFromListByAttribute(ArrayList<HorizontalLayout> list, String attr, String value){
+        HorizontalLayout d = new HorizontalLayout();
+
+        for(HorizontalLayout i : list){
+            if(i.getElement().getAttribute(attr).equals(value)){
+                d = i;
+                break;
+            }
+        }
+
+        return d;
     }
 
     //Altri metodi
