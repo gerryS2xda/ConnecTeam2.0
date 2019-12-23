@@ -62,7 +62,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private HorizontalLayout cronologiaNumeriGridsContainer;
     private HorizontalLayout cronologiaNumeriGridsContainerTeacher;
     private Div numeroInserito = new Div();
-    private Grid<CronologiaNumeri> currentGrid; //per lo studente per risolvere 'Cannot access state in VaadinSession or UI without locking the session.'
+    private Grid<CronologiaNumeri> currentGridStudent; //per lo studente per risolvere 'Cannot access state in VaadinSession or UI without locking the session.'
 
 
     public StartGameMatyUI(MatyController matyController, Account account, boolean isTeacher) {
@@ -83,7 +83,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             containersWrapper = new ArrayList<Div>();
             numeroInseritoVLList = new ArrayList<VerticalLayout>();
             numeroInseritoVLTeacherList = new ArrayList<VerticalLayout>();
-            currentGrid = new Grid<>(CronologiaNumeri.class);
+            currentGridStudent = new Grid<>(CronologiaNumeri.class);
 
             BroadcasterSuggerisciMaty.register(account, this);
 
@@ -764,20 +764,20 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             Gruppo currentGruppo = Utils.findGruppoByAccount(gruppi, account);
             Grid<CronologiaNumeri> grid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", currentGruppo.getId());
 
-            currentGrid.getElement().setAttribute("name", grid.getElement().getAttribute("name"));
-            currentGrid.removeAllColumns();
-            currentGrid.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ");
-            currentGrid.addColumn(TemplateRenderer.<CronologiaNumeri>of("[[item.name]]")
+            currentGridStudent.getElement().setAttribute("name", grid.getElement().getAttribute("name"));
+            currentGridStudent.removeAllColumns();
+            currentGridStudent.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ");
+            currentGridStudent.addColumn(TemplateRenderer.<CronologiaNumeri>of("[[item.name]]")
                     .withProperty("name", CronologiaNumeri::getNumeroAttualeWithHTML)).setHeader("Numero attuale");
-            currentGrid.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString).setHeader("Numeri eliminati");
-            currentGrid.setWidth("100%");
-            currentGrid.setHeight("100%");
+            currentGridStudent.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString).setHeader("Numeri eliminati");
+            currentGridStudent.setWidth("100%");
+            currentGridStudent.setHeight("100%");
 
             ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) grid.getDataProvider();
             List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
 
-            currentGrid.setItems(sourceItems);
-            cronologiaNumeriGridsContainer.add(currentGrid);
+            currentGridStudent.setItems(sourceItems);
+            cronologiaNumeriGridsContainer.add(currentGridStudent);
         }
     }
 
