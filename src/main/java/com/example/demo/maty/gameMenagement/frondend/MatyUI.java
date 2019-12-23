@@ -2,23 +2,25 @@
 package com.example.demo.maty.gameMenagement.frondend;
 
 
+import com.example.demo.chat.BroadcasterChat;
+import com.example.demo.chat.ChatListener;
+import com.example.demo.chat.ChatUI;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.entity.Partita;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.games.Maty;
 import com.example.demo.maty.gameMenagement.backend.MatyController;
-import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterChatMaty;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterSuggerisciMaty;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.BroadcastListenerMaty;
-import com.example.demo.maty.gameMenagement.backend.listeners.ChatListenerMaty;
+import com.example.demo.userOperation.NavBar;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
@@ -31,36 +33,37 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Push
 @Route("maty")
 @HtmlImport("chat.html")
 @StyleSheet("frontend://stile/stile.css")
-@StyleSheet("frontend://stile/style.css")
+//@StyleSheet("frontend://stile/style.css")
 @StyleSheet("frontend://stile/chat.css")
 @StyleSheet("frontend://stile/divbox.css")
 @StyleSheet("frontend://stile/animation.css")
+@StyleSheet("frontend://stile/matyStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam-Maty")
-public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListenerMaty, PageConfigurator {
+public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListener, PageConfigurator {
 
+    //static field
+    public static Gruppo currentGroupSelect;
 
     //instance field
     private AccountRepository accountRepository;
     private Account account;
     private MatyController matyController;
-    private Label numeroUtenti = new Label();
-    private Div containerUtenti = new Div();
-    private Image imageU = new Image();
-    private VerticalLayout chatMessages = new VerticalLayout();
     private Label secondi = new Label();
     private Label indizio = new Label("Indizi: ");
     private VerticalLayout verticalLayout = new VerticalLayout();
@@ -73,10 +76,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private MatyController.PartitaThread partitaThread;
     private ItemMaty item;
     private boolean isStarted = false;
-    private Div chat = new Div();
-    private MessageList messageList = new MessageList("chatlayoutmessage2");
     private HorizontalLayout containerAddendi= new HorizontalLayout();
-    private Image image333;
     private boolean isTeacher = false;
     private Label labelNum = new Label();
     private EndGameEventBeanPublisher endGamePublisher;
@@ -84,8 +84,14 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private int maxNumeroStutentiConnessi = 0;
     private AppBarUI appBarUI;
     private WrappedSession teacherSession;
+    private StartGameMatyUI startGameMatyUI; //Aggiungi controllo 'null' prima di usare
     private Button start; //pulsante che sara' invisibile
     private Dialog attendiDialog;
+    private List<Gruppo> gruppi = new ArrayList<Gruppo>();
+    private NavBar navBar;
+    private Dialog chatContainerDialog;
+    private ChatUI chatUI;
+
 
     public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
 
@@ -97,6 +103,9 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             endGamePublisher = endGameEventBeanPublisher;
             maxNumeroStutentiConnessi = com.example.demo.users.broadcaster.Broadcaster.getNumberOfMatyUser();
             teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
+            gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
+            currentGroupSelect = new Gruppo();
+            currentGroupSelect.setId("Gruppo 1"); //per default viene selezionato il 'Gruppo 1'
 
             UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //accedi al <body> element
 
@@ -119,8 +128,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
             }
 
-            matyController = new MatyController(partitaRepository);
-
             if(account.getTypeAccount().equals("teacher")) {
                 isTeacher = true;
                 //UI.getCurrent().setPollInterval(1000); //Per il teacher: Da usare solo le pagina viene caricata con UI.navigate(...)
@@ -129,6 +136,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 attendiDialog = dialogUtility.showDialog("Attendere...", "black");
                 attendiDialog.open();
             }
+
+            matyController = new MatyController(partitaRepository);
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
@@ -139,9 +148,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
 
             if (isStarted != true) {
                 BroadcasterMaty.register(account, this);
-                BroadcasterChatMaty.register(this);
-                BroadcasterMaty.aggiornaUtentiConnessi(UI.getCurrent());
-                BroadcasterMaty.addUsers(UI.getCurrent());
+                BroadcasterChat.register(account, this);
             } else {
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
@@ -152,60 +159,17 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 appBarUI = new AppBarUI("Maty", false, true); //nome pagina corrente
                 add(appBarUI);
                 showButtonInAppBar();
+            }else{
+                //mostra la navBar orizzontale se e' stutente
+                navBar = new NavBar(true);
+                navBar.addClassName("navBarHorizontal");
+                add(navBar);
+                addChatBtnInNavBar();
             }
 
             //Chat container
-            Div device = new Div();
-            device.getStyle().set("width", "30%"); //value precedente: 500px
-            Label label = new Label("Chat");
-            label.getStyle().set("font-size", "30px");
-            device.add(label);
-            device.setId("device");
-
-            chat.addClassName("chat");
-
-            HorizontalLayout textFieldSendBtn = new HorizontalLayout();
-            textFieldSendBtn.setSpacing(false);
-            textFieldSendBtn.getStyle().set("margin-top", "12px");
-            TextField message1 = new TextField();
-            Icon icon = new Icon(VaadinIcon.PAPERPLANE_O);
-            icon.setSize("24px");
-            icon.setColor("white");
-            if(isTeacher)
-                icon.getStyle().set("left", "100px");
-
-            Button send = new Button(icon);
-            message1.addKeyDownListener(Key.ENTER, keyDownEvent -> {
-                String mess = message1.getValue();
-                if (!mess.equals("")) {
-                    if(isTeacher) {
-                        BroadcasterChatMaty.broadcast("Teacher: " + message1.getValue() + ":" + account.getId());
-                    }else {
-                        BroadcasterChatMaty.broadcast(account.getNome() + ": " + message1.getValue() + ":" + account.getId());
-                    }
-                    message1.setValue("");
-                }
-            });
-            message1.getStyle().set("width","80%"); //value precedente: 85%
-            message1.getStyle().set("margin-right","16px");
-            send.addClickListener(buttonClickEvent -> {
-                String mess = message1.getValue();
-                if (!mess.equals("")) {
-                    if(isTeacher) {
-                        BroadcasterChatMaty.broadcast("Teacher: " + message1.getValue() + ":" + account.getId());
-                    }else{
-                        BroadcasterChatMaty.broadcast(account.getNome() + ": " + message1.getValue()+":"+account.getId());
-                    }
-                    message1.setValue("");
-                }
-            });
-            send.addClassName("buttonSendChat");
-            textFieldSendBtn.add(message1, send);
-
-            chat.add(messageList);
-            device.add(chat);
-            device.add(textFieldSendBtn);
-            add(device);
+            chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
+            chatContainerDialog = createDialogWithChatContent();
 
             //Container che mostra numero di utenti connessi e il pulsante 'Gioca' (Sala di attesa)
             //containerUtenti.addClassName("layoutUsers");
@@ -215,6 +179,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             //Container nome utente e pulsante 'Info' su Maty
             if(!isTeacher) {
                 add(nameUserAndInfoBtnContainer());
+            }else{
+                showSelectsFieldGruppiForTeacher();
             }
 
             //Implementazione di un pulsante invisibile 'start' che verra' 'cliccato' dal teacher
@@ -239,6 +205,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 }
             });
             add(start);
+
             waitAllUserForStartGame();
         }
         catch (Exception e) {
@@ -286,8 +253,9 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         b.getStyle().set("cursor","pointer");
         b.getStyle().set("color","white");
 
+        Image logoMaty = new Image("frontend/img/Maty.jpeg", "maty");
         DialogUtility dialogUtility = new DialogUtility();
-        Dialog d = dialogUtility.descrizioneGiocoDialog(maty);
+        Dialog d = dialogUtility.descrizioneGiocoDialog(maty, logoMaty);
         b.addClickListener(buttonClickEvent -> {
             d.open();
         });
@@ -312,7 +280,18 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
         infoBtn.getStyle().set("background-color", "#0000");
         infoBtn.getStyle().set("margin", "0");
         infoBtn.addClickListener(buttonClickEvent -> {
-            dialogUtility.descrizioneGiocoDialog(new Maty()).open();
+            Image logoMaty = new Image("frontend/img/Maty.jpeg", "maty");
+            dialogUtility.descrizioneGiocoDialog(new Maty(), logoMaty).open();
+        });
+
+        Icon chat = new Icon(VaadinIcon.CHAT);
+        chat.setSize(AppBarUI.ICON_BTN_SIZE);
+        Button chatBtn = new Button("Chat", chat);
+        chatBtn.setHeight(AppBarUI.APPBAR_HEIGHT);
+        chatBtn.getStyle().set("background-color", "#0000");
+        chatBtn.getStyle().set("margin", "0");
+        chatBtn.addClickListener(buttonClickEvent -> {
+            chatContainerDialog.open();
         });
 
         Icon close = new Icon(VaadinIcon.CLOSE_CIRCLE_O);
@@ -326,22 +305,93 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             com.example.demo.users.broadcaster.Broadcaster.setCountMatyUser(0); //reset counter giocatori di Maty
         });
 
-        horizontalLayout.add(infoBtn, terminateGame);
+        horizontalLayout.add(infoBtn, chatBtn, terminateGame);
         appBarUI.add(horizontalLayout);
     }
 
-    //public methods
-    public Image generateImage(Account account) {
-        Long id = account.getId();
-        StreamResource sr = new StreamResource("user", () ->  {
-            Account attached = accountRepository.findWithPropertyPictureAttachedById(id);
-            return new ByteArrayInputStream(attached.getProfilePicture());
+    private void addChatBtnInNavBar(){
+        HorizontalLayout chatContainer = new HorizontalLayout();
+        chatContainer.getElement().setAttribute("id", "chatContainerNVMatyUI");
+        chatContainer.getStyle().set("position", "absolute");
+        chatContainer.getStyle().set("left", "80%");
+
+        Icon chatIcon = new Icon(VaadinIcon.CHAT);
+        chatIcon.setSize("30px");
+        chatIcon.setColor("#007d99");
+        chatIcon.getStyle().set("margin-top", "6px");
+        chatIcon.getStyle().set("margin-right", "8px");
+
+        Button chatBtn = new Button("Chat");
+        chatBtn.addClassName("buttonChatStyleNavBar");
+        chatBtn.addClickListener(buttonClickEvent -> {
+            chatContainerDialog.open();
         });
-        sr.setContentType("image/png");
-        Image image = new Image(sr, "profile-picture");
-        return image;
+
+        chatContainer.add(chatIcon, chatBtn);
+        navBar.getChatContainer().add(chatContainer);
     }
 
+    private Dialog createDialogWithChatContent(){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        d.add(chatUI);
+
+        return d;
+    }
+
+    private void showSelectsFieldGruppiForTeacher(){
+        HorizontalLayout hor1 = new HorizontalLayout();
+        hor1.addClassName("showSelectsFieldGruppiForTeacherContainer");
+
+        Label lab1 = new Label("Seleziona gruppo: ");
+        lab1.getStyle().set("font-size", "16px");
+        lab1.getStyle().set("margin-top", "8px");
+
+        Select<String> selects = new Select<>();
+        List<String> items = new ArrayList<String>();
+
+        for(Gruppo g : gruppi){
+            items.add(g.getId());
+        }
+
+        selects.setItems(items);
+        if(items.size() > 0)
+            selects.setValue(items.get(0));
+
+        selects.addValueChangeListener(event -> {
+            String value = event.getValue();
+            currentGroupSelect = Utils.findGruppoByName(gruppi, value);
+
+            if(startGameMatyUI == null){
+                throw new IllegalArgumentException("StartGameMatyUI is null!!");
+            }
+
+            String groupId = currentGroupSelect.getId();
+
+            startGameMatyUI.hideAllContainerForTeacher();
+            Div containerBox = Utils.getDivFromListByAttribute(startGameMatyUI.getContainersBoxTeacher(), "name", groupId);
+            containerBox.getStyle().set("display", "block");
+
+            VerticalLayout parolaLayout = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getParolaLayoutTeacherList(), "name", groupId);
+            parolaLayout.getStyle().set("display", "flex");
+
+            VerticalLayout cronologiaNumeri = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getCronologiaNUmeriTeacherList(), "name", groupId);
+            cronologiaNumeri.getStyle().set("display", "flex");
+
+            chatUI.hideAllSpazioMessaggiTeacher();
+            MessageList spaziomsgTeacher = Utils.getMessageListFromListByAttributeForChat(chatUI.getSpazioMessaggiTeacher(), "name", groupId);
+            spaziomsgTeacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
+
+        });
+
+        hor1.add(lab1, selects);
+        add(hor1);
+    }
+
+    //public methods
     public static void reset(){
         try {
             BroadcasterMaty.getIntegers().clear();
@@ -350,7 +400,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             BroadcasterMaty.getAccountList().clear();
             BroadcasterMaty.getItems().clear();
             BroadcasterMaty.getListeners().clear();
-            BroadcasterChatMaty.getListeners().clear();
+            BroadcasterChat.getListeners().clear();
             BroadcasterSuggerisciMaty.getListeners().clear();
             BroadcasterMaty.getContClick().clear();
         }catch (Exception e){
@@ -359,15 +409,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     }
 
     //Implementazione metodi della Java interface 'BroadcasterListener'
-    @Override
-    public void countUser(UI ui, String nome) {
-        ui.getUI().get().access(() -> {
-            numeroUtenti.setEnabled(false);
-            numeroUtenti.setText("Utenti connessi: "+BroadcasterMaty.getListeners().size());
-            numeroUtenti.setEnabled(true);
-        });
-    }
-
     @Override
     public void startGame1() {
         boolean flag = false;
@@ -379,9 +420,9 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                         if(account.getTypeAccount().equals("student")){
                             attendiDialog.close();
                         }
-                        StartGameMatyUI startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
+                        startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
                         verticalLayout.add(startGameMatyUI);
-                        verticalLayout.add(secondi/*,indizio*/);
+                        verticalLayout.add(secondi);
                         indizio.getStyle().set("font-size", "30px");
                         indizio.getStyle().set("margin-left", "15px");
                         add(verticalLayout);
@@ -420,45 +461,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             secondi.getStyle().set("font-size","30px");
             secondi.getStyle().set("margin-left","15px");
             secondi.setEnabled(true);
-        });
-    }
-
-    @Override
-    public void addUsers(UI ui, int i) {
-        ui.getUI().get().access(() -> {
-            containerUtenti.removeAll();
-            BroadcasterMaty.getListeners().forEach((account1, broadcastListener) -> {
-                if(account1.getProfilePicture() != null){
-                    imageU = generateImage(account1);
-                    imageU.getStyle().set("width","50px");
-                    imageU.getStyle().set("height","50px");
-                    imageU.getStyle().set("border-radius","80px");
-                }else {
-                    if(account1.getSesso()=="1"){
-                        imageU = new Image("frontend/img/profiloGirl.png", "foto profilo");
-                        imageU.getStyle().set("width","50px");
-                        imageU.getStyle().set("height","50px");
-                        imageU.getStyle().set("border-radius","80px");
-                    }
-                    else {
-                        imageU = new Image("frontend/img/profiloBoy.png", "foto profilo");
-                        imageU.getStyle().set("width","50px");
-                        imageU.getStyle().set("height","50px");
-                        imageU.getStyle().set("border-radius","80px");
-                    }
-                }
-
-                System.out.println("Account id  = "+account1.getId());
-
-                Button button = new Button(imageU);
-                button.addClassName("buttonUserGuess");
-                button.setText(account1.getNome());
-                button.setEnabled(false);
-                MessageList messageList = new MessageList("message-list");
-                messageList.add(button);
-                containerUtenti.add(messageList);
-
-            });
         });
     }
 
@@ -508,6 +510,8 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     @Override
     public void partititaVincente(String parola, int punteggio) {
         getUI().get().access(() -> {
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
             reset();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
@@ -515,9 +519,9 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                 add(fireWorks);
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaVincente(parola, punteggio, maty);
-                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false);
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, new Gruppo(), "");
             }else if(account.getTypeAccount().equals("teacher")){
-                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true);
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true, new Gruppo(), "");
             }
         });
     }
@@ -525,14 +529,16 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     @Override
     public void partititanonVincente() {
         getUI().get().access(() -> {
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
             reset();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitanonVincente(maty);
-                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false);
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, new Gruppo(), "");
             }else if(account.getTypeAccount().equals("teacher")){
-                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true);
+                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true, new Gruppo(), "");
             }
         });
     }
@@ -558,59 +564,20 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     }
 
     @Override
-    public void receiveBroadcast(String message) {
-        getUI().get().access(() -> {
-            String string = message;
-            String[] parts = string.split(":");
-            String nome = parts[0]+":";
-            String testo = parts[1];
-            String id = parts[2];
-            Account a = accountRepository.findAccountById(Long.parseLong(id));
-            Div divmessage = new Div();
-            Div nomeP = new Div();
-            Label label = new Label(nome);
-
-            nomeP.add(label);
-            label.getStyle().set("margin-right","20px");
-
-            Div div = new Div();
-            Paragraph paragraph = new Paragraph(testo);
-            div.add(paragraph);
-            divmessage.addClassName("message");
-            if (a.getProfilePicture()!=null){
-                image333 = generateImage(a);
-                image333.getStyle().set("order","0");
-                divmessage.add(image333);
-            }else {
-                if(a.getSesso()=="1"){
-                    image333 = new Image("frontend/img/profiloGirl.png", "foto profilo");
-                    image333.getStyle().set("order","0");
-                    divmessage.add(image333);
-                }
-                else {
-                    image333 = new Image("frontend/img/profiloBoy.png", "foto profilo");
-                    image333.getStyle().set("order","0");
-                    divmessage.add(image333);
-                }
-            }
-            divmessage.add(label,div);
-            messageList.add(divmessage);
-        });
-    }
-
-    @Override
     public void terminaPartitaFromTeacher() {
         try {
             if(getUI().isPresent()) {   //inserito per evitare exception (No value Present) dovuta al teacher quando effettua il logout e viene invocato questo metodo
                 getUI().get().access(() -> {
+                    if(chatContainerDialog.isOpened())
+                        chatContainerDialog.close();
                     reset();
                     removeAll();
                     if (account.getTypeAccount().equals("student")) {
                         DialogUtility dialogUtility = new DialogUtility();
-                        dialogUtility.partitaTerminataFromTeacher();
-                        endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false);
+                        //dialogUtility.partitaTerminataFromTeacher();
+                        endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, new Gruppo(), "");
                     } else {
-                        endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true);
+                        endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true, new Gruppo(), "");
                     }
                 });
             }else{
@@ -620,6 +587,14 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             e.printStackTrace();
         }
 
+    }
+
+    //Implementazione metodi della Java interface 'ChatListener'
+    @Override
+    public void receiveBroadcast(Gruppo g, String message) { //g e' il gruppo da cui e' stato inviato il messaggio
+        getUI().get().access(() -> {
+            chatUI.receiveBroadcast(g, message);
+        });
     }
 
     //Implements methods of PageConfigurator
@@ -645,13 +620,15 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             return;
         }
 
-        System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
+        if(chatContainerDialog.isOpened())
+            chatContainerDialog.close();
+        System.out.println("MatyUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
             BroadcasterMaty.terminaPartitaFromTeacher();
         }else if(BroadcasterMaty.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             BroadcasterMaty.unregister(account, this);
-            endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false);
+            endGamePublisher.doStuffAndPublishAnEvent("Maty", account, false, new Gruppo(), "");
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
             BroadcasterMaty.terminaPartitaFromTeacher();
         }
