@@ -101,19 +101,6 @@ public class BroadcasterMaty implements Serializable {
         integers.add(integer);
     }
 
-    public static synchronized void numeroInserito(String operazione) {
-        try {
-
-            listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.numeroInserito(operazione);
-                });
-            });
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static synchronized void partitaVincente(String s, Integer integer) {
         try {
             listeners.forEach((account, broadcastListener) -> {
