@@ -55,7 +55,7 @@ import java.util.List;
 @StyleSheet("frontend://stile/matyStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam-Maty")
-public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, ChatListener, PageConfigurator {
+public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, ChatListener, PageConfigurator {
 
     //static field
     public static Gruppo currentGroupSelect;
@@ -65,9 +65,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     private Account account;
     private MatyController matyController;
     private Label secondi = new Label();
-    private Label indizio = new Label("Indizi: ");
     private VerticalLayout verticalLayout = new VerticalLayout();
-    private Div containerNumeriSS = new Div();
     private Div box = new Div();
     private Div wrapper = new Div();
     private Maty maty;
@@ -171,9 +169,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
             chatContainerDialog = createDialogWithChatContent();
 
-            //Container che mostra numero di utenti connessi e il pulsante 'Gioca' (Sala di attesa)
-            //containerUtenti.addClassName("layoutUsers");
-            containerNumeriSS.addClassName("containerNumeriSS");
             box.addClassName("box");
 
             //Container nome utente e pulsante 'Info' su Maty
@@ -375,7 +370,7 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
             Div containerBox = Utils.getDivFromListByAttribute(startGameMatyUI.getContainersBoxTeacher(), "name", groupId);
             containerBox.getStyle().set("display", "block");
 
-            VerticalLayout parolaLayout = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getParolaLayoutTeacherList(), "name", groupId);
+            VerticalLayout parolaLayout = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getnumeroInseritoVLTeacherList(), "name", groupId);
             parolaLayout.getStyle().set("display", "flex");
 
             VerticalLayout cronologiaNumeri = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getCronologiaNUmeriTeacherList(), "name", groupId);
@@ -423,8 +418,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
                         startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
                         verticalLayout.add(startGameMatyUI);
                         verticalLayout.add(secondi);
-                        indizio.getStyle().set("font-size", "30px");
-                        indizio.getStyle().set("margin-left", "15px");
                         add(verticalLayout);
                     });
                     flag = true;
@@ -468,7 +461,6 @@ public class MatyUI extends HorizontalLayout implements BroadcastListenerMaty, C
     public void numeroInserito(String operazione) {
         getUI().get().access(() -> {
             int j;
-            containerNumeriSS.removeAll();
             if (operazione.equals("somma")){
                 j=0;
             }else {
