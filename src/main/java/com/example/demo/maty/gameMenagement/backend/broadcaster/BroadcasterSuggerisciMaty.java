@@ -29,9 +29,9 @@ public class BroadcasterSuggerisciMaty implements Serializable {
         listeners.put(account, listener);
     }
 
-    public static void broadcast(final String message, String operazione, String nome, boolean operation, Gruppo g) {
+    public static void broadcast(final String message, String operazione, boolean operation, Gruppo g) {
         listeners.forEach((account, listenerMaty) -> {
-            listenerMaty.operazione(message, operazione, nome, operation, g);
+            listenerMaty.operazione(message, operazione, operation, g);
         });
 
     }
