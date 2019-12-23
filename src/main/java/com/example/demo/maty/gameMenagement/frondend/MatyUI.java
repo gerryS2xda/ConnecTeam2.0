@@ -154,7 +154,8 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             }
 
             if(isTeacher){ //mostra la appbar
-                getStyle().set("width", "100%");
+                setSpacing(false);
+                getStyle().set("margin", "0");
                 appBarUI = new AppBarUI("Maty", false, true); //nome pagina corrente
                 add(appBarUI);
                 showButtonInAppBar();
@@ -176,8 +177,14 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             //Init main container
             mainUIGame = new VerticalLayout();
             mainUIGame.setPadding(false);
-            mainUIGame.addClassName("mainUIGameVL");
+            if(!isTeacher){
+                mainUIGame.addClassName("mainUIGameVL");
+            }else{
+                mainUIGame.addClassName("mainUIGameVLTeacher");
+            }
+
             add(mainUIGame);
+
 
             //Chat container
             chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
