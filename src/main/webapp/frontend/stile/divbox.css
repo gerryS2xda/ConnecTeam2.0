@@ -1,9 +1,7 @@
 .box{
-    position: absolute;
-    left: 390px;
-    top: 260px; /* valore precedente: 230px */
     font-size: 15px;
 }
+
 .circle{
     border-radius: 50%;
     box-shadow: inset -25px -25px 40px rgba(0,0,0,.5);
@@ -20,10 +18,6 @@
     justify-content: center;
     font-family: sans-serif;
     color: #fff;
-    position: absolute;
-    right: -40px;
-    top: -40px;
-
 }
 
 
