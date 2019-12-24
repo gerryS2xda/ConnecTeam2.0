@@ -5,9 +5,6 @@ package com.example.demo.entity;
  * Dovra' essere una entity se si implementa la 'Memorizzazione dello stato'
  */
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Div;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +15,7 @@ public class CronologiaNumeri {
     private Account account; //'account' di colui che ha inserito / rimosso un numero
     private String nomeAccount;
     private Gruppo gruppo; //'gruppo' a cui appartiene l'account che ha inserito / rimosso un numero
-    private Component numeroAttuale; //'html component' relativo al numero che e' stato appena inserito
+    private int numeroInserito;
     private List<Integer> numeriEliminatiList; //numeri che sono stati eliminati
 
     //Constructor
@@ -26,7 +23,7 @@ public class CronologiaNumeri {
         account = new Account();
         nomeAccount = "";
         gruppo = new Gruppo();
-        numeroAttuale = new Div(); //un qualsiasi oggetto che e' sottoclasse di 'Component'
+        numeroInserito = 0;
         numeriEliminatiList = new ArrayList<Integer>();
     }
 
@@ -34,15 +31,7 @@ public class CronologiaNumeri {
         this.account = account;
         nomeAccount = account.getNome();
         gruppo = new Gruppo();
-        numeroAttuale = new Div(); //un qualsiasi oggetto che e' sottoclasse di 'Component'
-        numeriEliminatiList = new ArrayList<Integer>();
-    }
-
-    public CronologiaNumeri(Account account, Gruppo gruppo, Component numeroAttuale){
-        this.account = account;
-        nomeAccount = account.getNome();
-        this.gruppo = gruppo;
-        this.numeroAttuale = numeroAttuale;
+        numeroInserito = 0;
         numeriEliminatiList = new ArrayList<Integer>();
     }
 
@@ -63,16 +52,12 @@ public class CronologiaNumeri {
         this.gruppo = gruppo;
     }
 
-    public Component getNumeroAttuale() {
-        return numeroAttuale;
+    public int getNumeroInserito() {
+        return numeroInserito;
     }
 
-    public String getNumeroAttualeWithHTML() {
-        return numeroAttuale.getElement().getOuterHTML();
-    }
-
-    public void setNumeroAttuale(Component numeroAttuale) {
-        this.numeroAttuale = numeroAttuale;
+    public void setNumeroInserito(int numeroInserito) {
+        this.numeroInserito = numeroInserito;
     }
 
     public List<Integer> getNumeriEliminatiList() {
@@ -81,9 +66,19 @@ public class CronologiaNumeri {
 
     public String getNumeriEliminatiListWithString() {
 
+        //Rimuovi elementi se 'numeriEliminatiList' supera una certa dimensione e poi stampa
+        if(numeriEliminatiList.size() > 4){
+            numeriEliminatiList.remove(0);
+        }
+
+        //Costruisci stringa da mostrare nella grid
         String str = "";
-        for(Integer i : numeriEliminatiList){
-            str = str + i + ",";
+        for(int i = 0; i < numeriEliminatiList.size(); i++ ){
+            if(i == 0){
+                str += "" + numeriEliminatiList.get(i);
+                continue;
+            }
+            str += ", " + numeriEliminatiList.get(i);
         }
 
         return str;
