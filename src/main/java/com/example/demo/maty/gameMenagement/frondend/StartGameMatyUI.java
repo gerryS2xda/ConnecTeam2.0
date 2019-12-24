@@ -14,6 +14,7 @@ import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -35,9 +36,13 @@ import java.util.List;
 @JavaScript("frontend://js/script.js")
 public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListenerMaty {
 
+    //costanti
+    private static final String HTML_NUMERO_INSERITO = "<div class=\"box boxGrid\">" +
+            "<div id=\"colorpad1\" class=\"circleSmall\"><p class=\"parag2\">" +
+            "<span>[[item.numeroInserito]]</span></p></div></div>";
+
     //static field
     private static List<Grid<CronologiaNumeri>> cronologiaGrids = new ArrayList<Grid<CronologiaNumeri>>();
-    private static List<Grid<CronologiaNumeri>> cronologiaGridsTeacher = new ArrayList<Grid<CronologiaNumeri>>();
     private static boolean isCronologiaGridsSetted = false; //le liste delle grid sono state riempite al piu' una volta?
 
     //instance field
@@ -61,8 +66,8 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private VerticalLayout cronologiaGridContainer;
     private HorizontalLayout cronologiaNumeriGridsContainer;
     private HorizontalLayout cronologiaNumeriGridsContainerTeacher;
-    private Div numeroInserito = new Div();
     private Grid<CronologiaNumeri> currentGridStudent; //per lo studente per risolvere 'Cannot access state in VaadinSession or UI without locking the session.'
+    private List<Grid<CronologiaNumeri>> cronologiaGridsListTeacher;
 
 
     public StartGameMatyUI(MatyController matyController, Account account, boolean isTeacher) {
@@ -84,6 +89,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             numeroInseritoVLList = new ArrayList<VerticalLayout>();
             numeroInseritoVLTeacherList = new ArrayList<VerticalLayout>();
             currentGridStudent = new Grid<>(CronologiaNumeri.class);
+            cronologiaGridsListTeacher = new ArrayList<Grid<CronologiaNumeri>>();
 
             BroadcasterSuggerisciMaty.register(account, this);
 
@@ -112,24 +118,26 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             cronologiaNumeriGridsContainerTeacher.setHeight("300px");
 
             if(!isCronologiaGridsSetted) {
-                createGridForCronologiaNumeri();
-                createGridForCronologiaNumeriForTeacher();
+                createStaticListGridForCronologiaNumeri();
                 isCronologiaGridsSetted = true;
             }
 
-            initGridCronologiaNumeriForAll();
+            initStaticListGridCronologiaNumeri();
 
             initArrayListsAndAddToMainContent(); //ArrayList usati per implementare la gestione dei gruppi, un container per ogni gruppo
 
             if(!isTeacher) {
+                createCurrentGridAndAddToContainerForStudent();
                 cronologiaGridContainer.add(cronologiaMosse, cronologiaNumeriGridsContainer);
             }else{
+                createOrUpdateListGridForTeacherAndAddToContainer();
                 cronologiaGridContainer.add(cronologiaMosse, cronologiaNumeriGridsContainerTeacher);
             }
             add(cronologiaGridContainer);
 
-            showGrids();
-
+            if(!isTeacher){
+                BroadcasterSuggerisciMaty.refreshContent();
+            }
         } catch (Exception e) {
             removeAll();
             ErrorPage errorPage = new ErrorPage();
@@ -226,38 +234,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             numeroInseritoVLTeacherList.add(vert2);
             numeroInseritoWithEliminaBtnContainer.add(vert2);
         }
-    }
-
-    @Override
-    public void operazione(String message, String operazione, boolean operation, Gruppo g) {
-        getUI().get().access(() -> {
-
-            Grid<CronologiaNumeri> currentGrid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", g.getId());
-            CronologiaNumeri x = new CronologiaNumeri();
-
-            ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
-            List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-            int index = 0;
-            for(int i = 0; i < sourceItems.size(); i++){
-                CronologiaNumeri k = sourceItems.get(i);
-                if(k.getAccount().equals(account)){
-                    x = k;
-                    index = i;
-                    break;
-                }
-            }
-
-            x.setGruppo(Utils.findGruppoByAccount(gruppi, account));
-            if(operation == true){ //se 'true' -> inserimento numero
-                x.setNumeroAttuale(numeroInserito);
-            }else{ //se false -> rimozione di un numero
-                x.getNumeriEliminatiList().add(Integer.valueOf(message));
-            }
-
-            //aggiorna valore sia nella list che nella grid
-            sourceItems.set(index, x);
-            currentGrid.setItems(sourceItems);
-        });
     }
 
     private void setOperazione(){
@@ -366,7 +342,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                     BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + Integer.parseInt(mess));
         }
 
-        BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, gruppo);
+        BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo);
 
         /*----INIZIO------------------------------------------------------------------------------------------------------------------------------------*/
         int j;
@@ -404,7 +380,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         paragraph.add(span);
         circle.add(paragraph);
         box2.add(circle);
-        numeroInserito = box2;
         hor2.add(box2);
 
         if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
@@ -443,7 +418,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             numeroInseritoVL.removeAll();
 
-            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, gruppo);
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, account, gruppo);
 
             box1.removeAll();
             wrapper1.removeAll();
@@ -502,7 +477,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         BroadcasterMaty.addIntegers(
                 BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - Integer.parseInt(mess));
 
-        BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, gruppo);
+        BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo);
 
         /*------INIZIO----------------------------------------------------------------------------------------------------------------------------------*/
         int j;
@@ -538,7 +513,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         paragraph.add(span);
         circle.add(paragraph);
         box3.add(circle);
-        numeroInserito = box3;
         hor3.add(box3);
 
         if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
@@ -575,7 +549,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
             numeroInseritoVL.removeAll();
 
-            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, gruppo);
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, account, gruppo);
 
             box4.removeAll();
             wrapper4.removeAll();
@@ -651,74 +625,52 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             i.getStyle().set("display", "none");
         }
 
-        for(Grid<CronologiaNumeri> i : cronologiaGridsTeacher){
+        for(Grid<CronologiaNumeri> i : cronologiaGridsListTeacher){
             i.getStyle().set("display", "none");
         }
 
     }
 
-    private void createGridForCronologiaNumeri(){
+    private void createStaticListGridForCronologiaNumeri(){
         for(int i = 0; i < gruppi.size(); i++){
             Gruppo g = gruppi.get(i);
             Grid<CronologiaNumeri> grid = new Grid<>(CronologiaNumeri.class);
             grid.getElement().setAttribute("name", g.getId());
             grid.removeAllColumns();
-            grid.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ");
-            grid.addColumn(TemplateRenderer.<CronologiaNumeri>of("[[item.name]]")
-                    .withProperty("name", CronologiaNumeri::getNumeroAttualeWithHTML)).setHeader("Numero attuale");
-            grid.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString).setHeader("Numeri eliminati");
+            grid.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ")
+                .setTextAlign(ColumnTextAlign.CENTER);
+            grid.addColumn(TemplateRenderer.<CronologiaNumeri>of(HTML_NUMERO_INSERITO)
+                    .withProperty("numeroInserito", CronologiaNumeri::getNumeroInserito))
+                    .setHeader("Numero attuale").setTextAlign(ColumnTextAlign.CENTER);;
+            grid.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString)
+                    .setHeader("Numeri eliminati").setTextAlign(ColumnTextAlign.CENTER);;
             grid.setWidth("100%");
             grid.setHeight("100%");
             grid.getStyle().set("display", "none");
+
+            grid.setSelectionMode(Grid.SelectionMode.NONE); //disabilita 'selezione' delle righe
 
             cronologiaGrids.add(grid);
         }
     }
 
-    private void createGridForCronologiaNumeriForTeacher(){
-        for(int i = 0; i < gruppi.size(); i++){
-            Gruppo g = gruppi.get(i);
-            Grid<CronologiaNumeri> grid = new Grid<>(CronologiaNumeri.class);
-            grid.getElement().setAttribute("id", "teacher");
-            grid.getElement().setAttribute("name", g.getId());
-            grid.removeAllColumns();
-            grid.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ");
-            grid.addColumn(TemplateRenderer.<CronologiaNumeri>of("[[item.name]]")
-                    .withProperty("name", CronologiaNumeri::getNumeroAttualeWithHTML)).setHeader("Numero attuale");
-            //grid.addColumn(CronologiaNumeri::getNumeroAttuale).setHeader("Numero attuale");
-
-            grid.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString).setHeader("Numeri eliminati");
-            grid.setWidth("100%");
-            grid.setHeight("100%");
-            grid.getStyle().set("display", "none");
-
-            cronologiaGridsTeacher.add(grid);
-        }
-    }
-
-    private void initGridCronologiaNumeriForAll(){
+    private void initStaticListGridCronologiaNumeri(){
 
         if(!isTeacher) {
             Gruppo currentGruppo = Utils.findGruppoByAccount(gruppi, account);
             Grid<CronologiaNumeri> currentGrid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", currentGruppo.getId());
-            Grid<CronologiaNumeri> currentGridTeacher = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGridsTeacher, "name", currentGruppo.getId());
 
             ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
             List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-
-            ListDataProvider<CronologiaNumeri> sourceDataProviderTeacher = (ListDataProvider<CronologiaNumeri>) currentGridTeacher.getDataProvider();
-            List<CronologiaNumeri> sourceItemsTeacher = new ArrayList<>(sourceDataProviderTeacher.getItems());
 
             for (Account x : currentGruppo.getMembri()) {
                 CronologiaNumeri y = new CronologiaNumeri(account);
                 if (!sourceItems.contains(y)) {
                     y.setGruppo(currentGruppo);
                     sourceItems.add(y);
-                    sourceItemsTeacher.add(y);
                 }
             }
             currentGrid.setItems(sourceItems);
-            currentGridTeacher.setItems(sourceItemsTeacher);
 
         }else{
             for(Gruppo x : gruppi){  //Aggiungi account del teacher in tutte le grid
@@ -726,23 +678,119 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                 ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
                 List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
 
-                Grid<CronologiaNumeri> currentGridTeacher = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGridsTeacher, "name", x.getId());
-                ListDataProvider<CronologiaNumeri> sourceDataProviderTeacher = (ListDataProvider<CronologiaNumeri>) currentGridTeacher.getDataProvider();
-                List<CronologiaNumeri> sourceItemsTeacher = new ArrayList<>(sourceDataProviderTeacher.getItems());
-
                 CronologiaNumeri y = new CronologiaNumeri(account); //teacher account
                 y.setGruppo(x);
                 sourceItems.add(y);
-                sourceItemsTeacher.add(y);
 
                 currentGrid.setItems(sourceItems);
-                currentGridTeacher.setItems(sourceItemsTeacher);
-                cronologiaNumeriGridsContainerTeacher.add(currentGridTeacher);
             }
         }
     }
 
-    private void showGrids(){
+    //Clonazione di un oggetto che viene prelevato da 'cronologiaGrids' (risolve 'Cannot access state in VaadinSession or UI without locking the session.'=
+    //NOTA: Ogni update effettuato su 'currentGrid', dovra' essere inserito manualmente anche in 'cronologiaGrids'
+    private void createCurrentGridAndAddToContainerForStudent(){
+
+        Gruppo currentGruppo = Utils.findGruppoByAccount(gruppi, account);
+        Grid<CronologiaNumeri> currentGrid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", currentGruppo.getId());
+        ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
+        List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+
+        currentGridStudent.getElement().setAttribute("name", currentGrid.getElement().getAttribute("name"));
+        currentGridStudent.removeAllColumns();
+        currentGridStudent.addColumn(CronologiaNumeri::getNomeAccount)
+                .setHeader(" ").setTextAlign(ColumnTextAlign.CENTER);;
+        currentGridStudent.addColumn(TemplateRenderer.<CronologiaNumeri>of(HTML_NUMERO_INSERITO)
+                .withProperty("numeroInserito", CronologiaNumeri::getNumeroInserito))
+                .setHeader("Numero attuale").setTextAlign(ColumnTextAlign.CENTER);;
+        currentGridStudent.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString)
+                .setHeader("Numeri eliminati").setTextAlign(ColumnTextAlign.CENTER);;
+        currentGridStudent.setWidth("100%");
+        currentGridStudent.setHeight("100%");
+        currentGridStudent.setSelectionMode(Grid.SelectionMode.NONE); //disabilita 'selezione' delle righe
+
+        currentGridStudent.setItems(sourceItems);
+        cronologiaNumeriGridsContainer.add(currentGridStudent);
+    }
+
+    private void createOrUpdateListGridForTeacherAndAddToContainer(){
+
+        for(Gruppo x : gruppi){
+            Grid<CronologiaNumeri> currentGrid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", x.getId());
+            ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
+            List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+
+            Grid<CronologiaNumeri> newGrid = new Grid<>(CronologiaNumeri.class);
+            newGrid.getElement().setAttribute("name", currentGrid.getElement().getAttribute("name"));
+            newGrid.removeAllColumns();
+            newGrid.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ")
+                    .setTextAlign(ColumnTextAlign.CENTER);;
+            newGrid.addColumn(TemplateRenderer.<CronologiaNumeri>of(HTML_NUMERO_INSERITO)
+                    .withProperty("numeroInserito", CronologiaNumeri::getNumeroInserito))
+                    .setHeader("Numero attuale").setTextAlign(ColumnTextAlign.CENTER);;
+            newGrid.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString)
+                    .setHeader("Numeri eliminati").setTextAlign(ColumnTextAlign.CENTER);;
+            newGrid.setWidth("100%");
+            newGrid.setHeight("100%");
+            newGrid.getStyle().set("display", "none");
+            newGrid.setSelectionMode(Grid.SelectionMode.NONE); //disabilita 'selezione' delle righe
+            newGrid.setItems(sourceItems);
+
+            cronologiaGridsListTeacher.add(newGrid);
+            cronologiaNumeriGridsContainerTeacher.add(newGrid);
+        }
+
+    }
+
+    private void updateAllGrid(String numeroInserito, String numeroEliminato, Account acc, Gruppo g){
+
+        if(!isTeacher){
+            Grid<CronologiaNumeri> currentGrid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", g.getId());
+            ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
+            List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+
+            CronologiaNumeri x = new CronologiaNumeri();
+            int index = 0;
+            for(int i = 0; i < sourceItems.size(); i++){
+                CronologiaNumeri k = sourceItems.get(i);
+                if(k.getAccount().equals(acc)){
+                    x = k;
+                    index = i;
+                    break;
+                }
+            }
+
+            if(!numeroInserito.equals("")){ //operazione effettuata da 'account' e' 'Inserimento'
+                x.setNumeroInserito(Integer.valueOf(numeroInserito));
+            }else if(!numeroEliminato.equals("")){ //operazione effettuata da 'account' e' 'eliminazione'
+                int n = Integer.valueOf(numeroEliminato);
+                if(!x.getNumeriEliminatiList().contains(n))
+                    x.getNumeriEliminatiList().add(n);
+            }
+
+            sourceItems.set(index, x);
+
+            currentGridStudent.setItems(sourceItems);
+        }else{
+            //Prendi i dati da una delle grid in 'static list grid' in base al gruppo 'g'
+            Grid<CronologiaNumeri> currentGrid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", g.getId());
+            ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
+            List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
+
+            cronologiaNumeriGridsContainerTeacher.getChildren().forEach(component -> {
+                Grid<CronologiaNumeri> grid = (Grid<CronologiaNumeri>) component;
+                if(grid.getElement().getAttribute("name") != null){
+                    if(grid.getElement().getAttribute("name").equals(g.getId())){
+                        grid.setItems(sourceItems);
+                    }
+
+                }
+            });
+        }
+
+    }
+
+    private void updateAndshowGrids(){
 
         if(isTeacher) {
             Gruppo currentGruppo = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
@@ -756,28 +804,33 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                     }
                 }
             });
+        }
+    }
 
+    //Implementazione dei metodi della Java interface 'SuggerisciListenerMaty
+    @Override
+    public void operazione(String message, String operazione, boolean operation, Account acc, Gruppo g) {
+
+        getUI().get().access(() -> {
+
+            if(operation == true){ //se 'true' -> inserimento numero
+                updateAllGrid(message, "", acc, g);
+            }else{ //se false -> rimozione di un numero
+                updateAllGrid("", message, acc, g);
+            }
+
+        });
+    }
+
+    @Override
+    public void refreshContent(){
+        if(isTeacher){
+            for(Gruppo g : gruppi){
+                updateAllGrid("", "", account, g);
+            }
         }else{
-
-            //Clonazione di un oggetto che viene prelevato da 'cronologiaGrids' (risolve 'Cannot access state in VaadinSession or UI without locking the session.'=
-            //NOTA: Ogni update effettuato su 'currentGrid', dovra' essere inserito manualmente anche in 'cronologiaGrids'
             Gruppo currentGruppo = Utils.findGruppoByAccount(gruppi, account);
-            Grid<CronologiaNumeri> grid = Utils.getGridCronologiaNumeriFromListByAttribute(cronologiaGrids, "name", currentGruppo.getId());
-
-            currentGridStudent.getElement().setAttribute("name", grid.getElement().getAttribute("name"));
-            currentGridStudent.removeAllColumns();
-            currentGridStudent.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ");
-            currentGridStudent.addColumn(TemplateRenderer.<CronologiaNumeri>of("[[item.name]]")
-                    .withProperty("name", CronologiaNumeri::getNumeroAttualeWithHTML)).setHeader("Numero attuale");
-            currentGridStudent.addColumn(CronologiaNumeri::getNumeriEliminatiListWithString).setHeader("Numeri eliminati");
-            currentGridStudent.setWidth("100%");
-            currentGridStudent.setHeight("100%");
-
-            ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) grid.getDataProvider();
-            List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-
-            currentGridStudent.setItems(sourceItems);
-            cronologiaNumeriGridsContainer.add(currentGridStudent);
+            updateAllGrid("", "", account, currentGruppo);
         }
     }
 
