@@ -385,8 +385,11 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             VerticalLayout numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getNumeroInseritoVLTeacherList(), "name", groupId);
             numeroInseritoVL.getStyle().set("display", "flex");
 
+            /*
             VerticalLayout cronologiaNumeri = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getCronologiaNUmeriTeacherList(), "name", groupId);
             cronologiaNumeri.getStyle().set("display", "flex");
+
+             */
 
             chatUI.hideAllSpazioMessaggiTeacher();
             MessageList spaziomsgTeacher = Utils.getMessageListFromListByAttributeForChat(chatUI.getSpazioMessaggiTeacher(), "name", groupId);
@@ -470,14 +473,11 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     public void receiveIndizio(String message) {
         getUI().get().access(() -> {
             if(BroadcasterMaty.getContClick().size() == 5){
-                Label aiutolabel = new Label("Suggerimento:");
+                Label aiutolabel = new Label("Suggerimento: " + message);
                 aiutolabel.addClassName("aiutiLabelStyle");
                 aiutoContainer.getStyle().set("display", "flex");
                 aiutoContainer.add(aiutolabel);
             }
-            Paragraph aiutop = new Paragraph(message);
-            aiutop.addClassName("aiutoParagraph");
-            aiutoContainer.add(aiutop);
         });
     }
 
