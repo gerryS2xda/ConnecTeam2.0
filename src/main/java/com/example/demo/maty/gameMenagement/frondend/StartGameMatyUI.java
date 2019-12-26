@@ -60,7 +60,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private ArrayList<Div> containersWrapper; //<div class='box1'> contiene html dedicato per la pallina che si muove sullo schermo
     private ArrayList<VerticalLayout> numeroInseritoVLList;  //contiene 'numeroInseritoVL: ball numero inserito + eliminaBtn'
     private ArrayList<VerticalLayout> numeroInseritoVLTeacherList; //contiene 'numeroInseritoVL: ball numero inserito + eliminaBtn' per teacher
-    //Nuove variabili
     private VerticalLayout interactionContainer;
     private VerticalLayout cronologiaGridContainer;
     private HorizontalLayout cronologiaNumeriGridsContainer;
@@ -270,17 +269,16 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     //Send button: funzionamento di tutto il gioco quando viene premuto il pulsante 'Somma / Sottrai'
     private void sendNumeroInserito(){
         sendNumeroBtn.addClickListener(buttonClickEvent -> {
-            Gruppo gruppo; //gruppo da cui parte l'azione
-            VerticalLayout numeroInseritoVL;
             if(isTeacher){
-                gruppo = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
-                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
+                Gruppo gruppo = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
+                VerticalLayout numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
+                numeroInseritoVL.removeAll();
             }else{
-                gruppo = Utils.findGruppoByAccount(gruppi, account);
-                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
+                Gruppo gruppo1 = Utils.findGruppoByAccount(gruppi, account);
+                VerticalLayout numeroInseritoVL1 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo1.getId());
+                numeroInseritoVL1.removeAll();
             }
 
-            numeroInseritoVL.removeAll();
             getElement().executeJs("sends()");
             String mess = String.valueOf(suggerisciNumero.getValue());
             if (!mess.equals(BroadcasterMaty.getItems().get(0).getParola())) {
@@ -294,9 +292,9 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                             try {
                                 String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
                                 if (operazione.equalsIgnoreCase("somma")) {
-                                    operazioneSomma(i, mess, operazione, gruppo);
+                                    operazioneSomma(i, mess, operazione);
                                 } else {
-                                    operazioneSottrazione(i, mess, operazione, gruppo);
+                                    operazioneSottrazione(i, mess, operazione);
                                 }
 
                             } catch (Exception e) {
@@ -312,7 +310,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         });
     }
 
-    private void operazioneSomma(int i, String mess, String operazione, Gruppo gruppo){ //sendBtn = 'Somma'
+    private void operazioneSomma(int i, String mess, String operazione){ //sendBtn = 'Somma'
         if (BroadcasterMaty.getIntegers().size() == 0) {
             BroadcasterMaty.addIntegers(Integer.parseInt(mess));
         } else {
@@ -320,7 +318,16 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                     BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + Integer.parseInt(mess));
         }
 
-        BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo);
+        Gruppo gruppo1 = new Gruppo();
+        Gruppo gruppo2 = new Gruppo();
+
+        if(isTeacher){
+            gruppo1 = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo1);
+        }else{
+            gruppo2 = Utils.findGruppoByAccount(gruppi, account);
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo2);
+        }
 
         /*----INIZIO------------------------------------------------------------------------------------------------------------------------------------*/
         int j;
@@ -330,101 +337,18 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             j = 1;
         }
 
-        //Inizializzazione container da usare in base al gruppo
-        Div box2;
-        Div wrapper2;
-        VerticalLayout numeroInseritoVL2;
-        HorizontalLayout hor2 = new HorizontalLayout(); //contiene 'box2' (biglia) + 'eliminaBtn'
         if(!isTeacher){
-            box2 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
-            wrapper2 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
-            numeroInseritoVL2 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
+            riempiAndShowNumeroInseritoContainerStudent(mess, operazione, gruppo2);
         }else{
-            box2 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
-            box2.getElement().setAttribute("id", "teacher");
-            wrapper2 = new Div();
-            numeroInseritoVL2 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
-        }
-
-        box2.removeAll();
-        wrapper2.removeAll();
-
-        Div circle = new Div();
-        circle.addClassName("circle");
-        circle.setId("colorpad1");
-        Paragraph paragraph = new Paragraph();
-        paragraph.addClassName("parag1");
-        Span span = new Span(mess);
-        paragraph.add(span);
-        circle.add(paragraph);
-        box2.add(circle);
-        hor2.add(box2);
-
-        if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
-            Div d = new Div();
-            d.setWidth(null);
-            Paragraph p = new Paragraph(mess);
-            p.addClassName("parag2");
-            d.addClassName("paer");
-            d.setId("colorpad");
-            d.add(p);
-
-            wrapper2.add(d);
-            wrapper2.addClassName("box1");
-            addDivToMainContent(wrapper2, gruppo);
+            riempiAndShowNumeroInseritoContainerTeacher(mess, operazione, gruppo1);
         }
 
         getElement().executeJs("setRandomColor()"); //associa un random color a 'backgroud-color' delle 'ball'
 
-        Button eliminaBtn = new Button("Elimina ");
-        eliminaBtn.setId("eliminaBtn");
-        eliminaBtn.addClassName("eliminaBtnStyle");
-        eliminaBtn.addClickListener(buttonClickEvent1 -> {
-            //Inizializzazione container da usare in base al gruppo
-            Div box1;
-            Div wrapper1;
-            VerticalLayout numeroInseritoVL;
-            if(!isTeacher){
-                box1 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
-                wrapper1 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
-                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
-            }else{
-                box1 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
-                wrapper1 = new Div();
-                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
-            }
-
-            numeroInseritoVL.removeAll();
-
-            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, account, gruppo);
-
-            box1.removeAll();
-            wrapper1.removeAll();
-            eliminaBtn.setEnabled(false);
-            sendNumeroBtn.setEnabled(true);
-            int num = Integer.parseInt(mess);
-            if (operazione.equals("somma")) {
-                BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - num);
-                checkIfWin();
-            }
-
-        });
-        hor2.add(eliminaBtn);
-
-        Label numeroInseritoLabel1 = new Label("Il tuo numero");
-        numeroInseritoLabel1.addClassName("numeroInseritolabel");
-
-        numeroInseritoVL2.add(numeroInseritoLabel1, hor2);
-
-        if(Utils.isAccountInThisGruppo(gruppo, account)){
-            numeroInseritoVL2.getStyle().set("display", "flex");
-        }else{
-            numeroInseritoVL2.getStyle().set("display", "none");
-        }
-
         /*--FINE--------------------------------------------------------------------------------------------------------------------------------------*/
         suggerisciNumero.setValue(suggerisciNumero.getEmptyValue());
-        sendNumeroBtn.setEnabled(false);
+        if(!isTeacher)  //per il teacher questo pulsante deve rimanere sempre attivo
+            sendNumeroBtn.setEnabled(false);
         if (BroadcasterMaty.getContClick().size() == 5) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(0);
             BroadcasterMaty.riceveIndizio(indizio);
@@ -449,13 +373,22 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         checkIfWin();
     }
 
-    private void operazioneSottrazione(int i, String mess, String operazione, Gruppo gruppo){ //sendBtn = 'Sottrai'
+    private void operazioneSottrazione(int i, String mess, String operazione){ //sendBtn = 'Sottrai'
         System.out.println(operazione);
         System.out.println(BroadcasterSuggerisciMaty.getItems().get(i).getParola());
         BroadcasterMaty.addIntegers(
                 BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - Integer.parseInt(mess));
 
-        BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo);
+        Gruppo gruppo1 = new Gruppo();
+        Gruppo gruppo2 = new Gruppo();
+
+        if(isTeacher){
+            gruppo1 = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo1);
+        }else{
+            gruppo2 = Utils.findGruppoByAccount(gruppi, account);
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, true, account, gruppo2);
+        }
 
         /*------INIZIO----------------------------------------------------------------------------------------------------------------------------------*/
         int j;
@@ -465,97 +398,20 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             j = 1;
         }
 
-        //Inizializzazione container da usare in base al gruppo
-        Div box3;
-        Div wrapper3;
-        VerticalLayout numeroInseritoVL3;
-        HorizontalLayout hor3 = new HorizontalLayout(); //contiene 'box1' (biglia) + 'eliminaBtn'
         if(!isTeacher){
-            box3 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
-            wrapper3 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
-            numeroInseritoVL3 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
+            riempiAndShowNumeroInseritoContainerStudent(mess, operazione, gruppo2);
         }else{
-            box3 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
-            wrapper3 = new Div();
-            numeroInseritoVL3 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
-        }
-
-        box3.removeAll();
-        wrapper3.removeAll();
-        Div circle = new Div();
-        circle.addClassName("circle");
-        circle.setId("colorpad1");
-        Paragraph paragraph = new Paragraph();
-        paragraph.addClassName("parag1");
-        Span span = new Span(mess);
-        paragraph.add(span);
-        circle.add(paragraph);
-        box3.add(circle);
-        hor3.add(box3);
-
-        if(!isTeacher) { //se non e' il teacher -> mostra animazione pallina
-            Div d = new Div();
-            d.setWidth(null);
-            Paragraph p = new Paragraph(mess);
-            p.addClassName("parag2");
-            d.addClassName("paer");
-            d.setId("colorpad");
-            d.add(p);
-            wrapper3.add(d);
-            wrapper3.addClassName("box1");
-            addDivToMainContent(wrapper3, gruppo);
+            riempiAndShowNumeroInseritoContainerTeacher(mess, operazione, gruppo1);
         }
 
         getElement().executeJs("setRandomColor()"); //associa un random color a 'backgroud-color' delle 'ball'
-
-        Button eliminaBtn = new Button("Elimina");
-        eliminaBtn.setId("eliminaBtn");
-        eliminaBtn.addClassName("eliminaBtnStyle");
-        eliminaBtn.addClickListener(buttonClickEvent1 -> {
-            //Inizializzazione container da usare in base al gruppo
-            Div box4;
-            Div wrapper4;
-            VerticalLayout numeroInseritoVL;
-            if(!isTeacher){
-                box4 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
-                wrapper4 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
-                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
-            }else{
-                box4 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
-                wrapper4 = new Div();
-                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
-            }
-
-            numeroInseritoVL.removeAll();
-
-            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, account, gruppo);
-
-            box4.removeAll();
-            wrapper4.removeAll();
-            eliminaBtn.setEnabled(false);
-            sendNumeroBtn.setEnabled(true);
-            int num = Integer.parseInt(mess);
-            BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + num);
-            checkIfWin();
-        });
-        hor3.add(eliminaBtn);
-
-        Label numeroInseritoLabel1 = new Label("Il tuo numero");
-        numeroInseritoLabel1.addClassName("numeroInseritolabel");
-
-        numeroInseritoVL3.add(numeroInseritoLabel1, hor3);
-
-        if(Utils.isAccountInThisGruppo(gruppo, account)){
-            numeroInseritoVL3.getStyle().set("display", "flex");
-        }else{
-            numeroInseritoVL3.getStyle().set("display", "none");
-        }
 
         /*------FINE----------------------------------------------------------------------------------------------------------------------------------*/
 
 
         suggerisciNumero.setValue(suggerisciNumero.getEmptyValue());
-        sendNumeroBtn.setEnabled(false);
+        if(!isTeacher)  //per il teacher questo pulsante deve rimanere sempre attivo
+            sendNumeroBtn.setEnabled(false);
         if (BroadcasterMaty.getContClick().size() == 5) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(0);
             BroadcasterMaty.riceveIndizio(indizio);
@@ -809,6 +665,126 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             }
         });
 
+    }
+
+    private void riempiAndShowNumeroInseritoContainerStudent(String mess, String operazione, Gruppo gruppo){
+        Div box2 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
+        Div wrapper2 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
+        VerticalLayout numeroInseritoVL2 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
+        HorizontalLayout hor2 = new HorizontalLayout(); //contiene 'box2' (biglia) + 'eliminaBtn'
+
+        box2.removeAll();
+        wrapper2.removeAll();
+
+        Div circle = new Div();
+        circle.addClassName("circle");
+        circle.setId("colorpad1");
+        Paragraph paragraph = new Paragraph();
+        paragraph.addClassName("parag1");
+        Span span = new Span(mess);
+        paragraph.add(span);
+        circle.add(paragraph);
+        box2.add(circle);
+        hor2.add(box2);
+
+        //se non e' il teacher -> mostra animazione pallina
+        Div d = new Div();
+        d.setWidth(null);
+        Paragraph p = new Paragraph(mess);
+        p.addClassName("parag2");
+        d.addClassName("paer");
+        d.setId("colorpad");
+        d.add(p);
+
+        wrapper2.add(d);
+        wrapper2.addClassName("box1");
+        addDivToMainContent(wrapper2, gruppo);
+
+        hor2.add(createEliminaBtn(mess, operazione, gruppo));
+
+        Label numeroInseritoLabel1 = new Label("Il tuo numero");
+        numeroInseritoLabel1.addClassName("numeroInseritolabel");
+
+        numeroInseritoVL2.add(numeroInseritoLabel1, hor2);
+        if(Utils.isAccountInThisGruppo(gruppo, account)){
+            numeroInseritoVL2.getStyle().set("display", "flex");
+        }else{
+            numeroInseritoVL2.getStyle().set("display", "none");
+        }
+    }
+
+    private void riempiAndShowNumeroInseritoContainerTeacher(String mess, String operazione, Gruppo gruppo){
+        Div box3 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
+        box3.getElement().setAttribute("id", "teacher");
+        Div wrapper3 = new Div();
+        VerticalLayout numeroInseritoVL3 = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
+        HorizontalLayout hor3 = new HorizontalLayout(); //contiene 'box3' (biglia) + 'eliminaBtn'
+
+        box3.removeAll();
+        wrapper3.removeAll();
+
+        Div circle = new Div();
+        circle.addClassName("circle");
+        circle.setId("colorpad1");
+        Paragraph paragraph = new Paragraph();
+        paragraph.addClassName("parag1");
+        Span span = new Span(mess);
+        paragraph.add(span);
+        circle.add(paragraph);
+        box3.add(circle);
+        hor3.add(box3);
+
+        hor3.add(createEliminaBtn(mess, operazione, gruppo));
+
+        Label numeroInseritoLabel1 = new Label("Il tuo numero");
+        numeroInseritoLabel1.addClassName("numeroInseritolabel");
+
+        numeroInseritoVL3.add(numeroInseritoLabel1, hor3);
+
+        if(MatyUI.currentGroupSelect.getId().equals(gruppo.getId())){
+            numeroInseritoVL3.getStyle().set("display", "flex");
+        }else{
+            numeroInseritoVL3.getStyle().set("display", "none");
+        }
+    }
+
+    private Button createEliminaBtn(String mess, String operazione, Gruppo gruppo){
+        Button eliminaBtn = new Button("Elimina ");
+        eliminaBtn.setId("eliminaBtn");
+        eliminaBtn.addClassName("eliminaBtnStyle");
+        eliminaBtn.addClickListener(buttonClickEvent1 -> {
+            //Inizializzazione container da usare in base al gruppo
+            Div box1;
+            Div wrapper1;
+            VerticalLayout numeroInseritoVL;
+            if(!isTeacher){
+                box1 = Utils.getDivFromListByAttribute(containersBox, "name", gruppo.getId());
+                wrapper1 = Utils.getDivFromListByAttribute(containersWrapper, "name", gruppo.getId());
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLList, "name", gruppo.getId());
+            }else{
+                box1 = Utils.getDivFromListByAttribute(containersBoxTeacher, "name", gruppo.getId());
+                wrapper1 = new Div();
+                numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(numeroInseritoVLTeacherList, "name", gruppo.getId());
+            }
+
+            numeroInseritoVL.removeAll();
+
+            BroadcasterSuggerisciMaty.broadcast(mess, operazione, false, account, gruppo);
+
+            box1.removeAll();
+            wrapper1.removeAll();
+            eliminaBtn.setEnabled(false);
+            sendNumeroBtn.setEnabled(true);
+            int num = Integer.parseInt(mess);
+            if (operazione.equals("somma")) {
+                BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - num);
+                checkIfWin();
+            }else{
+                BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + num);
+                checkIfWin();
+            }
+        });
+        return eliminaBtn;
     }
 
     //Implementazione dei metodi della Java interface 'SuggerisciListenerMaty
