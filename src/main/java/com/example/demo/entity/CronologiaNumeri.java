@@ -29,7 +29,12 @@ public class CronologiaNumeri {
 
     public CronologiaNumeri(Account account){
         this.account = account;
-        nomeAccount = account.getNome();
+
+        if(account.getTypeAccount().equals("teacher")){
+            nomeAccount = "Teacher";
+        }else{
+            nomeAccount = account.getNome();
+        }
         gruppo = new Gruppo();
         numeroInserito = 0;
         numeriEliminatiList = new ArrayList<Integer>();
