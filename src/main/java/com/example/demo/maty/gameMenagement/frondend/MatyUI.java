@@ -174,7 +174,9 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 navBar = new NavBar(true);
                 navBar.addClassName("navBarHorizontal");
                 navBar.getElement().getStyle().set("height", "70px");
+                navBar.getHomeContainerWithBtn().addClassName("navBarItemStyle");
                 add(navBar);
+                addInfoBtnInNavBar();
                 addChatBtnInNavBar();
             }
 
@@ -184,7 +186,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 add(nameGameTitle);
             }else{
                 titleGruppi = new Label("");
-                titleGruppi.addClassName("titleGruppi");
+                titleGruppi.addClassName("titleGruppiTeacher");
                 add(titleGruppi);
                 setMenuItemClickEventForGruppiMenuItem("Gruppo 1"); //gruppo 1 e' di default
             }
@@ -296,14 +298,12 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private void addChatBtnInNavBar(){
         HorizontalLayout chatContainer = new HorizontalLayout();
         chatContainer.getElement().setAttribute("id", "chatContainerNVMatyUI");
-        chatContainer.getStyle().set("position", "absolute");
-        chatContainer.getStyle().set("left", "80%");
+        chatContainer.addClassName("navBarItemStyle");
 
         Icon chatIcon = new Icon(VaadinIcon.CHAT);
         chatIcon.setSize("30px");
         chatIcon.setColor("#007d99");
-        chatIcon.getStyle().set("margin-top", "6px");
-        chatIcon.getStyle().set("margin-right", "8px");
+        chatIcon.getStyle().set("margin-top", "3px");
 
         Button chatBtn = new Button("Chat");
         chatBtn.addClassName("buttonChatStyleNavBar");
@@ -313,6 +313,29 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
 
         chatContainer.add(chatIcon, chatBtn);
         navBar.getChatContainer().add(chatContainer);
+    }
+
+    private void addInfoBtnInNavBar(){
+        HorizontalLayout infoContainer = new HorizontalLayout();
+        infoContainer.getElement().setAttribute("id", "infoContainerNVGuessUI");
+        infoContainer.addClassName("navBarItemStyle");
+
+        Icon infoIcon = new Icon(VaadinIcon.INFO_CIRCLE_O);
+        infoIcon.setSize("28px");
+        infoIcon.setColor("#007d99");
+        infoIcon.getStyle().set("margin-top", "3px");
+
+        Image logoGuess = new Image("frontend/img/Guess.jpeg", "guess");
+        DialogUtility dialogUtility = new DialogUtility();
+        Dialog d = dialogUtility.descrizioneGiocoDialog(maty, logoGuess);
+        Button infoBtn = new Button("Info");
+        infoBtn.addClassName("buttonInfoStyleNavBar");
+        infoBtn.addClickListener(buttonClickEvent -> {
+            d.open();
+        });
+
+        infoContainer.add(infoIcon, infoBtn);
+        navBar.getInfoGameContainer().add(infoContainer);
     }
 
     private Dialog createDialogWithChatContent(){
