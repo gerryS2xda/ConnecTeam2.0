@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 @Lazy
 public interface ItemRepositoryMaty extends JpaRepository<ItemMaty, Integer> {
 
-    @Query("SELECT count(*) FROM ItemMaty i")
+    @Query("SELECT COUNT(i) FROM ItemMaty i")
     int numeroRighe();
 
     ItemMaty findOneById(int id);

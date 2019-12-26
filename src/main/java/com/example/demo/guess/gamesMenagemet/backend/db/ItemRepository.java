@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 @Lazy
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 
-    @Query("SELECT count(*) FROM Item i")
+    @Query("SELECT COUNT(i) FROM Item i")
     int numeroRighe();
 
     Item findOneById(int id);
