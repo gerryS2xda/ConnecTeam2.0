@@ -206,7 +206,12 @@ public class MainView extends VerticalLayout {
                 VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepository",itemRepository);
                 VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryMaty",itemRepositoryMaty);
                 VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryNuovoGioco",itemRepositoryNuovoGioco);
-                UI.getCurrent().navigate(ControllerMainUI.class);
+
+                if(a.getTypeAccount().equals("teacher")){
+                    UI.getCurrent().navigate(ControllerMainUI.class);
+                }else{
+                    UI.getCurrent().navigate(StudentHomeView.class);
+                }
             }else {
                 InfoEventUtility infoEventUtility =  new InfoEventUtility();
                 infoEventUtility.infoEvent("E-mail e/o password errati","100");
