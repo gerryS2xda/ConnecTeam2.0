@@ -78,8 +78,9 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             if(accountRepository == null || account == null){
-                throw new IllegalArgumentException("AccountRepository e Account sono null");
-            }else if(!account.getTypeAccount().equals("teacher")){
+                return; //Non fare nulla
+            }
+            if(!account.getTypeAccount().equals("teacher")){
                 throw new IllegalArgumentException("Questo account non puo' accedere a questa pagina");
             }
             setId("TeacherMainUITabTest");
@@ -355,6 +356,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         logout.addClickListener(event -> {
             VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente
             UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
+            UI.getCurrent().getPage().reload();
         });
         accordion.add(new AccordionPanel(logout, new Div()));
 

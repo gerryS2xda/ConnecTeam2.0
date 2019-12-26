@@ -412,6 +412,7 @@ public class DialogUtility extends VerticalLayout {
             d.close();
             VaadinSession.getCurrent().getSession().invalidate();  //chiudi la sessione utente corrente
             UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
+            UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
         content.add(titleLab, descrizione, cancelButton);
 
@@ -477,8 +478,8 @@ public class DialogUtility extends VerticalLayout {
                 UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
             }else {
                 UI.getCurrent().navigate(StudentHomeView.class);  //vai alla pagina "StudentHomeView"
-                UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
             }
+            UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
         });
 
         Button negative = new Button("Continua partita");

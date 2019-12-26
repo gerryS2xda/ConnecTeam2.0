@@ -53,15 +53,11 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             accountEventListpublisher = accountEventPublisher;
 
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-            if(accountRepository == null)
-                throw new IllegalArgumentException("StudentHomeView: AccountRepository is null");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-            if(account == null)
-                throw new IllegalArgumentException("StudentHomeView: Account is null");
-
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-            if(partitaRepository == null)
-                throw new IllegalArgumentException("StudentHomeView: PartitaRepository is null");
+            if(accountRepository == null || account == null || partitaRepository == null){
+                return; //Non fare nulla
+            }
 
             setId("StudentHomeView");
 
