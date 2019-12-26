@@ -92,7 +92,7 @@
     background-image: -ms-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
 }
 
-.parag2{
+.parag3{
     font-weight: bold;
     display:flex;
     flex-direction: column;
@@ -101,12 +101,12 @@
     text-align: center;
 }
 
-.parag2 span{
+.parag3 span{
     font-weight: normal;
     font-size: 22px;
 }
 
-.parag2, blockquote {
+.parag3, blockquote {
     margin-top: 0em;
     margin-bottom: 0em;
 }

@@ -6,10 +6,17 @@
     margin: 0;
 }
 
-.showSelectsFieldGruppiForTeacherContainer{
-    margin-top: 16px;
-    position: absolute;
-    top: 60px;
+.navBarItemStyle{
+    align-self: flex-end;
+}
+
+.buttonInfoStyleNavBar{
+    background-color: transparent;
+    color: black;
+    padding: 0;
+    margin: 0;
+    font-size: 20px;
+    cursor: pointer;
 }
 
 
@@ -95,7 +102,6 @@
 
 .mainUIGameVLTeacher{
     margin-left: 64px;
-    margin-top: 70px;
 }
 
 .nameGameTitle{
@@ -110,11 +116,26 @@
 }
 
 .interactionContainerStyle{
-    width: 400px;
+    width: 500px;
     min-width: 400px;
+    height: 400px;
     align-items: center;
 }
 
 .eliminaBtnStyle{
     align-self: center;
+}
+
+.cronologiaContainerStyle{
+    width: 500px;
+    height: 400px;
+    align-items: center;
+}
+
+.titleGruppiTeacher{
+    margin-top: 60px;
+    margin-bottom: 16px;
+    font-size: 36px;
+    text-align: center;
+    width: 100%;
 }
