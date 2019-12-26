@@ -21,13 +21,12 @@ public class BroadcasterMaty implements Serializable {
     private static Executor executor = Executors.newSingleThreadExecutor();
     private static Map<Account, BroadcastListenerMaty> listeners = new HashMap();
     private static List<Account> accountList = new ArrayList<>();
-    private static ArrayList<String> strings = new ArrayList<>();
     private static int indiziRicevuti = 0;
-    private static ArrayList<ItemMaty> items = new ArrayList<>();
-    private static List<MatyController.PartitaThread> partiteThread = new ArrayList<>();
+    private static ArrayList<ItemMaty> items = new ArrayList<ItemMaty>();
+    private static List<MatyController.PartitaThread> partiteThread = new ArrayList<MatyController.PartitaThread>();
     private static int in = 0;
-    private static ArrayList<Integer> integers = new ArrayList<>();
-    private static ArrayList<Integer> contClick = new ArrayList<>();
+    private static ArrayList<Integer> integers = new ArrayList<Integer>();
+    private static ArrayList<Integer> contClick = new ArrayList<Integer>();
 
     //static methods
     public static synchronized Registration register(Account account, BroadcastListenerMaty broadcastListener) {
