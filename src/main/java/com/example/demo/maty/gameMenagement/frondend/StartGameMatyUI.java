@@ -23,7 +23,6 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
     //costanti
     private static final String HTML_NUMERO_INSERITO = "<div class=\"box boxGrid\">" +
-            "<div id=\"colorpad2\" class=\"circleSmall\"><p class=\"parag2\">" +
+            "<div id=\"colorpad2\" class=\"circleSmall\"><p class=\"parag3\">" +
             "<span>[[item.numeroInserito]]</span></p></div></div>";
 
     //static field
@@ -97,14 +96,17 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             interactionContainer = new VerticalLayout();
             interactionContainer.setPadding(false);
             interactionContainer.addClassName("interactionContainerStyle");
+            interactionContainer.setWidth("500px");
+            interactionContainer.setHeight("400px");
             riempiInteractionContainer();
             add(interactionContainer);
 
             //'cronologiaNumeriGridsContainer'
             cronologiaGridContainer = new VerticalLayout();
             cronologiaGridContainer.setPadding(false);
-            cronologiaGridContainer.setWidth("100%");
-            cronologiaGridContainer.setHeight("100%");
+            cronologiaGridContainer.setWidth("500px");
+            cronologiaGridContainer.setHeight("400px");
+            cronologiaGridContainer.addClassName("cronologiaContainerStyle");
 
             Label cronologiaMosse = new Label("Cosa hanno fatto fino ad ora");
             cronologiaMosse.addClassName("cronologiaMosse");
@@ -215,10 +217,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private void setOperazione(){
         for (int i = 0; i < BroadcasterSuggerisciMaty.getItems().size(); i++) {
             try {
-                if(BroadcasterSuggerisciMaty.getItems().get(i) == null){
-                    continue;
-                }
-
                 System.out.println("StartGameMatyUI.setoperazione(): items:" + BroadcasterSuggerisciMaty.getItems().get(i).getOperazione());
                 String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
                 if (operazione.equalsIgnoreCase("somma")) {
@@ -229,7 +227,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                     sendNumeroBtn.setText("Sottrai");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("StartGameMatyUI.setOperazione(): " + e.getMessage());
             }
         }
     }
@@ -374,9 +372,9 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             wrapper2.add(d);
             wrapper2.addClassName("box1");
             addDivToMainContent(wrapper2, gruppo);
-
-            getElement().executeJs("setRandomColor()");
         }
+
+        getElement().executeJs("setRandomColor()"); //associa un random color a 'backgroud-color' delle 'ball'
 
         Button eliminaBtn = new Button("Elimina ");
         eliminaBtn.setId("eliminaBtn");
@@ -506,8 +504,9 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             wrapper3.add(d);
             wrapper3.addClassName("box1");
             addDivToMainContent(wrapper3, gruppo);
-            getElement().executeJs("setRandomColor()");
         }
+
+        getElement().executeJs("setRandomColor()"); //associa un random color a 'backgroud-color' delle 'ball'
 
         Button eliminaBtn = new Button("Elimina");
         eliminaBtn.setId("eliminaBtn");
@@ -704,7 +703,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             newGrid.getElement().setAttribute("name", currentGrid.getElement().getAttribute("name"));
             newGrid.removeAllColumns();
             newGrid.addColumn(CronologiaNumeri::getNomeAccount).setHeader(" ")
-                    .setTextAlign(ColumnTextAlign.CENTER);;
+                    .setTextAlign(ColumnTextAlign.CENTER);
             newGrid.addColumn(TemplateRenderer.<CronologiaNumeri>of(HTML_NUMERO_INSERITO)
                     .withProperty("numeroInserito", CronologiaNumeri::getNumeroInserito))
                     .setHeader("Numero attuale").setTextAlign(ColumnTextAlign.CENTER);;
