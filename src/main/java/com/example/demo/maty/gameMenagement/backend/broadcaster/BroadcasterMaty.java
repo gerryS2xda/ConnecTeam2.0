@@ -48,14 +48,17 @@ public class BroadcasterMaty implements Serializable {
 
     }
 
-    public static synchronized void startGame(MatyController.PartitaThread partitaThread, ItemMaty item){
-        items.add(item);
+    public static synchronized void startGame(MatyController.PartitaThread partitaThread){
         partiteThread.add(partitaThread);
         listeners.forEach((account, broadcastListener) -> {
             executor.execute(() -> {
                 broadcastListener.startGame1();
             });
         });
+    }
+
+    public static synchronized void addItemMaty(ItemMaty item){
+        items.add(item);
     }
 
     public static synchronized void riceveIndizio( final String message) {
