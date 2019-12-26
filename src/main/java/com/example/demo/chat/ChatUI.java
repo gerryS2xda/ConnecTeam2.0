@@ -5,6 +5,7 @@ import com.example.demo.entity.Gruppo;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.gamesRules.Game;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
+import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.utility.MessageList;
 import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.Key;
@@ -103,7 +104,7 @@ public class ChatUI extends VerticalLayout {
                 if(game.getNomeGioco().equals("Guess")){
                     currentGroupSelect =  GuessUI.currentGroupSelect.getId();
                 }else if(game.getNomeGioco().equals("Maty")){
-                    //Da inserire
+                    currentGroupSelect =  MatyUI.currentGroupSelect.getId();
                 }
                 if(x.getId().equals(currentGroupSelect)){
                     spazioMsgTeacher.getStyle().set("display", "block");
@@ -129,7 +130,7 @@ public class ChatUI extends VerticalLayout {
                     if(game.getNomeGioco().equals("Guess")){
                         currentGroupSelect =  GuessUI.currentGroupSelect.getId();
                     }else if(game.getNomeGioco().equals("Maty")){
-                        //Da inserire
+                        currentGroupSelect =  MatyUI.currentGroupSelect.getId();
                     }
                     BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, currentGroupSelect), "Teacher:" + message1.getValue() + ":" + account.getId());
                 }else{
@@ -147,7 +148,7 @@ public class ChatUI extends VerticalLayout {
                     if(game.getNomeGioco().equals("Guess")){
                         currentGroupSelect =  GuessUI.currentGroupSelect.getId();
                     }else if(game.getNomeGioco().equals("Maty")){
-                        //Da inserire
+                        currentGroupSelect =  MatyUI.currentGroupSelect.getId();
                     }
                     BroadcasterChat.broadcast(Utils.findGruppoByName(gruppi, currentGroupSelect), "Teacher:" + message1.getValue() + ":" + account.getId());
                 }else{
