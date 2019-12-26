@@ -162,7 +162,7 @@ public class NavBar extends HorizontalLayout {
             }else {
                 VaadinSession.getCurrent().getSession().invalidate();
                 UI.getCurrent().navigate(MainView.class);  //vai alla pagina "MainView" (classe con @Route("MainView")
-                System.out.println(VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user"));
+                UI.getCurrent().getPage().reload(); //da aggiungere quando si è su pc o browser diversi
             }
         });
 
@@ -178,6 +178,10 @@ public class NavBar extends HorizontalLayout {
 
     public HorizontalLayout getInfoGameContainer() {
         return infoGameContainer;
+    }
+
+    public HorizontalLayout getHomeContainerWithBtn() {
+        return homeContainerWithBtn;
     }
 
     //Responsive methods
