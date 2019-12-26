@@ -127,7 +127,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
 
             if(gruppi.size() == 0){ //la lista dei gruppi e' stata settata una sola volta?
                 gruppi = com.example.demo.users.broadcaster.Broadcaster.getGruppiListReceive();
-                BroadcasterGuess.setGruppiList(gruppi);
             }
 
             //Inizializzazione per StartGameUI

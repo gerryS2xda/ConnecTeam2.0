@@ -19,7 +19,6 @@ public class BroadcasterGuess implements Serializable {
 
     private static Executor executor = Executors.newSingleThreadExecutor();
     private static Map<Account, BroadcastListener> listeners = new HashMap();
-    private static List<Gruppo> gruppiList = new ArrayList<>();
     private static List<Account> accountList = new ArrayList<>();
     private static Map<String,Integer> votes = new HashMap();
     private static Map<Gruppo, List<String>> paroleVotate = new HashMap<>();   //contiene le parole 'Suggerite'
@@ -172,10 +171,6 @@ public class BroadcasterGuess implements Serializable {
     }
 
     //getter and setter methods
-    public static void setGruppiList(List<Gruppo> gruppiList) {
-        BroadcasterGuess.gruppiList = gruppiList;
-    }
-
     public static Map<Gruppo, List<String>> getParoleVotateHM() {
         return paroleVotate;
     }
