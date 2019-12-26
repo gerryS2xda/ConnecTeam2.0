@@ -39,28 +39,29 @@ public class MatyController {
     public MatyController(PartitaRepository partitaRepository){
         this.partitaRepository= partitaRepository;
         teacherSession = com.example.demo.users.broadcaster.Broadcaster.getTeacherSession();
+
+        if(VaadinService.getCurrentRequest() != null) {
+            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
+            itemRepository = (ItemRepositoryMaty) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepositoryMaty");
+        }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
+            itemRepository = (ItemRepositoryMaty) teacherSession.getAttribute("itemRepositoryMaty");
+        }
     }
 
     protected void addPunteggio(Punteggio punteggio){
         partita.addPunteggio(punteggio);
     }
 
+    public void setItemMatyBeforeStartGame(){
+        int tot = itemRepository.numeroRighe();
+        int rand = random.nextInt(tot)+1;
+        item = itemRepository.findOneById(rand);
+    }
+
     public void startGame(Partita parita){
 
         this.partita = parita;
 
-        if(VaadinService.getCurrentRequest() != null) {
-            //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
-            itemRepository = (ItemRepositoryMaty) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("itemRepositoryMaty");
-            partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-        }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
-            itemRepository = (ItemRepositoryMaty) teacherSession.getAttribute("itemRepositoryMaty");
-            partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
-        }
-
-        int tot = itemRepository.numeroRighe();
-        int rand = random.nextInt(tot)+1;
-        item = itemRepository.findOneById(rand);
         if(partitaThread!=null){
             partitaThread.interrupt();
             partitaThread.stopTimer();
