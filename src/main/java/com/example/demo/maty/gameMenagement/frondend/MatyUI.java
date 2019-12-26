@@ -23,6 +23,8 @@ import com.example.demo.utility.*;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -30,6 +32,8 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
@@ -83,11 +87,11 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private NavBar navBar;
     private Dialog chatContainerDialog;
     private ChatUI chatUI;
-    //Nuove variabili
     private VerticalLayout mainUIGame;
     private HorizontalLayout secondiContainer;
     private TimerBar timerBar;
     private VerticalLayout aiutoContainer;
+    private Label titleGruppi;
 
 
     public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
@@ -136,7 +140,13 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 attendiDialog.open();
             }
 
+            //Init StartGameMatyUI
             matyController = new MatyController(partitaRepository);
+            startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
+
+            //Chat container
+            chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
+            chatContainerDialog = createDialogWithChatContent();
 
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
@@ -172,6 +182,11 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 Label nameGameTitle = new Label("Maty");
                 nameGameTitle.addClassName("nameGameTitle");
                 add(nameGameTitle);
+            }else{
+                titleGruppi = new Label("");
+                titleGruppi.addClassName("titleGruppi");
+                add(titleGruppi);
+                setMenuItemClickEventForGruppiMenuItem("Gruppo 1"); //gruppo 1 e' di default
             }
 
             //Init main container
@@ -184,11 +199,6 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             }
 
             add(mainUIGame);
-
-
-            //Chat container
-            chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
-            chatContainerDialog = createDialogWithChatContent();
 
             //Implementazione di un pulsante invisibile 'start' che verra' 'cliccato' dal teacher
             start = new Button();
@@ -214,6 +224,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             add(start);
 
             waitAllUserForStartGame();
+
         }
         catch (Exception e) {
             removeAll();
@@ -237,44 +248,10 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
         }
     }
 
-    private HorizontalLayout nameUserAndInfoBtnContainer(){
-        HorizontalLayout hor1 = new HorizontalLayout();
-        hor1.setSpacing(false);
-        hor1.setPadding(false);
-        hor1.getStyle().set("position","absolute");
-        hor1.getStyle().set("top","6%");  //value precedente: 10%
-        hor1.getStyle().set("left","20%");
-
-        String str = "Benvenuta ";
-        if(account.getSesso().equals("0")){
-            str = "Benvenuto ";
-        }
-
-        Label nomeUser = new Label(str + account.getNome());
-        nomeUser.getStyle().set("font-size","40px");
-
-        Button b = new Button("Info su Maty");
-        b.getStyle().set("background-color","#007d99");
-        b.getStyle().set("margin-top","16px");
-        b.getStyle().set("margin-left","36px");
-        b.getStyle().set("cursor","pointer");
-        b.getStyle().set("color","white");
-
-        Image logoMaty = new Image("frontend/img/Maty.jpeg", "maty");
-        DialogUtility dialogUtility = new DialogUtility();
-        Dialog d = dialogUtility.descrizioneGiocoDialog(maty, logoMaty);
-        b.addClickListener(buttonClickEvent -> {
-            d.open();
-        });
-
-        hor1.add(nomeUser, b);
-        return hor1;
-    }
-
     private void showButtonInAppBar(){
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.getStyle().set("position", "absolute");
-        horizontalLayout.getStyle().set("left", "80%");
+        horizontalLayout.getStyle().set("left", "70%");
         horizontalLayout.getStyle().set("z-index", "2");
         horizontalLayout.setHeight(AppBarUI.APPBAR_HEIGHT);
 
@@ -312,7 +289,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             com.example.demo.users.broadcaster.Broadcaster.setCountMatyUser(0); //reset counter giocatori di Maty
         });
 
-        horizontalLayout.add(infoBtn, chatBtn, terminateGame);
+        horizontalLayout.add(createMenuBarForGruppi(), infoBtn, chatBtn, terminateGame);
         appBarUI.add(horizontalLayout);
     }
 
@@ -349,56 +326,52 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
         return d;
     }
 
-    private void showSelectsFieldGruppiForTeacher(){
-        HorizontalLayout hor1 = new HorizontalLayout();
-        hor1.addClassName("showSelectsFieldGruppiForTeacherContainer");
+    private MenuBar createMenuBarForGruppi(){
+        MenuBar menuBar = new MenuBar();
+        menuBar.setOpenOnHover(true);
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+        menuBar.getStyle().set("background-color", "#0000");
+        menuBar.getStyle().set("margin", "0");
 
-        Label lab1 = new Label("Seleziona gruppo: ");
-        lab1.getStyle().set("font-size", "16px");
-        lab1.getStyle().set("margin-top", "8px");
+        Icon gruppiIcon = new Icon(VaadinIcon.GROUP);
+        gruppiIcon.setSize(AppBarUI.ICON_BTN_SIZE);
 
-        Select<String> selects = new Select<>();
-        List<String> items = new ArrayList<String>();
+        MenuItem gruppiItem = menuBar.addItem("Gruppi");
+        gruppiItem.addComponentAsFirst(gruppiIcon);
+        SubMenu gruppiSubMenu = gruppiItem.getSubMenu();
 
         for(Gruppo g : gruppi){
-            items.add(g.getId());
+            gruppiSubMenu.addItem(g.getId(), menuItemClickEvent -> {
+                String value = g.getId();
+                setMenuItemClickEventForGruppiMenuItem(value);
+            });
         }
 
-        selects.setItems(items);
-        if(items.size() > 0)
-            selects.setValue(items.get(0));
+        return menuBar;
+    }
 
-        selects.addValueChangeListener(event -> {
-            String value = event.getValue();
-            currentGroupSelect = Utils.findGruppoByName(gruppi, value);
+    private void setMenuItemClickEventForGruppiMenuItem(String value){
+        titleGruppi.setText(value);
+        currentGroupSelect = Utils.findGruppoByName(gruppi, value);
 
-            if(startGameMatyUI == null){
-                throw new IllegalArgumentException("StartGameMatyUI is null!!");
-            }
+        startGameMatyUI.refreshContentForTeacher();
 
-            String groupId = currentGroupSelect.getId();
+        String groupId = currentGroupSelect.getId();
 
-            startGameMatyUI.hideAllContainerForTeacher();
-            Div containerBox = Utils.getDivFromListByAttribute(startGameMatyUI.getContainersBoxTeacher(), "name", groupId);
-            containerBox.getStyle().set("display", "block");
+        startGameMatyUI.hideAllContainerForTeacher();
 
-            VerticalLayout numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getNumeroInseritoVLTeacherList(), "name", groupId);
-            numeroInseritoVL.getStyle().set("display", "flex");
+        Div containerBox = Utils.getDivFromListByAttribute(startGameMatyUI.getContainersBoxTeacher(), "name", groupId);
+        containerBox.getStyle().set("display", "block");
 
-            /*
-            VerticalLayout cronologiaNumeri = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getCronologiaNUmeriTeacherList(), "name", groupId);
-            cronologiaNumeri.getStyle().set("display", "flex");
+        VerticalLayout numeroInseritoVL = Utils.getVerticalLayoutFromListByAttribute(startGameMatyUI.getNumeroInseritoVLTeacherList(), "name", groupId);
+        numeroInseritoVL.getStyle().set("display", "flex");
 
-             */
+        startGameMatyUI.showSelectedCronologiaNumeriGridTeacher(groupId);
 
-            chatUI.hideAllSpazioMessaggiTeacher();
-            MessageList spaziomsgTeacher = Utils.getMessageListFromListByAttributeForChat(chatUI.getSpazioMessaggiTeacher(), "name", groupId);
-            spaziomsgTeacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
+        chatUI.hideAllSpazioMessaggiTeacher();
+        MessageList spaziomsgTeacher = Utils.getMessageListFromListByAttributeForChat(chatUI.getSpazioMessaggiTeacher(), "name", groupId);
+        spaziomsgTeacher.getStyle().set("display", "block"); //mostra solo DivContainerPVTeacher in base al currentGroupSelect
 
-        });
-
-        hor1.add(lab1, selects);
-        add(hor1);
     }
 
     //public methods
@@ -455,7 +428,8 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                         mainUIGame.add(aiutoContainer);
 
                         //StartGameMatyUI: HorizontalLayout container
-                        startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
+                        //startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
+                        startGameMatyUI.initItemMaty();
                         mainUIGame.add(startGameMatyUI);
 
                     });

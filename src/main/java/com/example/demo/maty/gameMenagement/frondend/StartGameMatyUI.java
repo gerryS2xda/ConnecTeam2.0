@@ -38,7 +38,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
     //costanti
     private static final String HTML_NUMERO_INSERITO = "<div class=\"box boxGrid\">" +
-            "<div id=\"colorpad1\" class=\"circleSmall\"><p class=\"parag2\">" +
+            "<div id=\"colorpad2\" class=\"circleSmall\"><p class=\"parag2\">" +
             "<span>[[item.numeroInserito]]</span></p></div></div>";
 
     //static field
@@ -135,9 +135,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             }
             add(cronologiaGridContainer);
 
-            if(!isTeacher){
-                BroadcasterSuggerisciMaty.refreshContent();
-            }
+            BroadcasterSuggerisciMaty.refreshContent();
         } catch (Exception e) {
             removeAll();
             ErrorPage errorPage = new ErrorPage();
@@ -158,28 +156,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         suggerisciNumero.setPlaceholder("Enter a number...");
         suggerisciNumero.setWidth("150px");
         suggerisciNumero.addThemeVariants(TextFieldVariant.LUMO_ALIGN_CENTER);
-        ItemMaty itemMaty = matyController.getItem();
-        BroadcasterSuggerisciMaty.addItems(itemMaty);
-        String operazione11 = "";
-        int a = 0;
 
-        for (int i = 0; i < BroadcasterSuggerisciMaty.getItems().size(); i++) {
-            try {
-                operazione11 = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
-                System.out.println("Sono a a a " + operazione11);
-                a = i;
-            } catch (Exception e) {
-            }
-        }
-        if (operazione11.equals("sottrazione")) {
-            int numS = Integer.parseInt(BroadcasterSuggerisciMaty.getItems().get(a).getParola());
-            numS = numS * 2;
-            BroadcasterMaty.numeroDaSottrarre(numS + "", BroadcasterSuggerisciMaty.getItems().get(a).getParola());
-            BroadcasterMaty.addIntegers(numS);
-        } else {
-            System.out.println("A " + a);
-            BroadcasterMaty.numeroDASommare(BroadcasterMaty.getItems().get(0).getParola());
-        }
 
         Div divC = new Div();  //container per il btn (vedi 'buttonsend1.scss)
         divC.addClassName("container11");
@@ -188,7 +165,6 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         sendNumeroBtn.getStyle().set("cursor", "pointer");
         divC.add(sendNumeroBtn);
         sendNumeroInserito(); //business logic of sendNumeroBtn click listener
-        setOperazione();
 
         inputFieldAndBtn.add(suggerisciNumero, divC);
         interactionContainer.add(inputFieldAndBtn);
@@ -239,7 +215,11 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     private void setOperazione(){
         for (int i = 0; i < BroadcasterSuggerisciMaty.getItems().size(); i++) {
             try {
-                System.out.println("StartGameMatyUI: items:" + BroadcasterSuggerisciMaty.getItems().get(i).getOperazione());
+                if(BroadcasterSuggerisciMaty.getItems().get(i) == null){
+                    continue;
+                }
+
+                System.out.println("StartGameMatyUI.setoperazione(): items:" + BroadcasterSuggerisciMaty.getItems().get(i).getOperazione());
                 String operazione = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
                 if (operazione.equalsIgnoreCase("somma")) {
                     operazioneLabel.setText("Somma un numero");
@@ -249,7 +229,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                     sendNumeroBtn.setText("Sottrai");
                 }
             } catch (Exception e) {
-                //e.printStackTrace();  -> NullPointerException con ItemMaty
+                e.printStackTrace();
             }
         }
     }
@@ -790,21 +770,46 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
 
     }
 
-    private void updateAndshowGrids(){
+    //public methods
+    public void initItemMaty(){
+        ItemMaty itemMaty = matyController.getItem();
+        BroadcasterSuggerisciMaty.addItems(itemMaty);
+        String operazione11 = "";
+        int a = 0;
 
-        if(isTeacher) {
-            Gruppo currentGruppo = Utils.findGruppoByName(gruppi, MatyUI.currentGroupSelect.getId());
-            cronologiaNumeriGridsContainerTeacher.getChildren().forEach(component -> {
-                Grid<CronologiaNumeri> grid = (Grid<CronologiaNumeri>) component;
-                if(grid.getElement().getAttribute("name") != null){
-                    if(grid.getElement().getAttribute("name").equals(currentGruppo.getId())){
-                        grid.getStyle().set("display", "flex");
-                    }else{
-                        grid.getStyle().set("display", "none");
-                    }
-                }
-            });
+        for (int i = 0; i < BroadcasterSuggerisciMaty.getItems().size(); i++) {
+            try {
+                operazione11 = BroadcasterSuggerisciMaty.getItems().get(i).getOperazione();
+                System.out.println("Sono a a a " + operazione11);
+                a = i;
+            } catch (Exception e) {
+            }
         }
+        if (operazione11.equals("sottrazione")) {
+            int numS = Integer.parseInt(BroadcasterSuggerisciMaty.getItems().get(a).getParola());
+            numS = numS * 2;
+            BroadcasterMaty.numeroDaSottrarre(numS + "", BroadcasterSuggerisciMaty.getItems().get(a).getParola());
+            BroadcasterMaty.addIntegers(numS);
+        } else {
+            System.out.println("A " + a);
+            BroadcasterMaty.numeroDASommare(BroadcasterMaty.getItems().get(0).getParola());
+        }
+        setOperazione();
+    }
+
+    public void showSelectedCronologiaNumeriGridTeacher(String currentGroup){
+
+        cronologiaNumeriGridsContainerTeacher.getChildren().forEach(component -> {
+            Grid<CronologiaNumeri> grid = (Grid<CronologiaNumeri>) component;
+            if(grid.getElement().getAttribute("name") != null){
+                if(grid.getElement().getAttribute("name").equals(currentGroup)){
+                    grid.getStyle().set("display", "flex");
+                }else{
+                    grid.getStyle().set("display", "none");
+                }
+            }
+        });
+
     }
 
     //Implementazione dei metodi della Java interface 'SuggerisciListenerMaty
@@ -825,14 +830,19 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
     @Override
     public void refreshContent(){
         if(isTeacher){
-            for(Gruppo g : gruppi){
-                updateAllGrid("", "", account, g);
-            }
+            refreshContentForTeacher();
         }else{
             Gruppo currentGruppo = Utils.findGruppoByAccount(gruppi, account);
             updateAllGrid("", "", account, currentGruppo);
         }
     }
+
+    public void refreshContentForTeacher(){
+        for(Gruppo g : gruppi){
+            updateAllGrid("", "", account, g);
+        }
+    }
+
 
     //Getter and setter
     public ArrayList<Div> getContainersBoxTeacher() {
