@@ -37,7 +37,6 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
@@ -144,10 +143,6 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             matyController = new MatyController(partitaRepository);
             startGameMatyUI = new StartGameMatyUI(matyController, account, isTeacher);
 
-            //Chat container
-            chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
-            chatContainerDialog = createDialogWithChatContent();
-
             //Per ogni partita gia' iniziata, setta isStarted a true (una sola partita alla volta)
             for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
                 if (BroadcasterMaty.getPartiteThread().get(i) != null) {
@@ -158,10 +153,19 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             if (isStarted != true) {
                 BroadcasterMaty.register(account, this);
                 BroadcasterChat.register(account, this);
+                if(isTeacher){ //solo il teacher, quando avvia la partita, ha la possibilita' di 'scegliere e caricare' un item
+                    matyController.setItemMatyBeforeStartGame();
+                    item = matyController.getItem();
+                    BroadcasterMaty.addItemMaty(item);
+                }
             } else {
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
             }
+
+            //Chat container
+            chatUI = new ChatUI(new Maty(), account, accountRepository, gruppi);
+            chatContainerDialog = createDialogWithChatContent();
 
             if(isTeacher){ //mostra la appbar
                 setSpacing(false);
@@ -216,8 +220,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                     partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
                     matyController.startGame(partita);
                     partitaThread = matyController.getPartitaThread();
-                    item = matyController.getItem();
-                    BroadcasterMaty.startGame(partitaThread, item);
+                    BroadcasterMaty.startGame(partitaThread);
                 } else {
                     InfoEventUtility infoEventUtility = new InfoEventUtility();
                     infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "10");
