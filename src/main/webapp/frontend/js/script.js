@@ -13,6 +13,7 @@ function getRandomColor() {
 function setRandomColor() {
     $("#colorpad").css("background-color", getRandomColor());
     $("#colorpad1").css("background-color", getRandomColor());
+    $("#colorpad2").css("background-color", getRandomColor());
 }
 
 function sends() {
