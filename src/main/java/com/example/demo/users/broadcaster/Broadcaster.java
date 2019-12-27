@@ -88,17 +88,8 @@ public class Broadcaster  {
         }
     }
 
-    public static synchronized void logOut(Account account){
-        if(account.getTypeAccount().equals("student"))
-            listeners.remove(account);
-            accountList.remove(account);
-        if(account.getTypeAccount().equals("teacher"))
-            gestStudlisteners.remove(account); //logout del teacher
-        if(countGuessUser > 0)
-            countGuessUser--;
-        if(countMatyUser > 0)
-            countMatyUser--;
-        System.out.println("Broadcaster (User)- logOut: size accountList:" + accountList.size());
+    public static synchronized void removeItemFromAccountList(Account account){
+        accountList.remove(account);
     }
 
     //static methods for teacher (TeacherMainUITab)
