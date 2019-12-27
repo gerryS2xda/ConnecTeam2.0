@@ -4,13 +4,10 @@ import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.SuggerisciListenerMaty;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BroadcasterSuggerisciMaty implements Serializable {
 
@@ -42,6 +39,13 @@ public class BroadcasterSuggerisciMaty implements Serializable {
         }));
     }
 
+    public static synchronized void reset(){
+        listeners.forEach(((account, listenerMaty) -> {
+            listenerMaty.reset();
+        }));
+    }
+
+    //getter and setter
     public static Map<Account, SuggerisciListenerMaty> getListeners() {
         return listeners;
     }
