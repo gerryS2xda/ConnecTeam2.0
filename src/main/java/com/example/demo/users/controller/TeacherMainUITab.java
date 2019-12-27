@@ -7,6 +7,7 @@ import com.example.demo.error.ErrorPage;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.mainView.MainView;
+import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.userOperation.SettingsUser;
 import com.example.demo.users.broadcaster.Broadcaster;
@@ -404,7 +405,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             BroadcasterGuess.terminaPartitaForAll("Partita terminata!! Teacher si e' disconnesso");
         }
         if(Broadcaster.isMatyStart()){ //Una partita di Maty e' in corso?
-            com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty.terminaPartitaFromTeacher();
+            BroadcasterMaty.terminaPartitaForAll("Partita terminata!! Teacher si e' disconnesso");
         }
 
         Broadcaster.unregisterTeacher(account, this);
