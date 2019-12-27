@@ -153,6 +153,8 @@
     background-color:transparent;
     width: 100%;
     align-items: center;
+    height: 350px;
+    overflow-y: scroll;
 }
 
 .suggerisciParolaLayoutTeacher{
@@ -161,7 +163,10 @@
     padding-left: 0;
     width: 100%;
     align-items: center;
+    height: 300px;
+    overflow-y: scroll;
 }
+
 .divMessageListParolaVotata{
     width: 100%;
     text-align: center;
