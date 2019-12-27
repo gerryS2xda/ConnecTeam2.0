@@ -32,7 +32,9 @@ public class EndGameEventListener {
 
         if(acc.getTypeAccount().equals("student")){
             Broadcaster.removeAccountFromAllGrid(acc);
-        }else if(statusPartita.equals("vincente")){
+            Broadcaster.removeItemFromAccountList(acc);
+        }
+        if(statusPartita.equals("vincente")){
             Broadcaster.configFinePartitaTeacher(nameGame, g, statusPartita);
         }else if(statusPartita.equals("non-vincente")){
             Broadcaster.configFinePartitaTeacher(nameGame, g, statusPartita);
