@@ -33,12 +33,10 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.erik.TimerBar;
-
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -585,7 +583,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void partititaVincente(String parola,int punteggio) {
+    public void partitaVincente(String parola,int punteggio) {
         getUI().get().access(() -> {
             //reset();
             if(chatContainerDialog.isOpened())
@@ -611,7 +609,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
     }
 
     @Override
-    public void partititanonVincente(){
+    public void partitaNonVincente(){
         getUI().get().access(() -> {
             //reset();
             if(chatContainerDialog.isOpened())
@@ -652,7 +650,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                     }
                 });
             }else{
-                System.out.println("GuessUI.terminaPartitaFromTeacher() - getUI is not present for Account: " + account.getNome());
+                System.out.println("GuessUI.terminaPartitaForAll() - getUI is not present for Account: " + account.getNome());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -685,7 +683,6 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         }
 
         System.out.println("GuessUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
-
         if(chatContainerDialog.isOpened())
             chatContainerDialog.close();
 

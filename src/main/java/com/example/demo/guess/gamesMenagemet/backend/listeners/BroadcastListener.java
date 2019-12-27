@@ -8,8 +8,8 @@ public interface BroadcastListener {
     void receiveIndizio(int indexIndizio, String message);
     void countDown(int time);
     void parolaVotata(Gruppo g);
-    void partititaVincente(String parola,int punteggio);
-    void partititanonVincente();
+    void partitaVincente(String parola,int punteggio);
+    void partitaNonVincente();
     void terminaPartitaForAll(String msgDialog);
     void partitaVincenteForTeacher(Gruppo gruppo);
     void partitaNonVincenteForTeacher(Gruppo gruppo);

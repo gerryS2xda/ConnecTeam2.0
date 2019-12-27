@@ -109,7 +109,7 @@ public class BroadcasterGuess implements Serializable {
                     if(i.equals(account)){
                         //Esegui solo per gli account che sono membri del gruppo in cui e' stata trovata la parola vincente
                         executor.execute(() -> {
-                            broadcastListener.partititaVincente(s,integer);
+                            broadcastListener.partitaVincente(s,integer);
                         });
                     }
                 }
@@ -129,7 +129,7 @@ public class BroadcasterGuess implements Serializable {
                     if(i.equals(account)){
                         //Esegui solo per gli account che sono membri del gruppo in cui non e' stata trovata la parola vincente
                         executor.execute(() -> {
-                            broadcastListener.partititanonVincente();
+                            broadcastListener.partitaNonVincente();
                         });
                     }
                 }
