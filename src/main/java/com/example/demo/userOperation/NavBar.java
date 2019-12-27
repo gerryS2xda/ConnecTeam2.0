@@ -184,6 +184,10 @@ public class NavBar extends HorizontalLayout {
         return homeContainerWithBtn;
     }
 
+    public HorizontalLayout getLogOutContainer(){
+        return logOutContainer;
+    }
+
     //Responsive methods
     private void loadResponsiveConfiguration(int widthBrowser, int heightBrowser){
 
