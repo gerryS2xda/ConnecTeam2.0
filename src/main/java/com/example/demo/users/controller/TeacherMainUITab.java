@@ -79,7 +79,8 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             if(accountRepository == null || account == null){
-                return; //Non fare nulla
+                showErrorPage();
+                return;
             }
             if(!account.getTypeAccount().equals("teacher")){
                 throw new IllegalArgumentException("Questo account non puo' accedere a questa pagina");
@@ -113,13 +114,15 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
 
             UI.getCurrent().setPollInterval(1000); //Usato sia per GestioneStudentUI, GuessUI e MatyUI poiche' non vengono caricate con UI.navigate()
         }catch(Exception e){
-            removeAll();
-            getStyle().set("background-color","white");
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
+            showErrorPage();
             e.printStackTrace();
-            System.out.println(e.getMessage());
         }
+    }
+
+    private void showErrorPage(){
+        removeAll();
+        ErrorPage errorPage = new ErrorPage();
+        add(errorPage);
     }
 
     //private methods

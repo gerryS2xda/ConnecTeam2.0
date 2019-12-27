@@ -130,13 +130,16 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
             //UI.getCurrent().setPollInterval(5000); Da usare solo le pagina viene caricata con UI.navigate(...)
         }catch (Exception e){
-            removeAll();
-            getStyle().set("background-color","white");
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
+            showErrorPage();
             e.printStackTrace();
         }
 
+    }
+
+    private void showErrorPage(){
+        removeAll();
+        ErrorPage errorPage = new ErrorPage();
+        add(errorPage);
     }
 
     private void showButtonInAppBar(){
@@ -558,28 +561,30 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
                 gridStud.setItems(sourceItems);
 
                 for(int i = 0; i < gridGruppiGuess.size(); i++){
-                    sourceDataProvider = (ListDataProvider<Account>) gridGruppiGuess.get(i).getDataProvider();
-                    sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-                    if(sourceItems.contains(a)) {
-                        sourceItems.remove(a);
-                        gridGruppiGuess.get(i).setItems(sourceItems);
+                    ListDataProvider<Account> sourceDataProvider1 = (ListDataProvider<Account>) gridGruppiGuess.get(i).getDataProvider();
+                    List<Account> sourceItems1 = new ArrayList<>(sourceDataProvider1.getItems());
+                    if(sourceItems1.contains(a)) {
+                        sourceItems1.remove(a);
+                        gridGruppiGuess.get(i).setItems(sourceItems1);
                         if(gruppiGuess.size() > 0)
-                            gruppiGuess.get(i).setMembri(sourceItems);  //Quando termina partita per tutti: Exception: java.lang.IndexOutOfBoundsException: Index: 1, Size: 0
+                            gruppiGuess.get(i).setMembri(sourceItems1);  //Quando termina partita per tutti: Exception: java.lang.IndexOutOfBoundsException: Index: 1, Size: 0
                     }
                 }
 
                 for(int i = 0; i < gridGruppiMaty.size(); i++){
-                    sourceDataProvider = (ListDataProvider<Account>) gridGruppiMaty.get(i).getDataProvider();
-                    sourceItems = new ArrayList<>(sourceDataProvider.getItems());
-                    if(sourceItems.contains(a)) {
-                        sourceItems.remove(a);
-                        gridGruppiMaty.get(i).setItems(sourceItems);
+                    ListDataProvider<Account> sourceDataProvider2 = (ListDataProvider<Account>) gridGruppiMaty.get(i).getDataProvider();
+                    List<Account> sourceItems2 = new ArrayList<>(sourceDataProvider2.getItems());
+                    if(sourceItems2.contains(a)) {
+                        sourceItems2.remove(a);
+                        gridGruppiMaty.get(i).setItems(sourceItems2);
                         if(gruppiMaty.size() > 0)
-                            gruppiMaty.get(i).setMembri(sourceItems);
+                            gruppiMaty.get(i).setMembri(sourceItems2);
                     }
                 }
 
             });
+        }else{
+            System.out.println("GestioneStudentUI.removeAccountFromAllGrid(): getUI() is not present");
         }
     }
 

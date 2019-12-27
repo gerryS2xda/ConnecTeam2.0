@@ -101,21 +101,22 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             containersPVTeacher = new ArrayList<Div>();
             containersParoleVotate = new ArrayList<Div>();
 
+            UI.getCurrent().getElement().getStyle().set("overflow", "hidden"); //accedi al <body> element
+
             if(VaadinService.getCurrentRequest() != null) {
                 //Ottieni valori dalla sessione corrente e verifica se sono presenti in sessione
                 account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
-                if (account == null)
-                    throw new IllegalArgumentException("GuessUI: Account is null");
                 accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
-                if (accountRepository == null)
-                    throw new IllegalArgumentException("GuessUI: AccountRepository is null");
                 partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-                if (partitaRepository == null)
-                    throw new IllegalArgumentException("GuessUI: PartitaRepository is null");
             }else{ //getCurrentRequest() is null (poiche' e' il server che 'impone' accesso a questa pagina - no memorizzazione stato partita)
                 account = (Account) teacherSession.getAttribute("user");
                 accountRepository = (AccountRepository) teacherSession.getAttribute("rep");
                 partitaRepository = (PartitaRepository) teacherSession.getAttribute("partitaRepository");
+            }
+
+            if(account == null || accountRepository == null || partitaRepository == null){
+                showErrorPage();
+                return; //non fare nulla
             }
 
             if(account.getTypeAccount().equals("teacher")) {
@@ -230,13 +231,16 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             waitAllUserForStartGame();
 
         }catch (Exception e) {
-            removeAll();
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
+            showErrorPage();
             e.printStackTrace();
         }
     }
 
+    private void showErrorPage(){
+        removeAll();
+        ErrorPage errorPage = new ErrorPage();
+        add(errorPage);
+    }
 
     //Inizia una partita solo quando il teacher e alcuni studenti sono connessi a questa pagina
     private void waitAllUserForStartGame(){

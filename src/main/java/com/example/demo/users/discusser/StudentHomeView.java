@@ -56,7 +56,8 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
             if(accountRepository == null || account == null || partitaRepository == null){
-                return; //Non fare nulla
+                showErrorPage();
+                return;
             }
 
             setId("StudentHomeView");
@@ -108,7 +109,6 @@ public class StudentHomeView extends HorizontalLayout implements BroadcastListen
 
     public void showErrorPage(){
         removeAll();
-        getStyle().set("background-color","white");
         ErrorPage errorPage = new ErrorPage();
         add(errorPage);
     }

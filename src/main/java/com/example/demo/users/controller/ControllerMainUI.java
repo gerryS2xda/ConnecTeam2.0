@@ -45,8 +45,10 @@ public class ControllerMainUI extends HorizontalLayout {
             accountRepository = (AccountRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("rep");
             account = (Account) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("user");
             if(accountRepository == null || account == null){
-                throw new IllegalArgumentException("AccountRepository e Account sono null");
-            }else if(!account.getTypeAccount().equals("teacher")){
+                showErrorPage();
+                return;
+            }
+            if(!account.getTypeAccount().equals("teacher")){
                 throw new IllegalArgumentException("Questo account non puo' accedere a questa pagina");
             }
 
@@ -69,14 +71,16 @@ public class ControllerMainUI extends HorizontalLayout {
             add(main1);
 
         }catch (Exception e){
-            removeAll();
-            getStyle().set("background-color","white");
-            ErrorPage errorPage = new ErrorPage();
-            add(errorPage);
+            showErrorPage();
             e.printStackTrace();
-            System.out.println(e.getMessage());
         }
 
+    }
+
+    private void showErrorPage(){
+        removeAll();
+        ErrorPage errorPage = new ErrorPage();
+        add(errorPage);
     }
 
     private HorizontalLayout homeUser() {
