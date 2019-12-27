@@ -72,7 +72,6 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private PartitaRepository partitaRepository;
     private Partita partita;
     private MatyController.PartitaThread partitaThread;
-    private ItemMaty item;
     private boolean isStarted = false;
     private boolean isTeacher = false;
     private Label labelQuesito;
@@ -93,6 +92,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     private TimerBar timerBar;
     private VerticalLayout aiutoContainer;
     private Label titleGruppi;
+    private ItemMaty item;
 
 
     public MatyUI(@Autowired EndGameEventBeanPublisher endGameEventBeanPublisher) {
@@ -155,11 +155,6 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             if (isStarted != true) {
                 BroadcasterMaty.register(account, this);
                 BroadcasterChat.register(account, this);
-                if(isTeacher){ //solo il teacher, quando avvia la partita, ha la possibilita' di 'scegliere e caricare' un item
-                    matyController.setItemMatyBeforeStartGame();
-                    item = matyController.getItem();
-                    BroadcasterMaty.addItemMaty(item);
-                }
             } else {
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEvent("C'è una partita in corso aspetta che finisca", "0");
@@ -222,6 +217,10 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 }
                 if (isStarted != true) {
                     partita = new Partita(new Timestamp(new Date().getTime()), "Maty");
+                    matyController.setItemMatyBeforeStartGame();
+                    item = matyController.getItem();
+                    BroadcasterMaty.addItemMaty(item);
+
                     matyController.startGame(partita);
                     partitaThread = matyController.getPartitaThread();
                     BroadcasterMaty.startGame(partitaThread);
@@ -408,14 +407,15 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     public static void reset(){
         try {
             BroadcasterMaty.getIntegers().clear();
-            BroadcasterMaty.clearPartiteThread();   //interrompi tutti i thread sulle partite e poi fai clear della List
+            BroadcasterMaty.clearPartiteThread();   //interrompi tutti i thread dedicati alle partite e poi fai clear della List
             BroadcasterSuggerisciMaty.getItems().clear();
+            BroadcasterSuggerisciMaty.reset();
             BroadcasterMaty.getAccountList().clear();
             BroadcasterMaty.getItems().clear();
+            BroadcasterMaty.getContClick().clear();
             BroadcasterMaty.getListeners().clear();
             BroadcasterChat.getListeners().clear();
             BroadcasterSuggerisciMaty.getListeners().clear();
-            BroadcasterMaty.getContClick().clear();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -444,10 +444,12 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                         Label lab = new Label("Tempo: ");
                         lab.getStyle().set("font-size","30px");
                         lab.getStyle().set("margin-left","15px");
+
                         timerBar = new TimerBar(300000); //5 minuti
                         timerBar.getElement().getStyle().set("width", "100%");
                         timerBar.getElement().getStyle().set("min-width", "50%");   //valore minimo precedente: 500px
                         timerBar.getElement().getStyle().set("margin-top", "14px");
+
                         secondiContainer.add(lab, timerBar);
                         mainUIGame.add(secondiContainer);
 
