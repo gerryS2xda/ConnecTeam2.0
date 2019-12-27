@@ -95,7 +95,6 @@ public class MatyController {
                 }
             }
             partitaRepository.save(partita);
-            System.out.println("Sono in controller true"+BroadcasterMaty.getIndiziRicevuti());
             BroadcasterMaty.setIndiziRicevuti(0);
         }else {
             vinta = false;
@@ -106,8 +105,6 @@ public class MatyController {
                 addPunteggio(new Punteggio(a,0));
             }
             partitaRepository.save(partita);
-            System.out.println("Sono in controller false"+BroadcasterMaty.getIndiziRicevuti());
-
         }
 
 
@@ -151,7 +148,7 @@ public class MatyController {
             partitaThread.interrupt();
             partitaThread.stopTimer();
             BroadcasterMaty.setIndiziRicevuti(0);
-            BroadcasterMaty.partitanonVincente();
+            BroadcasterMaty.terminaPartitaForAll("Partita terminata!!"); //usato per indicare che la partita deve terminare per tutti
         }
 
         public void stopTimer(){

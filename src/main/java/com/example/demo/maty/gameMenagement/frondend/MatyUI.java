@@ -37,6 +37,8 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
@@ -57,7 +59,7 @@ import java.util.List;
 @StyleSheet("frontend://stile/matyStyle.css")
 @JavaScript("frontend://js/script.js")
 @PageTitle("ConnecTeam-Maty")
-public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, ChatListener, PageConfigurator {
+public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, ChatListener, PageConfigurator, BeforeLeaveObserver {
 
     //static field
     public static Gruppo currentGroupSelect;
@@ -179,6 +181,8 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 navBar.addClassName("navBarHorizontal");
                 navBar.getElement().getStyle().set("height", "70px");
                 navBar.getHomeContainerWithBtn().addClassName("navBarItemStyle");
+                navBar.getLogOutContainer().getStyle().set("top", "8px");
+                navBar.getLogOutContainer().addClassName("navBarItemStyle");
                 add(navBar);
                 addInfoBtnInNavBar();
                 addChatBtnInNavBar();
@@ -290,7 +294,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
         terminateGame.getStyle().set("background-color", "#0000");
         terminateGame.getStyle().set("margin", "0");
         terminateGame.addClickListener(buttonClickEvent -> {
-            BroadcasterMaty.terminaPartitaFromTeacher();
+            BroadcasterMaty.terminaPartitaForAll("Partita terminata dal teacher");
             com.example.demo.users.broadcaster.Broadcaster.setCountMatyUser(0); //reset counter giocatori di Maty
         });
 
@@ -491,11 +495,11 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     }
 
     @Override
-    public void partititaVincente(String parola, int punteggio) {
+    public void partitaVincente(String parola, int punteggio) {
         getUI().get().access(() -> {
+            //reset();
             if(chatContainerDialog.isOpened())
                 chatContainerDialog.close();
-            reset();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
                 FireWorks fireWorks = new FireWorks();
@@ -503,26 +507,40 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaVincente(parola, punteggio, maty);
                 endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, new Gruppo(), "");
-            }else if(account.getTypeAccount().equals("teacher")){
-                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true, new Gruppo(), "");
             }
         });
     }
 
     @Override
-    public void partititanonVincente() {
+    public void partitaVincenteForTeacher(Gruppo gruppo){
         getUI().get().access(() -> {
             if(chatContainerDialog.isOpened())
                 chatContainerDialog.close();
-            reset();
+            endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, gruppo, "vincente");
+        });
+    }
+
+    @Override
+    public void partitaNonVincente() {
+        getUI().get().access(() -> {
+            //reset();
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
             removeAll();
             if(account.getTypeAccount().equals("student")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitanonVincente(maty);
                 endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, new Gruppo(), "");
-            }else if(account.getTypeAccount().equals("teacher")){
-                endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true, new Gruppo(), "");
             }
+        });
+    }
+
+    @Override
+    public void partitaNonVincenteForTeacher(Gruppo gruppo){
+        getUI().get().access(() -> {
+            if(chatContainerDialog.isOpened())
+                chatContainerDialog.close();
+            endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, gruppo, "non-vincente");
         });
     }
 
@@ -541,7 +559,7 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
     }
 
     @Override
-    public void terminaPartitaFromTeacher() {
+    public void terminaPartitaForAll(String msgDialog) {  //usato anche per indicare se non ci sono piu' utenti connessi
         try {
             if(getUI().isPresent()) {   //inserito per evitare exception (No value Present) dovuta al teacher quando effettua il logout e viene invocato questo metodo
                 getUI().get().access(() -> {
@@ -551,14 +569,14 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
                     removeAll();
                     if (account.getTypeAccount().equals("student")) {
                         DialogUtility dialogUtility = new DialogUtility();
-                        //dialogUtility.partitaTerminataFromTeacher();
+                        dialogUtility.partitaTerminataForAll(msgDialog);
                         endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, false, new Gruppo(), "");
                     } else {
                         endGamePublisher.doStuffAndPublishAnEvent(maty.getNomeGioco(), account, true, new Gruppo(), "");
                     }
                 });
             }else{
-                System.out.println("MatyUI.terminaPartitaFromTeacher() - getUI is not present for Account: " + account.getNome());
+                System.out.println("MatyUI.terminaPartitaForAll() - getUI is not present for Account: " + account.getNome());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -597,17 +615,50 @@ public class MatyUI extends VerticalLayout implements BroadcastListenerMaty, Cha
             return;
         }
 
+        System.out.println("MatyUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
         if(chatContainerDialog.isOpened())
             chatContainerDialog.close();
-        System.out.println("MatyUI.browserIsLeaving() e' stato invocato; Account:" + account.getNome());
+
+        BroadcasterMaty.unregister(account, this);
 
         if(account.getTypeAccount().equals("teacher")){ //teacher ha effettuato il logout, allora termina per tutti;
-            BroadcasterMaty.terminaPartitaFromTeacher();
-        }else if(BroadcasterMaty.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
-            BroadcasterMaty.unregister(account, this);
+            BroadcasterMaty.terminaPartitaForAll("Partita terminata!! Teacher si e' disconnesso");
+            return;
+        }
+
+        if(BroadcasterMaty.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
             endGamePublisher.doStuffAndPublishAnEvent("Maty", account, false, new Gruppo(), "");
         }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
-            BroadcasterMaty.terminaPartitaFromTeacher();
+            BroadcasterMaty.terminaPartitaForAll("Partita terminata!! Nessun utente e' connesso al gioco");
+        }
+    }
+
+    //Implements methods of BeforeLeaveObserver
+    @Override
+    public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) { //Necessario poiche' viene invocato UI.navigate() dal server e NON dal client
+        System.out.println("MatyUI.beforeLeave() e' stato invocato; Account:" + account.getNome());
+
+        //Pre-condition
+        boolean flag = false;
+        for(Account i : BroadcasterMaty.getListeners().keySet()){
+            if(i.equals(account)){
+                flag = true;
+                break;
+            }
+        }
+        if(!flag){  //se il listener non contiene questo 'account' -> non fare nulla
+            return;
+        }
+
+        if(chatContainerDialog.isOpened())
+            chatContainerDialog.close();
+
+        BroadcasterMaty.unregister(account, this);
+
+        if(!isTeacher && BroadcasterMaty.getListeners().size() > 1) { //se rimuovendo questo utente dal listener, sono presenti almeno 2 account
+            endGamePublisher.doStuffAndPublishAnEvent("Maty", account, false, new Gruppo(), "");
+        }else{  //nessun utente e' connesso, quindi termina la partita per tutti gli utenti connessi rimanenti
+            BroadcasterMaty.terminaPartitaForAll("Partita terminata!! Nessun utente e' connesso al gioco");
         }
     }
 

@@ -231,36 +231,31 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
         }
     }
 
-    private void checkIfWin() {
+    private void checkIfWin(Gruppo gruppo) {
         for (int i = 0; i < BroadcasterMaty.getPartiteThread().size(); i++) {
             if (i == 0) {
                 flag = false;
             }
-            try {
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            } finally {
-                int punteggio = 0;
-                if (BroadcasterMaty.getIndiziRicevuti() == 0) {
-                    punteggio = 120;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 1) {
-                    punteggio = 100;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 2) {
-                    punteggio = 60;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 3) {
-                    punteggio = 30;
-                } else if (BroadcasterMaty.getIndiziRicevuti() == 4) {
-                    punteggio = 10;
-                }
-                vincente = matyController.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),
-                        BroadcasterMaty.getItems().get(i));
-                if (vincente == false && flag == false) {
-                } else if (vincente == true && flag == false) {
-                    BroadcasterMaty.getPartiteThread().get(i).interrupt();
-                    BroadcasterMaty.getPartiteThread().get(i).stopTimer();
-                    BroadcasterMaty.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1)
-                            ,punteggio);
-                }
+
+            int punteggio = 0;
+            if (BroadcasterMaty.getIndiziRicevuti() == 0) {
+                punteggio = 120;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 1) {
+                punteggio = 100;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 2) {
+                punteggio = 60;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 3) {
+                punteggio = 30;
+            } else if (BroadcasterMaty.getIndiziRicevuti() == 4) {
+                punteggio = 10;
+            }
+            vincente = matyController.partitaVincente("" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1),
+            BroadcasterMaty.getItems().get(i));
+            if (vincente == true && flag == false) {
+                BroadcasterMaty.getPartiteThread().get(i).interrupt();
+                BroadcasterMaty.getPartiteThread().get(i).stopTimer();
+                BroadcasterMaty.partitaVincente(gruppo, "" + BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1)
+                           ,punteggio);
             }
 
         }
@@ -353,24 +348,20 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(0);
             BroadcasterMaty.riceveIndizio(indizio);
             BroadcasterMaty.setIndiziRicevuti(1);
-            System.out.println("Trovato");
         } else if (BroadcasterMaty.getContClick().size() == 10) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(1);
             BroadcasterMaty.riceveIndizio(indizio);
             BroadcasterMaty.setIndiziRicevuti(2);
-            System.out.println("Trovato");
         } else if (BroadcasterMaty.getContClick().size() == 15) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(2);
             BroadcasterMaty.riceveIndizio(indizio);
             BroadcasterMaty.setIndiziRicevuti(3);
-            System.out.println("Trovato");
         } else if (BroadcasterMaty.getContClick().size() == 20) {
             String indizio = BroadcasterSuggerisciMaty.getItems().get(i).getIndizio(3);
             BroadcasterMaty.riceveIndizio(indizio);
             BroadcasterMaty.setIndiziRicevuti(4);
-            System.out.println("Trovato");
         }
-        checkIfWin();
+        checkIfWin(gruppo2); //verifica se il numero inserito conduce alla soluzione (SOLO student)
     }
 
     private void operazioneSottrazione(int i, String mess, String operazione){ //sendBtn = 'Sottrai'
@@ -433,7 +424,7 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             BroadcasterMaty.setIndiziRicevuti(4);
             System.out.println("Trovato");
         }
-        checkIfWin();
+        checkIfWin(gruppo2); //verifica se il numero inserito conduce alla soluzione (SOLO student)
     }
 
     private void addDivToMainContent(Div d, Gruppo g){
@@ -778,10 +769,10 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
             int num = Integer.parseInt(mess);
             if (operazione.equals("somma")) {
                 BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) - num);
-                checkIfWin();
+                checkIfWin(gruppo); //include anche il teacher nella verifica
             }else{
                 BroadcasterMaty.addIntegers(BroadcasterMaty.getIntegers().get(BroadcasterMaty.getIntegers().size() - 1) + num);
-                checkIfWin();
+                checkIfWin(gruppo); //include anche il teacher nella verifica
             }
         });
         return eliminaBtn;

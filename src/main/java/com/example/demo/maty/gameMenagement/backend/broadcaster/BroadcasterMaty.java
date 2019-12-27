@@ -1,6 +1,7 @@
 package com.example.demo.maty.gameMenagement.backend.broadcaster;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Gruppo;
 import com.example.demo.maty.gameMenagement.backend.MatyController;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.BroadcastListenerMaty;
@@ -103,27 +104,43 @@ public class BroadcasterMaty implements Serializable {
         integers.add(integer);
     }
 
-    public static synchronized void partitaVincente(String s, Integer integer) {
+    public static synchronized void partitaVincente(Gruppo gruppo, String s, Integer integer) {
         try {
             listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.partititaVincente(s,integer);
-                });
+                for(Account i : gruppo.getMembri()){
+                    if(i.equals(account)){
+                        //Esegui solo per gli account che sono membri del gruppo in cui e' stata trovata la soluzione
+                        executor.execute(() -> {
+                            broadcastListener.partitaVincente(s,integer);
+                        });
+                    }
+                }
+                if(account.getTypeAccount().equals("teacher")){
+                    broadcastListener.partitaVincenteForTeacher(gruppo);
+                }
             });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public static synchronized void partitanonVincente() {
+    public static synchronized void partitanonVincente(Gruppo gruppo) {
         try {
             listeners.forEach((account, broadcastListener) -> {
-                executor.execute(() -> {
-                    broadcastListener.partititanonVincente();
-                });
+                for(Account i : gruppo.getMembri()) {
+                    if (i.equals(account)) {
+                        //Esegui solo per gli account che sono membri del gruppo in cui non e' stata trovata la soluzione
+                        executor.execute(() -> {
+                            broadcastListener.partitaNonVincente();
+                        });
+                    }
+                }
+                if(account.getTypeAccount().equals("teacher")){
+                    broadcastListener.partitaNonVincenteForTeacher(gruppo);
+                }
             });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -143,15 +160,15 @@ public class BroadcasterMaty implements Serializable {
         }
     }
 
-    public static synchronized void terminaPartitaFromTeacher(){
+    public static synchronized void terminaPartitaForAll(String msgDialog){
         try {
             listeners.forEach((account, broadcastListener) -> {
                 executor.execute(() -> {
-                    broadcastListener.terminaPartitaFromTeacher();
+                    broadcastListener.terminaPartitaForAll(msgDialog);
                 });
             });
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
