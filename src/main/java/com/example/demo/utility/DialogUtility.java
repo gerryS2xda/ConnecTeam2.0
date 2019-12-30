@@ -2,19 +2,18 @@ package com.example.demo.utility;
 
 import com.example.demo.mainView.MainView;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
+import com.example.demo.users.controller.TeacherMainUITab;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.gamesRules.Game;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
-import com.example.demo.users.controller.ControllerMainUI;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -45,65 +44,78 @@ public class DialogUtility extends VerticalLayout {
     }
 
     public void loginDialog(Account account){
-        Dialog dialog = new Dialog();
-        Div content = new Div();
-        Button accedi = new Button("Accedi");
-        accedi.addClassName("my-style2");
-        content.addClassName("my-style");
-        content.setText("Registrazione completata");
-        String styles = ".my-style { "
-                + "margin-left: 60px;"
-                + " }"
-                + " .my-style2 { "
-                + "margin-top: 27px;"
-                + "margin-left: 110px;"
-                + "cursor: pointer;"
-                + "background-color: #007d99;"
-                + "color: white;"
-                + " }";
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("100%");
+        d.setHeight("100%");
 
-        StreamRegistration resource = UI.getCurrent().getSession()
-                .getResourceRegistry()
-                .registerResource(new StreamResource("styles.css", () -> {
-                    byte[] bytes = styles.getBytes(StandardCharsets.UTF_8);
-                    return new ByteArrayInputStream(bytes);
-                }));
-        UI.getCurrent().getPage().addStyleSheet(
-                "base://" + resource.getResourceUri().toString());
-        dialog.setWidth("300px");
-        dialog.setHeight("120px");
-        dialog.add(content,accedi);
-        dialog.open();
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
 
-        accedi.addClickShortcut(Key.ENTER);
+        Label titleLab = new Label("Registrazione completata");
+        titleLab.getStyle().set("font-size", "24px");
+        titleLab.getStyle().set("color", "black");
 
-        accedi.addClickListener(clickEvent -> {
-            dialog.close();
+        Button accediBtn = new Button("Accedi");
+        accediBtn.getStyle().set("background-color", "#007d99");
+        accediBtn.getStyle().set("cursor", "pointer");
+        accediBtn.getStyle().set("color", "white");
+        accediBtn.getStyle().set("margin-top", "25px");
+        accediBtn.addClickShortcut(Key.ENTER);
+        accediBtn.addClickListener(buttonClickEvent -> {
+            d.close();
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", account.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", account);
 
             if(account.getTypeAccount().equals("teacher")){
-                UI.getCurrent().navigate(ControllerMainUI.class);
+                UI.getCurrent().navigate(TeacherMainUITab.class);
             }else{
                 UI.getCurrent().navigate(StudentHomeView.class);
             }
-
         });
+        content.add(titleLab, accediBtn);
+
+        d.add(content);
+        d.open();
     }
 
     public void passwordDimenticata(){
 
-        Dialog dialog = new Dialog();
-        Label label= new Label("Inserisci l'email, ti manderemo una password provvisoria");
         AccountRepository accountRepository = (AccountRepository) VaadinRequest.getCurrent().getWrappedSession().getAttribute("rep");
-        FormLayout form= new FormLayout();
-        TextField email= new TextField("Email");
-        Button sendMail= new Button("Invia");
+
+        Dialog d = new Dialog();
+        d.setWidth("100%");
+        d.setHeight("100%");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.START);
+        content.getStyle().set("height", "100%");
+
+        Label titleLab = new Label("Password dimenticata");
+        titleLab.getStyle().set("font-size", "24px");
+        titleLab.getStyle().set("align-self" , "center");
+        titleLab.getStyle().set("margin-bottom", "16px");
+
+        Label descrizione = new Label();
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.setText("Inserisci l'email e se è presente, puoi impostare una nuova password");
+
+        HorizontalLayout hor1 = new HorizontalLayout();
+        TextField email = new TextField("Email");
+        Button sendMail = new Button("Invia");
+        sendMail.getStyle().set("align-self", "flex-end");
         sendMail.setEnabled(false);
-        dialog.setWidth("400px");
-        dialog.setHeight("120px");
-        dialog.open();
+        hor1.add(email, sendMail);
+
+        content.add(titleLab, descrizione, hor1);
+
         Binder<String> binder = new Binder<>();
         binder.setBean(control);
         Label validationStatus = new Label();
@@ -114,7 +126,7 @@ public class DialogUtility extends VerticalLayout {
                 .bind(s -> control, (s, v) -> control = v);
         binder.withValidator(Validator.from(account ->{
             if(email.isEmpty()){
-                dialog.remove(validationStatus);
+                d.remove(validationStatus);
                 return true;
             }else{
                 Account a = accountRepository.findOneByEmail(email.getValue());
@@ -123,7 +135,7 @@ public class DialogUtility extends VerticalLayout {
                 }else{
                     Div space = new Div();
                     space.setWidth("100%");
-                    dialog.add(space,validationStatus);
+                    d.add(space,validationStatus);
                     return false;
                 }
             }
@@ -131,15 +143,59 @@ public class DialogUtility extends VerticalLayout {
         binder.addStatusChangeListener(
                 event -> sendMail.setEnabled(binder.isValid()));
         sendMail.addClickListener(clickEvent -> {
+            d.close();
             Random rand = new Random();
             int n = rand.nextInt(9000) + 1000;
             accountRepository.updatePassword(email.getValue(), n + "");
-            SendMail.sendMailTLS(email.getValue(), "Cambia password", "La nuova password è: " + n);
-            InfoEventUtility infoEventUtility =  new InfoEventUtility();
-            infoEventUtility.infoEvent("Email Inviata con successo","115");
-            dialog.close();
+
+            //Nuova implementazione
+            showRecoveryPasswordDialog(n + "").open();
+
+            /*  Questa implementazione e' stata rimossa, vedi ConnecTeam1.0 per il vecchio codice
+                SendMail.sendMailTLS(email.getValue(), "Cambia password", "La nuova password è: " + n);
+                InfoEventUtility infoEventUtility =  new InfoEventUtility();
+                infoEventUtility.infoEvent("Email Inviata con successo","115");
+             */
         });
-        dialog.add(label,form,email,sendMail);
+
+        d.add(content);
+        d.open();
+    }
+
+    private Dialog showRecoveryPasswordDialog(String newPwd){
+        Dialog d = new Dialog();
+        d.setCloseOnEsc(false);
+        d.setCloseOnOutsideClick(false);
+        d.setWidth("400px");
+        d.setHeight("100%");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setSpacing(false);
+        content.setPadding(false);
+        content.setAlignItems(Alignment.CENTER);
+        content.getStyle().set("height", "100%");
+
+        Label titleLab = new Label("Recupero password");
+        titleLab.getStyle().set("font-size", "24px");
+        titleLab.getStyle().set("margin-bottom", "16px");
+
+        Label descrizione = new Label();
+        descrizione.getStyle().set("font-size", "16px");
+        descrizione.getStyle().set("align-self", "start");
+        descrizione.setText("La sua nuova password e': " + newPwd);
+
+        Button cancelButton = new Button("Close");
+        cancelButton.getStyle().set("background-color", "#007d99");
+        cancelButton.getStyle().set("cursor", "pointer");
+        cancelButton.getStyle().set("color", "white");
+        cancelButton.getStyle().set("margin-top", "25px");
+        cancelButton.addClickListener(buttonClickEvent -> {
+            d.close();
+        });
+        content.add(titleLab, descrizione, cancelButton);
+        d.add(content);
+
+        return d;
     }
 
     public void partitaVincente(String parola, int punteggio, Game game){
