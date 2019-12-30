@@ -1,7 +1,5 @@
 package com.example.demo.mainView;
 
-
-
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
@@ -10,7 +8,6 @@ import com.example.demo.gamesRules.GameList;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.example.demo.maty.gameMenagement.backend.db.ItemRepositoryMaty;
 import com.example.demo.nuovoGioco.gameManagement.database.ItemRepositoryNuovoGioco;
-import com.example.demo.users.controller.ControllerMainUI;   //modificato
 import com.example.demo.users.controller.TeacherMainUITab;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.utility.DialogUtility;
@@ -40,6 +37,13 @@ import com.vaadin.flow.server.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Objects;
 
+/*
+    NOTA: La business logic che permette di inviare email e' stata rimossa da questa versione di ConnecTeam.
+    Per visualizzare il suo funzionamento è necessario utilizzare ConnecTeam1.0 (sviluppato da Gregorio Saggese)
+    Questa funzionalita' permette di creare un nuovo account 'Google' e quindi sfruttare 'Gmail' per poter
+    accedere al sistema e per poter recuperare la password in caso di smarrimento (viene inviata una mail all'account)
+    Il codice relativo alla password dimenticata si trova in DialogUtility.passwordDimenticata().
+ */
 
 @PWA(name = "Connecteam", shortName = "Connecteam",
         offlinePath = "offline-page.html",
@@ -208,13 +212,13 @@ public class MainView extends VerticalLayout {
                 VaadinService.getCurrentRequest().getWrappedSession().setAttribute("itemRepositoryNuovoGioco",itemRepositoryNuovoGioco);
 
                 if(a.getTypeAccount().equals("teacher")){
-                    UI.getCurrent().navigate(ControllerMainUI.class);
+                    UI.getCurrent().navigate(TeacherMainUITab.class);
                 }else{
                     UI.getCurrent().navigate(StudentHomeView.class);
                 }
             }else {
                 InfoEventUtility infoEventUtility =  new InfoEventUtility();
-                infoEventUtility.infoEvent("E-mail e/o password errati","100");
+                infoEventUtility.infoEventForError("E-mail e/o password errati", "250px");
             }
         });
 
@@ -355,13 +359,17 @@ public class MainView extends VerticalLayout {
         if (a.findOneByEmail(account.getEmail()) == null) { //se true -> gestisci nuova email
             if(account.getEmail().contains("@unisa.it")){
                 account.setTypeAccount("teacher");
-            }else{
+            }else if(account.getEmail().contains("@studenti.unisa.it")) {
                 account.setTypeAccount("student");
+            }else{
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForError("E-mail non valida!!", "200px");
+                return;
             }
             completaRegistrazione(account);
         }else {
             InfoEventUtility infoEventUtility = new InfoEventUtility();
-            infoEventUtility.infoEvent("E-mail esistente, riprova","100");
+            infoEventUtility.infoEventForError("E-mail esistente, riprova", "240px");
         }
     }
 
