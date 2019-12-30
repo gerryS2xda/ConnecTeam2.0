@@ -35,4 +35,6 @@ public interface PartitaRepository extends JpaRepository<Partita, Long> {
     @Query(value = " DELETE FROM PARTITA_ARRAY PA WHERE PA.ACCOUNT_ID=?1", nativeQuery = true)
     void deleteAccountsPartite(long id);
 
+    @Query("SELECT p FROM Partita p")
+    List<Partita> getAllPartite();
 }

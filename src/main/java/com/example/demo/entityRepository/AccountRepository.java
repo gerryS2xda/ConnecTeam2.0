@@ -9,12 +9,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface AccountRepository  extends JpaRepository<Account, Long> {
 
-    public Account findAccountById(Long id);
-    public Account findOneByEmail(String email);
-    public boolean existsByNome(String nome);
+    Account findAccountById(Long id);
+    Account findOneByEmail(String email);
+    boolean existsByNome(String nome);
 
     @Transactional
     @Modifying
@@ -37,6 +38,9 @@ public interface AccountRepository  extends JpaRepository<Account, Long> {
     @Modifying
     @Query("update Account a set a.profilePicture = ?2 where a.id = ?1")
     void updateImage(Long id, byte[] newimg);
+
+    @Query("SELECT a FROM Account a")
+    List<Account> getAllAccount();
 
 }
 
