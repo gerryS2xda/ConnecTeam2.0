@@ -5,18 +5,23 @@ import com.example.demo.entity.Partita;
 import com.example.demo.entity.Punteggio;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
-
 import java.sql.Timestamp;
+import java.util.List;
+
+import org.slf4j.Logger;
 
 @SpringBootApplication
 @EnableAsync
 public class DemoApplication {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private AccountRepository accountRepository;
@@ -32,13 +37,15 @@ public class DemoApplication {
     public CommandLineRunner initializeData() {
         return args -> {
 
-            Account gregorio=new Account("Gregorio", "gregorio@gmail.com", "gregorio","0", "teacher");
-            Account luigi=new Account("Luigi", "luigi@gmail.com", "luigi","0", "teacher");
-            Account francesca=new Account("Francesca", "francesca@gmail.com", "francesca","1", "student");
-            Account antonio=new Account("Antonio", "antonio@gmail.com", "antonio","0", "student");
-            Account gianluca=new Account("Gianluca", "gianluca@gmail.com", "gianluca","0", "student");
-            Account michela=new Account("Michela", "michela@gmail.com", "michela","1", "student");
-            Account simone = new Account("Simone", "simone@gmail.com", "simone","0", "student");
+            Account gregorio = new Account("Gregorio", "gregorio@unisa.it", "gregorio","0", "teacher");
+            Account luigi = new Account("Luigi", "luigi@unisa.it", "luigi","0", "teacher");
+            Account admin = new Account("Admin", "admin@unisa.it", "admin", "1", "teacher");
+            Account gerardo = new Account("Gerardo", "gerardo@studenti.unisa.it", "gerardo","0", "student");
+            Account francesca = new Account("Francesca", "francesca@studenti.unisa.it", "francesca","1", "student");
+            Account antonio = new Account("Antonio", "antonio@studenti.unisa.it", "antonio","0", "student");
+            Account gianluca = new Account("Gianluca", "gianluca@studenti.unisa.it", "gianluca","0", "student");
+            Account michela = new Account("Michela", "michela@studenti.unisa.it", "michela","1", "student");
+            Account simone = new Account("Simone", "simone@studenti.unisa.it", "simone","0", "student");
 
             accountRepository.save(simone);
             accountRepository.save(luigi);
@@ -47,6 +54,8 @@ public class DemoApplication {
             accountRepository.save(antonio);
             accountRepository.save(gianluca);
             accountRepository.save(michela);
+            accountRepository.save(admin);
+            accountRepository.save(gerardo);
 
             Partita partita2= new Partita(Timestamp.valueOf("2019-05-03 11:20:09"),"Guess");
             partita2.addPunteggio(new Punteggio(luigi,10));
