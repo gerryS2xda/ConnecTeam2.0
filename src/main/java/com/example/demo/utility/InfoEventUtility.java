@@ -92,4 +92,22 @@ public class InfoEventUtility {
         notification.getElement().getStyle().set("width", "100%");
         notification.open();
     }
+
+    public void infoEventForError(String info, String width){
+
+        Paragraph content = new Paragraph();
+        content.setText(info);
+        content.getElement().getStyle().set("color", "red");
+        content.getElement().getStyle().set("font-size", "18px");
+
+        if(!width.equals(""))
+            content.getElement().getStyle().set("width", width);
+        content.getElement().getStyle().set("height", "100%");
+
+        Notification notification = new Notification(content);
+        notification.setDuration(4000);
+        notification.setPosition(Notification.Position.MIDDLE);
+        notification.getElement().getStyle().set("width", "100%");
+        notification.open();
+    }
 }
