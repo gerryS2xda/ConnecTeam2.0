@@ -467,7 +467,7 @@ public class MainView extends VerticalLayout {
         add(b);
         b.addClickListener(buttonClickEvent -> {
 
-            Account a = accountRepository.findOneByEmail("gregorio@gmail.com");
+            Account a = accountRepository.findOneByEmail("gregorio@unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -483,7 +483,7 @@ public class MainView extends VerticalLayout {
         b = new Button("luigi");
         add(b);
         b.addClickListener(buttonClickEvent -> {
-            Account a = accountRepository.findOneByEmail("luigi@gmail.com");
+            Account a = accountRepository.findOneByEmail("luigi@unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -500,7 +500,7 @@ public class MainView extends VerticalLayout {
         b = new Button("michela");
         add(b);
         b.addClickListener(buttonClickEvent -> {
-            Account a = accountRepository.findOneByEmail("michela@gmail.com");
+            Account a = accountRepository.findOneByEmail("michela@studenti.unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -516,7 +516,7 @@ public class MainView extends VerticalLayout {
         b = new Button("francesca");
         add(b);
         b.addClickListener(buttonClickEvent -> {
-            Account a = accountRepository.findOneByEmail("francesca@gmail.com");
+            Account a = accountRepository.findOneByEmail("francesca@studenti.unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -532,7 +532,7 @@ public class MainView extends VerticalLayout {
         b = new Button("antonio");
         add(b);
         b.addClickListener(buttonClickEvent -> {
-            Account a = accountRepository.findOneByEmail("antonio@gmail.com");
+            Account a = accountRepository.findOneByEmail("antonio@studenti.unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -548,7 +548,7 @@ public class MainView extends VerticalLayout {
         b = new Button("gianluca");
         add(b);
         b.addClickListener(buttonClickEvent -> {
-            Account a = accountRepository.findOneByEmail("gianluca@gmail.com");
+            Account a = accountRepository.findOneByEmail("gianluca@studenti.unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
@@ -564,7 +564,7 @@ public class MainView extends VerticalLayout {
         b = new Button("simone");
         add(b);
         b.addClickListener(buttonClickEvent -> {
-            Account a = accountRepository.findOneByEmail("simone@gmail.com");
+            Account a = accountRepository.findOneByEmail("simone@studenti.unisa.it");
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("loggato", true);
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("userId", a.getId());
             VaadinService.getCurrentRequest().getWrappedSession().setAttribute("user", a);
