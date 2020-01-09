@@ -1,6 +1,6 @@
 package com.example.demo.utility;
 
-import com.example.demo.userOperation.NavBarVertical;
+import com.example.demo.users.operation.NavBarVertical;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

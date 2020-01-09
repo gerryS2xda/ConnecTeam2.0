@@ -17,7 +17,7 @@ import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterSuggerisciMaty;
 import com.example.demo.maty.gameMenagement.backend.db.ItemMaty;
 import com.example.demo.maty.gameMenagement.backend.listeners.BroadcastListenerMaty;
-import com.example.demo.userOperation.NavBar;
+import com.example.demo.users.operation.NavBar;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.ClientCallable;

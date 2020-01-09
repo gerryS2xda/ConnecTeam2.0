@@ -7,7 +7,6 @@ import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSuggerisci;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.SuggerisciListener;
-import com.example.demo.userOperation.NavBar;
 import com.example.demo.utility.MessageList;
 import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.button.Button;

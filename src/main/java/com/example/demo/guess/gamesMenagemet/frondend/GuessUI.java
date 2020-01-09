@@ -15,7 +15,7 @@ import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterSugg
 import com.example.demo.guess.gamesMenagemet.backend.db.Item;
 import com.example.demo.guess.gamesMenagemet.backend.listeners.BroadcastListener;
 import com.example.demo.chat.ChatListener;
-import com.example.demo.userOperation.NavBar;
+import com.example.demo.users.operation.NavBar;
 import com.example.demo.users.event.EndGameEventBeanPublisher;
 import com.example.demo.utility.*;
 import com.vaadin.flow.component.*;

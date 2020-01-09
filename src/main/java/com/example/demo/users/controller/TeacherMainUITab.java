@@ -9,7 +9,7 @@ import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.mainView.MainView;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
-import com.example.demo.userOperation.SettingsUser;
+import com.example.demo.users.operation.SettingsUser;
 import com.example.demo.users.broadcaster.Broadcaster;
 import com.example.demo.users.broadcaster.BroadcastListenerTeacher;
 import com.example.demo.users.event.EndGameEventBeanPublisher;

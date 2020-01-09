@@ -1,5 +1,5 @@
 
-package com.example.demo.userOperation;
+package com.example.demo.users.operation;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;

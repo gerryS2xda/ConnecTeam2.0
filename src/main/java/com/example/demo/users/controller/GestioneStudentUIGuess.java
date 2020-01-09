@@ -2,8 +2,7 @@ package com.example.demo.users.controller;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
-import com.example.demo.error.ErrorPage;
-import com.example.demo.userOperation.NavBarVertical;
+import com.example.demo.users.operation.NavBarVertical;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.StyleSheet;

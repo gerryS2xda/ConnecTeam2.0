@@ -1,6 +1,6 @@
 package com.example.demo.users.discusser;
 
-import com.example.demo.userOperation.NavBar;
+import com.example.demo.users.operation.NavBar;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Partita;
 import com.example.demo.entity.Punteggio;

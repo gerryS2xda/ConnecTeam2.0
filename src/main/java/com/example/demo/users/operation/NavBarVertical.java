@@ -1,4 +1,4 @@
-package com.example.demo.userOperation;
+package com.example.demo.users.operation;
 
 import com.example.demo.mainView.MainView;
 import com.example.demo.users.controller.GestioneStudentUI;
