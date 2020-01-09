@@ -6,6 +6,7 @@ import com.example.demo.entity.Punteggio;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
 import com.example.demo.gamesManagement.GameList;
+import com.example.demo.users.discusser.StudentHomeView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
@@ -196,7 +197,7 @@ public class StatisticUser extends VerticalLayout {
             Button goPlay = new Button("Vai alla lista dei giochi",new Icon(VaadinIcon.PLAY));
             goPlay.addClassName("goPlay");
             goPlay.addClickListener(buttonClickEvent -> {
-                UI.getCurrent().navigate(HomeView.class);
+                UI.getCurrent().navigate(StudentHomeView.class);
             });
             verticalLayout.add(goPlay);
             horizontalLayoutChart.add(verticalLayout);
