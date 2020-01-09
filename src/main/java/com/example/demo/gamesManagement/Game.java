@@ -1,4 +1,4 @@
-package com.example.demo.gamesRules;
+package com.example.demo.gamesManagement;
 
 public interface Game {
     String getNomeGioco();

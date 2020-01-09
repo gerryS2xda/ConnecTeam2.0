@@ -1,4 +1,4 @@
-package com.example.demo.gamesRules;
+package com.example.demo.gamesManagement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;

@@ -1,4 +1,4 @@
-package com.example.demo.gamesRules;
+package com.example.demo.gamesManagement;
 
 public class DuplicateGameNameException extends RuntimeException {
     public DuplicateGameNameException(String message) {

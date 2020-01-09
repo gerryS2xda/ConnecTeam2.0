@@ -7,7 +7,7 @@ import com.example.demo.entity.Partita;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.games.Guess;
+import com.example.demo.gamesManagement.Guess;
 import com.example.demo.guess.gamesMenagemet.backend.GuessController;
 import com.example.demo.guess.gamesMenagemet.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.chat.BroadcasterChat;

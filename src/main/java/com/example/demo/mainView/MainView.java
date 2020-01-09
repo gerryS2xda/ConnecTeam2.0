@@ -4,7 +4,7 @@ import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.gamesRules.GameList;
+import com.example.demo.gamesManagement.GameList;
 import com.example.demo.guess.gamesMenagemet.backend.db.ItemRepository;
 import com.example.demo.maty.gameMenagement.backend.db.ItemRepositoryMaty;
 import com.example.demo.nuovoGioco.gameManagement.database.ItemRepositoryNuovoGioco;

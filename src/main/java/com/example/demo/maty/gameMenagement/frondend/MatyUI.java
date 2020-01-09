@@ -11,7 +11,7 @@ import com.example.demo.entity.Partita;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.games.Maty;
+import com.example.demo.gamesManagement.Maty;
 import com.example.demo.maty.gameMenagement.backend.MatyController;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterMaty;
 import com.example.demo.maty.gameMenagement.backend.broadcaster.BroadcasterSuggerisciMaty;

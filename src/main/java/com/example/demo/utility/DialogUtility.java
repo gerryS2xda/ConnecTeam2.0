@@ -6,7 +6,7 @@ import com.example.demo.users.controller.TeacherMainUITab;
 import com.example.demo.users.discusser.StudentHomeView;
 import com.example.demo.entity.Account;
 import com.example.demo.entityRepository.AccountRepository;
-import com.example.demo.gamesRules.Game;
+import com.example.demo.gamesManagement.Game;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;

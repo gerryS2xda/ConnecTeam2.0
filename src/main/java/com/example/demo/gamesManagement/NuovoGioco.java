@@ -1,6 +1,5 @@
-package com.example.demo.games;
+package com.example.demo.gamesManagement;
 
-import com.example.demo.gamesRules.Game;
 import org.springframework.stereotype.Component;
 
 @Component

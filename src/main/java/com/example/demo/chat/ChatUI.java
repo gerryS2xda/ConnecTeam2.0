@@ -3,7 +3,7 @@ package com.example.demo.chat;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Gruppo;
 import com.example.demo.entityRepository.AccountRepository;
-import com.example.demo.gamesRules.Game;
+import com.example.demo.gamesManagement.Game;
 import com.example.demo.guess.gamesMenagemet.frondend.GuessUI;
 import com.example.demo.maty.gameMenagement.frondend.MatyUI;
 import com.example.demo.utility.MessageList;
