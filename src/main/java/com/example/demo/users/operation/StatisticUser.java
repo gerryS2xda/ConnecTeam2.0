@@ -37,11 +37,9 @@ import java.util.List;
 @PageTitle("ConnecTeam")
 public class StatisticUser extends VerticalLayout {
 
-
+    //instance field
     private PartitaRepository partitaRepository;
     private Account account;
-
-    private String punti="";
     private GameList gameList;
 
 

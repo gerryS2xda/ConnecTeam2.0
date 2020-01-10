@@ -6,7 +6,6 @@ import com.example.demo.entity.Punteggio;
 import com.example.demo.entityRepository.AccountRepository;
 import com.example.demo.entityRepository.PartitaRepository;
 import com.example.demo.error.ErrorPage;
-import com.example.demo.gamesManagement.GameList;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.dependency.JavaScript;
@@ -35,7 +34,6 @@ public class ControllerMainUI extends HorizontalLayout {
 
     private Account account;
     private PartitaRepository partitaRepository;
-    private GameList gameList;
     private Image image;
     private AccountRepository accountRepository;
 
@@ -88,7 +86,6 @@ public class ControllerMainUI extends HorizontalLayout {
         HorizontalLayout main = new HorizontalLayout();
         main.addClassName("positioning");
         partitaRepository = (PartitaRepository) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("partitaRepository");
-        gameList = (GameList) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("gameList");
         VerticalLayout verticalLayout;
         verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(false);
