@@ -1,6 +1,7 @@
-package com.example.demo.gamesManagement;
+package com.example.demo.games.guess;
 
 
+import com.example.demo.gamesManagement.Game;
 import org.springframework.stereotype.Component;
 
 @Component
