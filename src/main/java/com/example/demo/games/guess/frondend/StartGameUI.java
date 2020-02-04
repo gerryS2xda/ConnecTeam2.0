@@ -7,6 +7,7 @@ import com.example.demo.games.guess.backend.GuessController;
 import com.example.demo.games.guess.backend.broadcaster.BroadcasterGuess;
 import com.example.demo.games.guess.backend.broadcaster.BroadcasterSuggerisci;
 import com.example.demo.games.guess.backend.listeners.SuggerisciListener;
+import com.example.demo.utility.InfoEventUtility;
 import com.example.demo.utility.MessageList;
 import com.example.demo.utility.Utils;
 import com.vaadin.flow.component.button.Button;
@@ -188,7 +189,7 @@ public class StartGameUI extends HorizontalLayout implements SuggerisciListener{
                 button.setEnabled(false);
 
                 stringIntegerMap.forEach((s, integer) -> {
-                    if (integer == BroadcasterGuess.getListeners().size()) {
+                    if (integer == BroadcasterGuess.getListenersSizeWithoutTeacher()) {
                         for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
                             if (i == 0) {
                                 flag = false;
@@ -265,47 +266,8 @@ public class StartGameUI extends HorizontalLayout implements SuggerisciListener{
             button.addClassName("btnPlus");
             button.setWidth("32px");
             button.addClickListener(buttonClickEvent -> {
-                BroadcasterGuess.addParolaVotata(gruppo, message);
-                Map<String, Integer> stringIntegerMap = countFrequencies(BroadcasterGuess.getParoleVotateHM().get(gruppo));
-                BroadcasterGuess.getVotoParola(gruppo, stringIntegerMap);
-                button.setEnabled(false);
-
-                stringIntegerMap.forEach((s, integer) -> {
-                    //Tra tutte le parole votate dai membri di 'gruppo', verifica se e' presente quella vincente
-                    if (integer == BroadcasterGuess.getListeners().size()) {
-                        for (int i = 0; i < BroadcasterGuess.getPartiteThread().size(); i++) {
-                            if (i == 0) {
-                                flag = false;
-                            }
-                            try {
-                                BroadcasterGuess.getPartiteThread().get(i).interrupt();
-                                BroadcasterGuess.getPartiteThread().get(i).stopTimer();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            } finally {
-                                int punteggio = 0;
-                                if (BroadcasterGuess.getIndiziRicevuti() == 1) {
-                                    punteggio = 100;
-                                } else if (BroadcasterGuess.getIndiziRicevuti() == 2) {
-                                    punteggio = 60;
-                                } else if (BroadcasterGuess.getIndiziRicevuti() == 3) {
-                                    punteggio = 30;
-                                } else if (BroadcasterGuess.getIndiziRicevuti() == 4) {
-                                    punteggio = 10;
-                                }
-
-                                vincente = guessController.partitaVincente(s, BroadcasterGuess.getItems().get(i));
-
-                                if (vincente == false && flag == false) {
-                                    BroadcasterGuess.partitanonVincente(gruppo);
-                                } else if (vincente == true && flag == false) {
-                                    BroadcasterGuess.partitaVincente(gruppo, s, punteggio);
-                                }
-                            }
-
-                        }
-                    }
-                });
+                InfoEventUtility infoEventUtility = new InfoEventUtility();
+                infoEventUtility.infoEventForTeacher("L'insegnante può solo suggerire le parole, non può votarle!", "red", "420px");
             });
 
             horizontalLayoutTeacher.add(label, button);
