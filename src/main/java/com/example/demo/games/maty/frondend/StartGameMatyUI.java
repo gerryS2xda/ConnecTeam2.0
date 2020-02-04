@@ -612,6 +612,10 @@ public class StartGameMatyUI extends HorizontalLayout implements SuggerisciListe
                 ListDataProvider<CronologiaNumeri> sourceDataProvider = (ListDataProvider<CronologiaNumeri>) currentGrid.getDataProvider();
                 List<CronologiaNumeri> sourceItems = new ArrayList<>(sourceDataProvider.getItems());
 
+                if(sourceItems.size() <= 0){
+                    return;
+                }
+
                 cronologiaNumeriGridsContainerTeacher.getChildren().forEach(component -> {
                     Grid<CronologiaNumeri> grid = (Grid<CronologiaNumeri>) component;
                     if (grid.getElement().getAttribute("name") != null) {
