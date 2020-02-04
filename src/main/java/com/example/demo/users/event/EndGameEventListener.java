@@ -34,10 +34,22 @@ public class EndGameEventListener {
             Broadcaster.removeAccountFromAllGrid(acc);
             Broadcaster.removeItemFromAccountList(acc);
         }
+
+        //NOTA: occorre sistemare partita vincente in modo tale che non termina per tutti se uno dei gruppi vince
+        //NOTA: Per il teacher occorre resettare il tutto altrimenti mostra la schermata del gioco bloccata,
+        //in quanto la partita e' terminata per tutti, anche se ha vinto un solo gruppo
         if(statusPartita.equals("vincente")){
             Broadcaster.configFinePartitaTeacher(nameGame, g, statusPartita);
+            Broadcaster.setIsGuessStart(false);
+            Broadcaster.setCountGuessUser(0);
+            Broadcaster.setIsMatyStart(false);
+            Broadcaster.setCountMatyUser(0);
         }else if(statusPartita.equals("non-vincente")){
             Broadcaster.configFinePartitaTeacher(nameGame, g, statusPartita);
+            Broadcaster.setIsGuessStart(false);
+            Broadcaster.setCountGuessUser(0);
+            Broadcaster.setIsMatyStart(false);
+            Broadcaster.setCountMatyUser(0);
         }
 
     }
