@@ -234,7 +234,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 matyView.getStyle().set("display", "none");
             }
             if(gestStudentiView == null){
-                gestStudentiView = new GestioneStudentUI(startGameEventBeanPublisher, accountRepository, account);
+                gestStudentiView = new GestioneStudentUI(startGameEventBeanPublisher, accountRepository, account, this);
                 add(gestStudentiView);
             }else{
                 gestStudentiView.getStyle().set("display", "flex");
@@ -398,6 +398,21 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
         return d;
     }
 
+    //public methods
+    public void resetGestioneStudentUI(boolean isResetAll){
+        UI.getCurrent().getPage().executeJs("document.getElementById(\"homeNV\").click();");
+        if(isResetAll) { //se true, rimuovi anche l'istanza "GestioneStudentUI
+            if (gestStudentiView != null) {
+                remove(gestStudentiView);
+                gestStudentiView = null;
+            }
+            if (gestStudentiView != null) {
+                remove(gestStudentiView);
+                gestStudentiView = null;
+            }
+        }//else vai solo alla Home
+    }
+
     //Implements method of BeforeLeaveObserver interface
     @Override
     public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
@@ -474,15 +489,7 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEventForTeacher("Il " + g.getId() + " non ha vinto la partita!!", "red", "");
             }
-            UI.getCurrent().getPage().executeJs("document.getElementById(\"homeNV\").click();");
-            if(gestStudentiView != null){
-                remove(gestStudentiView);
-                gestStudentiView = null;
-            }
-            if(gestStudentiView != null){
-                remove(gestStudentiView);
-                gestStudentiView = null;
-            }
+            resetGestioneStudentUI(true);
         });
 
     }
