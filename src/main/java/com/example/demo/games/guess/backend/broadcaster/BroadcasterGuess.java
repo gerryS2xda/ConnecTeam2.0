@@ -170,6 +170,16 @@ public class BroadcasterGuess implements Serializable {
         }
     }
 
+    public static int getListenersSizeWithoutTeacher(){
+        int size = listeners.size();
+        for(Account a : listeners.keySet()){
+            if(a.getTypeAccount().equals("teacher")){
+                size--;
+            }
+        }
+        return size;
+    }
+
     //getter and setter methods
     public static Map<Gruppo, List<String>> getParoleVotateHM() {
         return paroleVotate;
