@@ -598,6 +598,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
                 add(fireWorks);
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaVincente(parola, punteggio, guess);
+                //NOTA: occorre sistemare partita vincente in modo tale che non termina per tutti se uno dei gruppi vince
                 endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, new Gruppo(), "");
             }
         });
@@ -608,6 +609,7 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
         getUI().get().access(() -> {
             if(chatContainerDialog.isOpened())
                 chatContainerDialog.close();
+            //NOTA: occorre sistemare partita vincente in modo tale che non termina per tutti se uno dei gruppi vince
             endGamePublisher.doStuffAndPublishAnEvent("Guess", account, false, gruppo, "vincente");
         });
     }
