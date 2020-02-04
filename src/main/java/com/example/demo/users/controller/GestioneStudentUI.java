@@ -43,6 +43,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     //costanti
     private static final int MAX_NUM_GRUPPI = 10;
     private static final String[] SELECTS_ITEM = {"Guess", "Maty", "Nuovo gioco"};
+    private static boolean isOkBtnSettingsDialogPressed = false; //il pulsante e' stato premuto almeno una volta?
 
     //instance field
     private AccountRepository accRep;
@@ -71,13 +72,15 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
     private boolean isGridContainerAddToUI;
     private boolean isGridStudConfigurated; //gridstud e' stato configurato almeno una volta
     private String currentGameShow = ""; //UI che in questo momento sta visualizzando il teacher
+    private TeacherMainUITab mainUI;
 
-    public GestioneStudentUI(StartGameEventBeanPublisher startGameEventPublisher, AccountRepository accRep, Account account){
+    public GestioneStudentUI(StartGameEventBeanPublisher startGameEventPublisher, AccountRepository accRep, Account account, TeacherMainUITab mainUI){
 
         try {
             //Inizializzazione
             this.accRep = accRep;
             this.account = account;
+            this.mainUI = mainUI;
             startGameEventBeanPublisher = startGameEventPublisher;
             setId("GestioneStudentUI"); //setta id del root element di questo component
             gridGruppiGuess = new ArrayList<Grid<Account>>();
@@ -88,6 +91,7 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
             containerGridMaty = new Tabs();
             isGridContainerAddToUI = false;
             isGridStudConfigurated = false;
+            isOkBtnSettingsDialogPressed = false;
 
             //Inizializza list string items for Selects
             selectsItem = new ArrayList<String>();
@@ -263,11 +267,15 @@ public class GestioneStudentUI extends HorizontalLayout implements BroadcastList
 
             d.close();
             buttonClickEvent.getSource().setEnabled(true);
+            isOkBtnSettingsDialogPressed = true; //pulsante premuto almeno una volta, quindi non rimuovere istanza GestioneStudentUI
         });
 
         Button close = new Button("Chiudi");
         close.addClickListener(buttonClickEvent -> {
             d.close();
+            if(!isOkBtnSettingsDialogPressed) {
+                mainUI.resetGestioneStudentUI(true);
+            }
         });
         btnContainer.add(b, close);
 
