@@ -467,17 +467,21 @@ public class TeacherMainUITab extends HorizontalLayout implements BroadcastListe
             if(statusPartita.equals("")) {
                 DialogUtility dialogUtility = new DialogUtility();
                 dialogUtility.partitaTerminataDialogTeacher(nameGame, "Partita Terminata! Non risultano altri utenti connessi");
-                UI.getCurrent().getPage().executeJs("document.getElementById(\"homeNV\").click();");
-                if(gestStudentiView != null){
-                    remove(gestStudentiView);
-                    gestStudentiView = null;
-                }
             }else if(statusPartita.equals("vincente")){
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEventForTeacher("Il " + g.getId() + " ha vinto la partita!!", "green", "");
             }else if(statusPartita.equals("non-vincente")){
                 InfoEventUtility infoEventUtility = new InfoEventUtility();
                 infoEventUtility.infoEventForTeacher("Il " + g.getId() + " non ha vinto la partita!!", "red", "");
+            }
+            UI.getCurrent().getPage().executeJs("document.getElementById(\"homeNV\").click();");
+            if(gestStudentiView != null){
+                remove(gestStudentiView);
+                gestStudentiView = null;
+            }
+            if(gestStudentiView != null){
+                remove(gestStudentiView);
+                gestStudentiView = null;
             }
         });
 
