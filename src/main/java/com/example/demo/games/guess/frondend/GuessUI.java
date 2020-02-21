@@ -498,8 +498,8 @@ public class GuessUI extends HorizontalLayout implements BroadcastListener, Chat
             d.addClassName("divContainerIndizio");
             switch (indexIndizio){
                 case 0: d.getStyle().set("background-color", "#0C8BE8"); break;
-                case 1: d.getStyle().set("background-color", "#0CE859"); break;  //oppure #23BAFF
-                case 2: d.getStyle().set("background-color", "#4EEB00"); break;
+                case 1: d.getStyle().set("background-color", "#548235"); break;  //valore prec: #0CE859 oppure #23BAFF
+                case 2: d.getStyle().set("background-color", "#98142D"); break;  //valore prec: #4EEB00
                 case 3: d.getStyle().set("background-color", "#FF7E1A"); break;
             }
 
